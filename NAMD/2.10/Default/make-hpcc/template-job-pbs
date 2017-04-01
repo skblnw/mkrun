@@ -1,0 +1,29 @@
+#PBS -S /bin/bash
+#PBS -N name
+#PBS -l nodes=4:ppn=16
+#PBS -q Area_D
+#PBS -j oe
+#
+
+source /home/intel/composerxe/bin/compilervars.sh intel64
+#source /home/intel/impi/4.1.0.030/intel64/bin/mpivars.sh
+
+#NAMD_PATH=/io4data/data/feisun/fei/program/NAMD/Linux-x86_64-g++
+#NAMD_HOME=/nfs/disk3/junfan/NAMD/NAMD_2.9_Source/Linux-x86_64-g++
+NAMD_HOME=/home/cchan2242/opt/NAMD_2.10
+#NAMD_HOME=/nfs/disk3/cchan2242/bin
+
+NAMD=$NAMD_HOME/namd2
+CHARMRUN=$NAMD_HOME/charmrun
+
+MPIRUN=/home/intel/impi/4.1.0.030/intel64/bin/mpirun
+
+cat $PBS_NODEFILE >> /tmp/nodefile.$$
+NP=`cat $PBS_NODEFILE | wc -l`
+#NN=`cat $PBS_NODEFILE | sort | uniq | tee /tmp/nodes.$$ | wc -l`
+
+
+echo Submitting directory is $PBS_O_WORKDIR
+cd $PBS_O_WORKDIR
+echo Running on host `hostname`
+echo Job started at `date`

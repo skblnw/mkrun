@@ -1,0 +1,22 @@
+#!/bin/sh
+
+# Minimization
+desmond --include step6.0_minimization.cfg
+framenum=`catdcd -dtr step6.0_minimization|grep Total|awk '{print $3}'`
+catdcd -o step6.0_minimization.pdb -otype pdb -s ../step5_assembly.psf -stype psf -first $framenum -last $framenum -dtr step6.0_minimization
+python updatedms_coor.py -dms step5_assembly.dms -o step6.0_minimization.dms -pdb step6.0_minimization.pdb
+
+# Equilibration
+for i in  1 2
+do
+    desmond --include step6.${i}_equilibration.cfg
+    framenum=`catdcd -dtr step6.${i}_equilibration|grep Total|awk '{print $3}'`
+    catdcd -o step6.${i}_equilibration.pdb -otype pdb -s ../step5_assembly.psf -stype psf -first $framenum -last $framenum -dtr step6.${i}_equilibration
+    python updatedms_coor.py -dms step5_assembly.dms -o step6.${i}_equilibration.dms -pdb step6.${i}_equilibration.pdb
+done
+
+# production
+desmond --include step7_production.cfg
+
+# continue a job
+# desmond --include step7_production.cfg -restore step7_production.cpt --cfg xxx=xxx

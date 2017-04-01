@@ -1,0 +1,21 @@
+name: us-zPOSaa-NUM
+priority: 1
+cpus: 8
+[
+echo Job started at `date`
+
+export NAMD_PATH=/home/kevin/opt/NAMD_2.10_Linux-x86_64-multicore-CUDA
+export LD_LIBRARY_PATH=$NAMD_PATH:$LD_LIBRARY_PATH
+export NAMD=$NAMD_PATH/namd2
+export CHARMRUN=$NAMD_PATH/charmrun
+
+export CUDA_HOME=/share/apps/cuda
+export LD_LIBRARY_PATH=$CUDA_HOME/lib:$LD_LIBRARY_PATH
+
+cd /share/data/kevin/BAR-PH/us/sym/run
+
+$NAMD +idlepoll +p8 us-zPOSaa-NUM.namd > us-zPOSaa-NUM.log
+wait
+
+echo Job ended at `date`
+]

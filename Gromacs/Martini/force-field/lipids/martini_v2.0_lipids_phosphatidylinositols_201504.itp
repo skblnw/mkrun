@@ -1,0 +1,1659 @@
+;
+; Collection with all phosphatidylinositols Martini lipids, compiled on 201504
+;
+ 
+;;;;;; Martini lipid topology for di-C16:0-C18:0 PIP (DPP1), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_DPP1_01.itp -alname DPP1 -alhead 'P1' -allink 'G G' -altail 'CCCC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol phosphate (PIP) lipid corresponding to atomistic C16:0 dipalmitoyl (DP-PIP) - 
+;   C18:0 distearoyl (DS-PIP) tails.
+; Parameterization:
+;   The lipid head is based on atomistic phosphatidilinositol 3-mono-phosphate (PIP(3)) simulations, see 
+;   Lopez et al. 2013 for details. The lipid tail follows the standard Martini 2.0 lipid definitions and 
+;   building block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Author(s): Cesar Lopez <C.A.Lopez-Bautista@rug.nl>
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Note, in this topology the phosphates are unprotonated. At pH 7, some of the phosphates can have one or even two 
+;   protonations, reducing the molecules total charge. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=P1, allink=G G, altail=CCCC CCCC, alname=DPP1, charge=-3.0
+;@RESNTEST DPP==DPP1 if: atoms[0]==C1  and atoms[4]==P1
+;@BEADS C1 C2 C3 PO4 P1 GL1 GL2 C1A C2A C3A C4A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C1-P1 C2-P1 C1-PO4 PO4-GL1 GL1-GL2 GL1-C1A C1A-C2A C2A-C3A C3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  DPP1          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	DPP1 	C1  	 1 	0 	
+   2 	P1 	 1 	DPP1 	C2  	 2 	0 	; corrected particle type (P1 instead of Na), oct 2013
+   3 	P4 	 1 	DPP1 	C3  	 3 	0 	
+   4 	Qa 	 1 	DPP1 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+   5 	Qa 	 1 	DPP1 	P1  	 5 	-2.0 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   6 	Na 	 1 	DPP1 	GL1 	 6 	0 	
+   7 	Na 	 1 	DPP1 	GL2 	 7 	0 	
+   8 	C1 	 1 	DPP1 	C1A 	 8 	0 	
+   9 	C1 	 1 	DPP1 	C2A 	 9 	0 	
+  10 	C1 	 1 	DPP1 	C3A 	10 	0 	
+  11 	C1 	 1 	DPP1 	C4A 	11 	0 	
+  12 	C1 	 1 	DPP1 	C1B 	12 	0 	
+  13 	C1 	 1 	DPP1 	C2B 	13 	0 	
+  14 	C1 	 1 	DPP1 	C3B 	14 	0 	
+  15 	C1 	 1 	DPP1 	C4B 	15 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+   1  5 	1 	0.40 	25000 	
+   2  5 	1 	0.30 	30000 	
+#endif
+   1  4 	1 	0.35 	1250 	
+   4  6 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   6  7 	1 	0.37 	1250 	
+   6  8 	1 	0.47 	1250 	
+   8  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+   7 12 	1 	0.47 	1250 	
+  12 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+  14 15 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+; Here we have less angles than in PI, replaced by bonds/constraints
+; Orient Head
+   1  4  6 	2 	140.0 	25.0 	; link to lipid - PI has 30
+; 4    6    7         2 120.00 25.0 ; These are part of the default lipids rules but not used here
+; 4    6    8         2 180.00 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   6  8  9 	2 	180.0 	25.0 	
+   8  9 10 	2 	180.0 	25.0 	
+   9 10 11 	2 	180.0 	25.0 	
+   7 12 13 	2 	180.0 	25.0 	
+  12 13 14 	2 	180.0 	25.0 	
+  13 14 15 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  6  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+   1  5 	1 	0.40 	
+   2  5 	1 	0.30 	
+#endif
+
+ 
+;;;;;; Martini lipid topology for di-C16:0-C18:0 PIP2 (DPP2), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_DPP2_01.itp -alname DPP2 -alhead 'P2' -allink 'G G' -altail 'CCCC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol bisphosphat (PIP2) lipid corresponding to atomistic C16:0 dipalmitoyl (DP-PIP2) - 
+;   C18:0 distearoyl (DS-PIP2) tails.
+; Parameterization:
+;   The lipid head is based on atomistic phosphatidilinositol 3-4 bi-phosphate (PIP2(3,4)) simulations, see 
+;   Lopez et al. 2013 for details. The lipid tail follows the standard Martini 2.0 lipid definitions and 
+;   building block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Author(s): Cesar Lopez <C.A.Lopez-Bautista@rug.nl>
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Changed one constraints to a bond and removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Note, in this topology the phosphates are unprotonated. At pH 7, some of the phosphates can have one or even two 
+;   protonations, reducing the molecules total charge. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=P2, allink=G G, altail=CCCC CCCC, alname=DPP2, charge=-5.0
+;@RESNTEST DPP==DPP2 if: atoms[0]==C1  and atoms[5]==P2
+;@BEADS C1 C2 C3 PO4 P1 P2 GL1 GL2 C1A C2A C3A C4A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C2-P1 C2-P2 C1-P1 C3-P2 P1-P2 C1-PO4 PO4-GL1 GL1-GL2 GL1-C1A C1A-C2A C2A-C3A C3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  DPP2          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	DPP2 	C1  	 1 	0 	
+   2 	Na 	 1 	DPP2 	C2  	 2 	0 	
+   3 	P4 	 1 	DPP2 	C3  	 3 	0 	
+   4 	Qa 	 1 	DPP2 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+   5 	Qa 	 1 	DPP2 	P1  	 5 	-2.0 	
+   6 	Qa 	 1 	DPP2 	P2  	 6 	-2.0 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   7 	Na 	 1 	DPP2 	GL1 	 7 	0 	
+   8 	Na 	 1 	DPP2 	GL2 	 8 	0 	
+   9 	C1 	 1 	DPP2 	C1A 	 9 	0 	
+  10 	C1 	 1 	DPP2 	C2A 	10 	0 	
+  11 	C1 	 1 	DPP2 	C3A 	11 	0 	
+  12 	C1 	 1 	DPP2 	C4A 	12 	0 	
+  13 	C1 	 1 	DPP2 	C1B 	13 	0 	
+  14 	C1 	 1 	DPP2 	C2B 	14 	0 	
+  15 	C1 	 1 	DPP2 	C3B 	15 	0 	
+  16 	C1 	 1 	DPP2 	C4B 	16 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+   2  5 	1 	0.30 	25000 	
+   2  6 	1 	0.35 	30000 	
+   1  5 	1 	0.40 	25000 	
+   3  6 	1 	0.31 	30000 	
+; 5  6  1  0.60  25000 ; Always keep as bond for stability
+#endif
+   5  6 	1 	0.60 	25000 	; Always keep as bond for stability
+   1  4 	1 	0.35 	1250 	
+   4  7 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   7  8 	1 	0.37 	1250 	
+   7  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+  11 12 	1 	0.47 	1250 	
+   8 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+  14 15 	1 	0.47 	1250 	
+  15 16 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+; Here we have less angles than in PI, replaced by bonds/constraints
+; Orient Head
+   1  4  7 	2 	140.0 	25.0 	; link to lipid - PI has 30
+; 4  7  8  2  120.0 25.0 ; These are part of the default lipids rules but not used here
+; 4  7  9  2  180.0 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   7  9 10 	2 	180.0 	25.0 	
+   9 10 11 	2 	180.0 	25.0 	
+  10 11 12 	2 	180.0 	25.0 	
+   8 13 14 	2 	180.0 	25.0 	
+  13 14 15 	2 	180.0 	25.0 	
+  14 15 16 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  7  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+   2  5 	1 	0.30 	
+   2  6 	1 	0.35 	
+   1  5 	1 	0.40 	
+   3  6 	1 	0.31 	
+; 5     6         1 0.60 ; Always keep as bond for stability
+#endif
+
+ 
+;;;;;; Martini lipid topology for di-C16:0-C18:0 PI (DPPI), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_DPPI_01.itp -alname DPPI -alhead 'PI' -allink 'G G' -altail 'CCCC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol (PI) lipid corresponding to atomistic C16:0 dipalmitoyl (DPPI) - 
+;   C18:0 distearoyl (DSPI) tails.
+; Parameterization:
+;   The lipid head is based on atomistic phosphatidylinositol (PI) simulations, see Lopez et al. 2013 for details. 
+;   The lipid tail follows the standard Martini 2.0 lipid definitions and building block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Author(s): Cesar Lopez <C.A.Lopez-Bautista@rug.nl>
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=PI, allink=G G, altail=CCCC CCCC, alname=DPPI, charge=-1.0
+;@RESNTEST DPP==DPPI if: atoms[0]==C1  and atoms[4]==GL1
+;@BEADS C1 C2 C3 PO4 GL1 GL2 C1A C2A C3A C4A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C1-PO4 PO4-GL1 GL1-GL2 GL1-C1A C1A-C2A C2A-C3A C3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  DPPI          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	DPPI 	C1  	 1 	0 	
+   2 	P4 	 1 	DPPI 	C2  	 2 	0 	
+   3 	P4 	 1 	DPPI 	C3  	 3 	0 	
+   4 	Qa 	 1 	DPPI 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+; Tail part (uses standar Martini v2.0 tail rules)
+   5 	Na 	 1 	DPPI 	GL1 	 5 	0 	
+   6 	Na 	 1 	DPPI 	GL2 	 6 	0 	
+   7 	C1 	 1 	DPPI 	C1A 	 7 	0 	
+   8 	C1 	 1 	DPPI 	C2A 	 8 	0 	
+   9 	C1 	 1 	DPPI 	C3A 	 9 	0 	
+  10 	C1 	 1 	DPPI 	C4A 	10 	0 	
+  11 	C1 	 1 	DPPI 	C1B 	11 	0 	
+  12 	C1 	 1 	DPPI 	C2B 	12 	0 	
+  13 	C1 	 1 	DPPI 	C3B 	13 	0 	
+  14 	C1 	 1 	DPPI 	C4B 	14 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+#endif
+   1  4 	1 	0.35 	1250 	
+   4  5 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   5  6 	1 	0.37 	1250 	
+   5  7 	1 	0.47 	1250 	
+   7  8 	1 	0.47 	1250 	
+   8  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+   6 11 	1 	0.47 	1250 	
+  11 12 	1 	0.47 	1250 	
+  12 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+   3  1  4 	2 	133.0 	100.0 	
+   2  1  4 	2 	100.0 	70.0 	
+; Orient Head
+   1  4  5 	2 	140.0 	30.0 	; link to lipid
+; 4    5    6         2 120.00 25.0 ; These are part of the default lipids rules but not used here
+; 4    5    7         2 180.00 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   5  7  8 	2 	180.0 	25.0 	
+   7  8  9 	2 	180.0 	25.0 	
+   8  9 10 	2 	180.0 	25.0 	
+   6 11 12 	2 	180.0 	25.0 	
+  11 12 13 	2 	180.0 	25.0 	
+  12 13 14 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  5  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+#endif
+
+ 
+;;;;;; Martini lipid topology for C16:0/20:4 PI (PAPI), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_PAPI_01.itp -alname PAPI -alhead 'PI' -allink 'G G' -altail 'DDDDC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol (PI) lipid corresponding to atomistic e.g. C16:0/20:4 1-stearoyl-2-arachidonoyl tails.
+; Parameterization:
+;   The lipid head is based on atomistic phosphatidylinositol (PI) simulations, see Lopez et al. 2013 for details. 
+;   The lipid tail follows the standard Martini 2.0 lipid definitions and building block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Author(s): Cesar Lopez <C.A.Lopez-Bautista@rug.nl>
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=PI, allink=G G, altail=DDDDC CCCC, alname=PAPI, charge=-1.0
+;@RESNTEST PAP==PAPI if: atoms[0]==C1  and atoms[4]==GL1
+;@BEADS C1 C2 C3 PO4 GL1 GL2 D1A D2A D3A D4A C5A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C1-PO4 PO4-GL1 GL1-GL2 GL1-D1A D1A-D2A D2A-D3A D3A-D4A D4A-C5A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  PAPI          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	PAPI 	C1  	 1 	0 	
+   2 	P4 	 1 	PAPI 	C2  	 2 	0 	
+   3 	P4 	 1 	PAPI 	C3  	 3 	0 	
+   4 	Qa 	 1 	PAPI 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+; Tail part (uses standar Martini v2.0 tail rules)
+   5 	Na 	 1 	PAPI 	GL1 	 5 	0 	
+   6 	Na 	 1 	PAPI 	GL2 	 6 	0 	
+   7 	C4 	 1 	PAPI 	D1A 	 7 	0 	
+   8 	C4 	 1 	PAPI 	D2A 	 8 	0 	
+   9 	C4 	 1 	PAPI 	D3A 	 9 	0 	
+  10 	C4 	 1 	PAPI 	D4A 	10 	0 	
+  11 	C1 	 1 	PAPI 	C5A 	11 	0 	
+  12 	C1 	 1 	PAPI 	C1B 	12 	0 	
+  13 	C1 	 1 	PAPI 	C2B 	13 	0 	
+  14 	C1 	 1 	PAPI 	C3B 	14 	0 	
+  15 	C1 	 1 	PAPI 	C4B 	15 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+#endif
+   1  4 	1 	0.35 	1250 	
+   4  5 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   5  6 	1 	0.37 	1250 	
+   5  7 	1 	0.47 	1250 	
+   7  8 	1 	0.47 	1250 	
+   8  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+   6 12 	1 	0.47 	1250 	
+  12 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+  14 15 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+   3  1  4 	2 	133.0 	100.0 	
+   2  1  4 	2 	100.0 	70.0 	
+; Orient Head
+   1  4  5 	2 	140.0 	30.0 	; link to lipid
+; 4    5    6         2 120.00 25.0 ; These are part of the default lipids rules but not used here
+; 4    5    7         2 180.00 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   5  7  8 	2 	100.0 	10.0 	
+   7  8  9 	2 	100.0 	10.0 	
+   8  9 10 	2 	100.0 	10.0 	
+   9 10 11 	2 	120.0 	45.0 	
+   6 12 13 	2 	180.0 	25.0 	
+  12 13 14 	2 	180.0 	25.0 	
+  13 14 15 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  5  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+#endif
+
+ 
+;;;;;; Martini lipid topology for C16:0/18:2 PI (PIPI), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_PIPI_01.itp -alname PIPI -alhead 'PI' -allink 'G G' -altail 'CDDC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol (PI) lipid corresponding to atomistic e.g. C16:0/18:2 1-palmitoyl-2-linoleoyl tails.
+; Parameterization:
+;   The lipid head is based on atomistic phosphatidylinositol (PI) simulations, see Lopez et al. 2013 for details. 
+;   The lipid tail follows the standard Martini 2.0 lipid definitions and building block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Author(s): Cesar Lopez <C.A.Lopez-Bautista@rug.nl>
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=PI, allink=G G, altail=CDDC CCCC, alname=PIPI, charge=-1.0
+;@RESNTEST PIP==PIPI if: atoms[0]==C1  and atoms[4]==GL1
+;@BEADS C1 C2 C3 PO4 GL1 GL2 C1A D2A D3A C4A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C1-PO4 PO4-GL1 GL1-GL2 GL1-C1A C1A-D2A D2A-D3A D3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  PIPI          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	PIPI 	C1  	 1 	0 	
+   2 	P4 	 1 	PIPI 	C2  	 2 	0 	
+   3 	P4 	 1 	PIPI 	C3  	 3 	0 	
+   4 	Qa 	 1 	PIPI 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+; Tail part (uses standar Martini v2.0 tail rules)
+   5 	Na 	 1 	PIPI 	GL1 	 5 	0 	
+   6 	Na 	 1 	PIPI 	GL2 	 6 	0 	
+   7 	C1 	 1 	PIPI 	C1A 	 7 	0 	
+   8 	C4 	 1 	PIPI 	D2A 	 8 	0 	
+   9 	C4 	 1 	PIPI 	D3A 	 9 	0 	
+  10 	C1 	 1 	PIPI 	C4A 	10 	0 	
+  11 	C1 	 1 	PIPI 	C1B 	11 	0 	
+  12 	C1 	 1 	PIPI 	C2B 	12 	0 	
+  13 	C1 	 1 	PIPI 	C3B 	13 	0 	
+  14 	C1 	 1 	PIPI 	C4B 	14 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+#endif
+   1  4 	1 	0.35 	1250 	
+   4  5 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   5  6 	1 	0.37 	1250 	
+   5  7 	1 	0.47 	1250 	
+   7  8 	1 	0.47 	1250 	
+   8  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+   6 11 	1 	0.47 	1250 	
+  11 12 	1 	0.47 	1250 	
+  12 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+   3  1  4 	2 	133.0 	100.0 	
+   2  1  4 	2 	100.0 	70.0 	
+; Orient Head
+   1  4  5 	2 	140.0 	30.0 	; link to lipid
+; 4    5    6         2 120.00 25.0 ; These are part of the default lipids rules but not used here
+; 4    5    7         2 180.00 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   5  7  8 	2 	180.0 	25.0 	
+   7  8  9 	2 	100.0 	10.0 	
+   8  9 10 	2 	120.0 	45.0 	
+   6 11 12 	2 	180.0 	25.0 	
+  11 12 13 	2 	180.0 	25.0 	
+  12 13 14 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  5  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+#endif
+
+ 
+;;;;;; Martini lipid topology for di-C16:1-C18:1 PIP (POP1), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_POP1_01.itp -alname POP1 -alhead 'P1' -allink 'G G' -altail 'CDCC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol phosphate (PIP) lipid corresponding to atomistic e.g. C16:1(9c), C18:1(9c) 
+;   dioleoyl (DO-PIP) tails.
+; Parameterization:
+;   The lipid head is based on atomistic phosphatidilinositol 3-mono-phosphate (PIP(3)) simulations, see 
+;   Lopez et al. 2013 for details. The lipid tail follows the standard Martini 2.0 lipid definitions and 
+;   building block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Author(s): Cesar Lopez <C.A.Lopez-Bautista@rug.nl>
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Note, in this topology the phosphates are unprotonated. At pH 7, some of the phosphates can have one or even two 
+;   protonations, reducing the molecules total charge. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=P1, allink=G G, altail=CDCC CCCC, alname=POP1, charge=-3.0
+;@RESNTEST POP==POP1 if: atoms[0]==C1  and atoms[4]==P1
+;@BEADS C1 C2 C3 PO4 P1 GL1 GL2 C1A D2A C3A C4A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C1-P1 C2-P1 C1-PO4 PO4-GL1 GL1-GL2 GL1-C1A C1A-D2A D2A-C3A C3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  POP1          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	POP1 	C1  	 1 	0 	
+   2 	P1 	 1 	POP1 	C2  	 2 	0 	; corrected particle type (P1 instead of Na), oct 2013
+   3 	P4 	 1 	POP1 	C3  	 3 	0 	
+   4 	Qa 	 1 	POP1 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+   5 	Qa 	 1 	POP1 	P1  	 5 	-2.0 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   6 	Na 	 1 	POP1 	GL1 	 6 	0 	
+   7 	Na 	 1 	POP1 	GL2 	 7 	0 	
+   8 	C1 	 1 	POP1 	C1A 	 8 	0 	
+   9 	C3 	 1 	POP1 	D2A 	 9 	0 	
+  10 	C1 	 1 	POP1 	C3A 	10 	0 	
+  11 	C1 	 1 	POP1 	C4A 	11 	0 	
+  12 	C1 	 1 	POP1 	C1B 	12 	0 	
+  13 	C1 	 1 	POP1 	C2B 	13 	0 	
+  14 	C1 	 1 	POP1 	C3B 	14 	0 	
+  15 	C1 	 1 	POP1 	C4B 	15 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+   1  5 	1 	0.40 	25000 	
+   2  5 	1 	0.30 	30000 	
+#endif
+   1  4 	1 	0.35 	1250 	
+   4  6 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   6  7 	1 	0.37 	1250 	
+   6  8 	1 	0.47 	1250 	
+   8  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+   7 12 	1 	0.47 	1250 	
+  12 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+  14 15 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+; Here we have less angles than in PI, replaced by bonds/constraints
+; Orient Head
+   1  4  6 	2 	140.0 	25.0 	; link to lipid - PI has 30
+; 4    6    7         2 120.00 25.0 ; These are part of the default lipids rules but not used here
+; 4    6    8         2 180.00 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   6  8  9 	2 	180.0 	25.0 	
+   8  9 10 	2 	120.0 	45.0 	
+   9 10 11 	2 	180.0 	25.0 	
+   7 12 13 	2 	180.0 	25.0 	
+  12 13 14 	2 	180.0 	25.0 	
+  13 14 15 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  6  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+   1  5 	1 	0.40 	
+   2  5 	1 	0.30 	
+#endif
+
+ 
+;;;;;; Martini lipid topology for di-C16:1-C18:1 PIP2 (POP2), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_POP2_01.itp -alname POP2 -alhead 'P2' -allink 'G G' -altail 'CDCC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol bisphosphat (PIP2) lipid corresponding to atomistic e.g. C16:1(9c), C18:1(9c) 
+;   dioleoyl (DO-PIP2) tails.
+; Parameterization:
+;   The lipid head is based on atomistic phosphatidilinositol 3-4 bi-phosphate (PIP2(3,4)) simulations, see 
+;   Lopez et al. 2013 for details. The lipid tail follows the standard Martini 2.0 lipid definitions and 
+;   building block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Author(s): Cesar Lopez <C.A.Lopez-Bautista@rug.nl>
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Changed one constraints to a bond and removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Note, in this topology the phosphates are unprotonated. At pH 7, some of the phosphates can have one or even two 
+;   protonations, reducing the molecules total charge. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=P2, allink=G G, altail=CDCC CCCC, alname=POP2, charge=-5.0
+;@RESNTEST POP==POP2 if: atoms[0]==C1  and atoms[5]==P2
+;@BEADS C1 C2 C3 PO4 P1 P2 GL1 GL2 C1A D2A C3A C4A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C2-P1 C2-P2 C1-P1 C3-P2 P1-P2 C1-PO4 PO4-GL1 GL1-GL2 GL1-C1A C1A-D2A D2A-C3A C3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  POP2          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	POP2 	C1  	 1 	0 	
+   2 	Na 	 1 	POP2 	C2  	 2 	0 	
+   3 	P4 	 1 	POP2 	C3  	 3 	0 	
+   4 	Qa 	 1 	POP2 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+   5 	Qa 	 1 	POP2 	P1  	 5 	-2.0 	
+   6 	Qa 	 1 	POP2 	P2  	 6 	-2.0 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   7 	Na 	 1 	POP2 	GL1 	 7 	0 	
+   8 	Na 	 1 	POP2 	GL2 	 8 	0 	
+   9 	C1 	 1 	POP2 	C1A 	 9 	0 	
+  10 	C3 	 1 	POP2 	D2A 	10 	0 	
+  11 	C1 	 1 	POP2 	C3A 	11 	0 	
+  12 	C1 	 1 	POP2 	C4A 	12 	0 	
+  13 	C1 	 1 	POP2 	C1B 	13 	0 	
+  14 	C1 	 1 	POP2 	C2B 	14 	0 	
+  15 	C1 	 1 	POP2 	C3B 	15 	0 	
+  16 	C1 	 1 	POP2 	C4B 	16 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+   2  5 	1 	0.30 	25000 	
+   2  6 	1 	0.35 	30000 	
+   1  5 	1 	0.40 	25000 	
+   3  6 	1 	0.31 	30000 	
+; 5  6  1  0.60  25000 ; Always keep as bond for stability
+#endif
+   5  6 	1 	0.60 	25000 	; Always keep as bond for stability
+   1  4 	1 	0.35 	1250 	
+   4  7 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   7  8 	1 	0.37 	1250 	
+   7  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+  11 12 	1 	0.47 	1250 	
+   8 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+  14 15 	1 	0.47 	1250 	
+  15 16 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+; Here we have less angles than in PI, replaced by bonds/constraints
+; Orient Head
+   1  4  7 	2 	140.0 	25.0 	; link to lipid - PI has 30
+; 4  7  8  2  120.0 25.0 ; These are part of the default lipids rules but not used here
+; 4  7  9  2  180.0 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   7  9 10 	2 	180.0 	25.0 	
+   9 10 11 	2 	120.0 	45.0 	
+  10 11 12 	2 	180.0 	25.0 	
+   8 13 14 	2 	180.0 	25.0 	
+  13 14 15 	2 	180.0 	25.0 	
+  14 15 16 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  7  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+   2  5 	1 	0.30 	
+   2  6 	1 	0.35 	
+   1  5 	1 	0.40 	
+   3  6 	1 	0.31 	
+; 5     6         1 0.60 ; Always keep as bond for stability
+#endif
+
+ 
+;;;;;; Martini lipid topology for di-C16:1-C18:1 PIP3 (POP3), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_POP3_01.itp -alname POP3 -alhead 'P3' -allink 'G G' -altail 'CDCC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol trisphosphate (PIP3) lipid corresponding to atomistic e.g. C16:1(9c), C18:1(9c) 
+;   dioleoyl (DO-PIP3) tails.
+; Parameterization:
+;   The lipid head is based on the PI, PIP and PIP2 lipids in Lopez et al. 2013 with the third PIP phosphates (P3) 
+;   added. The P3 phosphate was placed by mirroring the placement of the P1 phosphate in PIP2, this should be 
+;   done more carefully with proper mapping from atomistic simulations as the C1, C2, C3 beads are not evenly 
+;   distributed on the inositol ring. The lipid tail follows the standard Martini 2.0 lipid definitions and building 
+;   block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Placed third phosphate, changed one constraints to a bond and removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Note, in this topology the phosphates are unprotonated. At pH 7, some of the phosphates can have one or even two 
+;   protonations, reducing the molecules total charge. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=P3, allink=G G, altail=CDCC CCCC, alname=POP3, charge=-7.0
+;@RESNTEST POP==POP3 if: atoms[0]==C1  and atoms[6]==P3
+;@BEADS C1 C2 C3 PO4 P1 P2 P3 GL1 GL2 C1A D2A C3A C4A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C2-P1 C2-P2 C1-P1 C3-P2 C1-P3 C3-P3 P1-P2 P2-P3 C1-PO4 PO4-GL1 GL1-GL2 GL1-C1A C1A-D2A D2A-C3A C3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  POP3          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	POP3 	C1  	 1 	0 	
+   2 	Na 	 1 	POP3 	C2  	 2 	0 	
+   3 	P4 	 1 	POP3 	C3  	 3 	0 	
+   4 	Qa 	 1 	POP3 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+   5 	Qa 	 1 	POP3 	P1  	 5 	-2.0 	
+   6 	Qa 	 1 	POP3 	P2  	 6 	-2.0 	
+   7 	Qa 	 1 	POP3 	P3  	 7 	-2.0 	; New P3 bead
+; Tail part (uses standar Martini v2.0 tail rules)
+   8 	Na 	 1 	POP3 	GL1 	 8 	0 	
+   9 	Na 	 1 	POP3 	GL2 	 9 	0 	
+  10 	C1 	 1 	POP3 	C1A 	10 	0 	
+  11 	C3 	 1 	POP3 	D2A 	11 	0 	
+  12 	C1 	 1 	POP3 	C3A 	12 	0 	
+  13 	C1 	 1 	POP3 	C4A 	13 	0 	
+  14 	C1 	 1 	POP3 	C1B 	14 	0 	
+  15 	C1 	 1 	POP3 	C2B 	15 	0 	
+  16 	C1 	 1 	POP3 	C3B 	16 	0 	
+  17 	C1 	 1 	POP3 	C4B 	17 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+   2  5 	1 	0.30 	25000 	
+   2  6 	1 	0.35 	30000 	
+   1  5 	1 	0.40 	25000 	
+   3  6 	1 	0.31 	30000 	
+; 5  6  1  0.60  25000 ; Always keep as bond for stability
+   1  7 	1 	0.40 	25000 	; New to add P3 bead - not messured just placed
+   3  7 	1 	0.30 	30000 	; New to add P3 bead - not messured just placed
+; 6  7  1  0.60  25000 ; New to add P3 bead - not messured just placed
+#endif
+   5  6 	1 	0.60 	25000 	; Always keep as bond for stability
+   6  7 	1 	0.60 	25000 	; New to add P3 bead - not messured just placed, added just as bonds to increase stability
+   1  4 	1 	0.35 	1250 	
+   4  8 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   8  9 	1 	0.37 	1250 	
+   8 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+  11 12 	1 	0.47 	1250 	
+  12 13 	1 	0.47 	1250 	
+   9 14 	1 	0.47 	1250 	
+  14 15 	1 	0.47 	1250 	
+  15 16 	1 	0.47 	1250 	
+  16 17 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+; Here we have less angles than in PI, replaced by bonds/constraints
+; Orient Head
+   1  4  8 	2 	140.0 	25.0 	; link to lipid - PI has 30
+; 4    8    9         2 120.00 25.0 ; These are part of the default lipids rules but not used here
+; 4    8   10         2 180.00 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   8 10 11 	2 	180.0 	25.0 	
+  10 11 12 	2 	120.0 	45.0 	
+  11 12 13 	2 	180.0 	25.0 	
+   9 14 15 	2 	180.0 	25.0 	
+  14 15 16 	2 	180.0 	25.0 	
+  15 16 17 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  8  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+   2  5 	1 	0.30 	
+   2  6 	1 	0.35 	
+   1  5 	1 	0.40 	
+   3  6 	1 	0.31 	
+; 5  6  1  0.60 ; Always keep as bond for stability
+   1  7 	1 	0.40 	; New to add P3 bad - not messured just placed
+   3  7 	1 	0.30 	; New to add P3 bad - not messured just placed
+; 6  7  1  0.60 ; New to add P3 bad - not messured just placed, added just as bonds to increase stability
+#endif
+
+ 
+;;;;;; Martini lipid topology for di-C16:1-C18:1 PI (POPI), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_POPI_01.itp -alname POPI -alhead 'PI' -allink 'G G' -altail 'CDCC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol (PI) lipid corresponding to atomistic e.g. C16:1(9c), C18:1(9c) dioleoyl (DOPI) tails.
+; Parameterization:
+;   The lipid head is based on atomistic phosphatidylinositol (PI) simulations, see Lopez et al. 2013 for details. 
+;   The lipid tail follows the standard Martini 2.0 lipid definitions and building block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Author(s): Cesar Lopez <C.A.Lopez-Bautista@rug.nl>
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=PI, allink=G G, altail=CDCC CCCC, alname=POPI, charge=-1.0
+;@RESNTEST POP==POPI if: atoms[0]==C1  and atoms[4]==GL1
+;@BEADS C1 C2 C3 PO4 GL1 GL2 C1A D2A C3A C4A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C1-PO4 PO4-GL1 GL1-GL2 GL1-C1A C1A-D2A D2A-C3A C3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  POPI          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	POPI 	C1  	 1 	0 	
+   2 	P4 	 1 	POPI 	C2  	 2 	0 	
+   3 	P4 	 1 	POPI 	C3  	 3 	0 	
+   4 	Qa 	 1 	POPI 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+; Tail part (uses standar Martini v2.0 tail rules)
+   5 	Na 	 1 	POPI 	GL1 	 5 	0 	
+   6 	Na 	 1 	POPI 	GL2 	 6 	0 	
+   7 	C1 	 1 	POPI 	C1A 	 7 	0 	
+   8 	C3 	 1 	POPI 	D2A 	 8 	0 	
+   9 	C1 	 1 	POPI 	C3A 	 9 	0 	
+  10 	C1 	 1 	POPI 	C4A 	10 	0 	
+  11 	C1 	 1 	POPI 	C1B 	11 	0 	
+  12 	C1 	 1 	POPI 	C2B 	12 	0 	
+  13 	C1 	 1 	POPI 	C3B 	13 	0 	
+  14 	C1 	 1 	POPI 	C4B 	14 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+#endif
+   1  4 	1 	0.35 	1250 	
+   4  5 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   5  6 	1 	0.37 	1250 	
+   5  7 	1 	0.47 	1250 	
+   7  8 	1 	0.47 	1250 	
+   8  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+   6 11 	1 	0.47 	1250 	
+  11 12 	1 	0.47 	1250 	
+  12 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+   3  1  4 	2 	133.0 	100.0 	
+   2  1  4 	2 	100.0 	70.0 	
+; Orient Head
+   1  4  5 	2 	140.0 	30.0 	; link to lipid
+; 4    5    6         2 120.00 25.0 ; These are part of the default lipids rules but not used here
+; 4    5    7         2 180.00 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   5  7  8 	2 	180.0 	25.0 	
+   7  8  9 	2 	120.0 	45.0 	
+   8  9 10 	2 	180.0 	25.0 	
+   6 11 12 	2 	180.0 	25.0 	
+  11 12 13 	2 	180.0 	25.0 	
+  12 13 14 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  5  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+#endif
+
+ 
+;;;;;; Martini lipid topology for C16:0/22:6 PI (PUPI), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_PUPI_01.itp -alname PUPI -alhead 'PI' -allink 'G G' -altail 'DDDDD CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol (PI) lipid corresponding to atomistic e.g. C16:0/22:6 1-palmitoyl-2-docosahexaenoyl tails.
+; Parameterization:
+;   The lipid head is based on atomistic phosphatidylinositol (PI) simulations, see Lopez et al. 2013 for details. 
+;   The lipid tail follows the standard Martini 2.0 lipid definitions and building block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Author(s): Cesar Lopez <C.A.Lopez-Bautista@rug.nl>
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=PI, allink=G G, altail=DDDDD CCCC, alname=PUPI, charge=-1.0
+;@RESNTEST PUP==PUPI if: atoms[0]==C1  and atoms[4]==GL1
+;@BEADS C1 C2 C3 PO4 GL1 GL2 D1A D2A D3A D4A D5A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C1-PO4 PO4-GL1 GL1-GL2 GL1-D1A D1A-D2A D2A-D3A D3A-D4A D4A-D5A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  PUPI          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	PUPI 	C1  	 1 	0 	
+   2 	P4 	 1 	PUPI 	C2  	 2 	0 	
+   3 	P4 	 1 	PUPI 	C3  	 3 	0 	
+   4 	Qa 	 1 	PUPI 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+; Tail part (uses standar Martini v2.0 tail rules)
+   5 	Na 	 1 	PUPI 	GL1 	 5 	0 	
+   6 	Na 	 1 	PUPI 	GL2 	 6 	0 	
+   7 	C4 	 1 	PUPI 	D1A 	 7 	0 	
+   8 	C4 	 1 	PUPI 	D2A 	 8 	0 	
+   9 	C4 	 1 	PUPI 	D3A 	 9 	0 	
+  10 	C4 	 1 	PUPI 	D4A 	10 	0 	
+  11 	C4 	 1 	PUPI 	D5A 	11 	0 	
+  12 	C1 	 1 	PUPI 	C1B 	12 	0 	
+  13 	C1 	 1 	PUPI 	C2B 	13 	0 	
+  14 	C1 	 1 	PUPI 	C3B 	14 	0 	
+  15 	C1 	 1 	PUPI 	C4B 	15 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+#endif
+   1  4 	1 	0.35 	1250 	
+   4  5 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   5  6 	1 	0.37 	1250 	
+   5  7 	1 	0.47 	1250 	
+   7  8 	1 	0.47 	1250 	
+   8  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+   6 12 	1 	0.47 	1250 	
+  12 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+  14 15 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+   3  1  4 	2 	133.0 	100.0 	
+   2  1  4 	2 	100.0 	70.0 	
+; Orient Head
+   1  4  5 	2 	140.0 	30.0 	; link to lipid
+; 4    5    6         2 120.00 25.0 ; These are part of the default lipids rules but not used here
+; 4    5    7         2 180.00 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   5  7  8 	2 	100.0 	10.0 	
+   7  8  9 	2 	100.0 	10.0 	
+   8  9 10 	2 	100.0 	10.0 	
+   9 10 11 	2 	100.0 	10.0 	
+   6 12 13 	2 	180.0 	25.0 	
+  12 13 14 	2 	180.0 	25.0 	
+  13 14 15 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  5  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+#endif
+
+ 
+;;;;;; Martini lipid topology for di-C16:1-C18:1 PIP (PVP1), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_PVP1_01.itp -alname PVP1 -alhead 'P1' -allink 'G G' -altail 'CCDC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol phosphate (PIP) lipid corresponding to atomistic e.g. C16:1(11c), C18:1(11c), 
+;   C18:1(12c) tails.
+; Parameterization:
+;   The lipid head is based on atomistic phosphatidilinositol 3-mono-phosphate (PIP(3)) simulations, see 
+;   Lopez et al. 2013 for details. The lipid tail follows the standard Martini 2.0 lipid definitions and 
+;   building block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Author(s): Cesar Lopez <C.A.Lopez-Bautista@rug.nl>
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Note, in this topology the phosphates are unprotonated. At pH 7, some of the phosphates can have one or even two 
+;   protonations, reducing the molecules total charge. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=P1, allink=G G, altail=CCDC CCCC, alname=PVP1, charge=-3.0
+;@RESNTEST PVP==PVP1 if: atoms[0]==C1  and atoms[4]==P1
+;@BEADS C1 C2 C3 PO4 P1 GL1 GL2 C1A C2A D3A C4A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C1-P1 C2-P1 C1-PO4 PO4-GL1 GL1-GL2 GL1-C1A C1A-C2A C2A-D3A D3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  PVP1          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	PVP1 	C1  	 1 	0 	
+   2 	P1 	 1 	PVP1 	C2  	 2 	0 	; corrected particle type (P1 instead of Na), oct 2013
+   3 	P4 	 1 	PVP1 	C3  	 3 	0 	
+   4 	Qa 	 1 	PVP1 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+   5 	Qa 	 1 	PVP1 	P1  	 5 	-2.0 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   6 	Na 	 1 	PVP1 	GL1 	 6 	0 	
+   7 	Na 	 1 	PVP1 	GL2 	 7 	0 	
+   8 	C1 	 1 	PVP1 	C1A 	 8 	0 	
+   9 	C1 	 1 	PVP1 	C2A 	 9 	0 	
+  10 	C3 	 1 	PVP1 	D3A 	10 	0 	
+  11 	C1 	 1 	PVP1 	C4A 	11 	0 	
+  12 	C1 	 1 	PVP1 	C1B 	12 	0 	
+  13 	C1 	 1 	PVP1 	C2B 	13 	0 	
+  14 	C1 	 1 	PVP1 	C3B 	14 	0 	
+  15 	C1 	 1 	PVP1 	C4B 	15 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+   1  5 	1 	0.40 	25000 	
+   2  5 	1 	0.30 	30000 	
+#endif
+   1  4 	1 	0.35 	1250 	
+   4  6 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   6  7 	1 	0.37 	1250 	
+   6  8 	1 	0.47 	1250 	
+   8  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+   7 12 	1 	0.47 	1250 	
+  12 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+  14 15 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+; Here we have less angles than in PI, replaced by bonds/constraints
+; Orient Head
+   1  4  6 	2 	140.0 	25.0 	; link to lipid - PI has 30
+; 4    6    7         2 120.00 25.0 ; These are part of the default lipids rules but not used here
+; 4    6    8         2 180.00 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   6  8  9 	2 	180.0 	25.0 	
+   8  9 10 	2 	180.0 	25.0 	
+   9 10 11 	2 	120.0 	45.0 	
+   7 12 13 	2 	180.0 	25.0 	
+  12 13 14 	2 	180.0 	25.0 	
+  13 14 15 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  6  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+   1  5 	1 	0.40 	
+   2  5 	1 	0.30 	
+#endif
+
+ 
+;;;;;; Martini lipid topology for di-C16:1-C18:1 PIP2 (PVP2), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_PVP2_01.itp -alname PVP2 -alhead 'P2' -allink 'G G' -altail 'CCDC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol bisphosphat (PIP2) lipid corresponding to atomistic e.g. C16:1(11c), C18:1(11c), 
+;   C18:1(12c) tails.
+; Parameterization:
+;   The lipid head is based on atomistic phosphatidilinositol 3-4 bi-phosphate (PIP2(3,4)) simulations, see 
+;   Lopez et al. 2013 for details. The lipid tail follows the standard Martini 2.0 lipid definitions and 
+;   building block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Author(s): Cesar Lopez <C.A.Lopez-Bautista@rug.nl>
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Changed one constraints to a bond and removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Note, in this topology the phosphates are unprotonated. At pH 7, some of the phosphates can have one or even two 
+;   protonations, reducing the molecules total charge. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=P2, allink=G G, altail=CCDC CCCC, alname=PVP2, charge=-5.0
+;@RESNTEST PVP==PVP2 if: atoms[0]==C1  and atoms[5]==P2
+;@BEADS C1 C2 C3 PO4 P1 P2 GL1 GL2 C1A C2A D3A C4A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C2-P1 C2-P2 C1-P1 C3-P2 P1-P2 C1-PO4 PO4-GL1 GL1-GL2 GL1-C1A C1A-C2A C2A-D3A D3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  PVP2          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	PVP2 	C1  	 1 	0 	
+   2 	Na 	 1 	PVP2 	C2  	 2 	0 	
+   3 	P4 	 1 	PVP2 	C3  	 3 	0 	
+   4 	Qa 	 1 	PVP2 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+   5 	Qa 	 1 	PVP2 	P1  	 5 	-2.0 	
+   6 	Qa 	 1 	PVP2 	P2  	 6 	-2.0 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   7 	Na 	 1 	PVP2 	GL1 	 7 	0 	
+   8 	Na 	 1 	PVP2 	GL2 	 8 	0 	
+   9 	C1 	 1 	PVP2 	C1A 	 9 	0 	
+  10 	C1 	 1 	PVP2 	C2A 	10 	0 	
+  11 	C3 	 1 	PVP2 	D3A 	11 	0 	
+  12 	C1 	 1 	PVP2 	C4A 	12 	0 	
+  13 	C1 	 1 	PVP2 	C1B 	13 	0 	
+  14 	C1 	 1 	PVP2 	C2B 	14 	0 	
+  15 	C1 	 1 	PVP2 	C3B 	15 	0 	
+  16 	C1 	 1 	PVP2 	C4B 	16 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+   2  5 	1 	0.30 	25000 	
+   2  6 	1 	0.35 	30000 	
+   1  5 	1 	0.40 	25000 	
+   3  6 	1 	0.31 	30000 	
+; 5  6  1  0.60  25000 ; Always keep as bond for stability
+#endif
+   5  6 	1 	0.60 	25000 	; Always keep as bond for stability
+   1  4 	1 	0.35 	1250 	
+   4  7 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   7  8 	1 	0.37 	1250 	
+   7  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+  11 12 	1 	0.47 	1250 	
+   8 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+  14 15 	1 	0.47 	1250 	
+  15 16 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+; Here we have less angles than in PI, replaced by bonds/constraints
+; Orient Head
+   1  4  7 	2 	140.0 	25.0 	; link to lipid - PI has 30
+; 4  7  8  2  120.0 25.0 ; These are part of the default lipids rules but not used here
+; 4  7  9  2  180.0 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   7  9 10 	2 	180.0 	25.0 	
+   9 10 11 	2 	180.0 	25.0 	
+  10 11 12 	2 	120.0 	45.0 	
+   8 13 14 	2 	180.0 	25.0 	
+  13 14 15 	2 	180.0 	25.0 	
+  14 15 16 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  7  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+   2  5 	1 	0.30 	
+   2  6 	1 	0.35 	
+   1  5 	1 	0.40 	
+   3  6 	1 	0.31 	
+; 5     6         1 0.60 ; Always keep as bond for stability
+#endif
+
+ 
+;;;;;; Martini lipid topology for di-C16:1-C18:1 PIP3 (PVP3), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_PVP3_01.itp -alname PVP3 -alhead 'P3' -allink 'G G' -altail 'CCDC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol trisphosphate (PIP3) lipid corresponding to atomistic e.g. C16:1(11c), C18:1(11c), 
+;   C18:1(12c) tails.
+; Parameterization:
+;   The lipid head is based on the PI, PIP and PIP2 lipids in Lopez et al. 2013 with the third PIP phosphates (P3) 
+;   added. The P3 phosphate was placed by mirroring the placement of the P1 phosphate in PIP2, this should be 
+;   done more carefully with proper mapping from atomistic simulations as the C1, C2, C3 beads are not evenly 
+;   distributed on the inositol ring. The lipid tail follows the standard Martini 2.0 lipid definitions and building 
+;   block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Placed third phosphate, changed one constraints to a bond and removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Note, in this topology the phosphates are unprotonated. At pH 7, some of the phosphates can have one or even two 
+;   protonations, reducing the molecules total charge. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=P3, allink=G G, altail=CCDC CCCC, alname=PVP3, charge=-7.0
+;@RESNTEST PVP==PVP3 if: atoms[0]==C1  and atoms[6]==P3
+;@BEADS C1 C2 C3 PO4 P1 P2 P3 GL1 GL2 C1A C2A D3A C4A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C2-P1 C2-P2 C1-P1 C3-P2 C1-P3 C3-P3 P1-P2 P2-P3 C1-PO4 PO4-GL1 GL1-GL2 GL1-C1A C1A-C2A C2A-D3A D3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  PVP3          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	PVP3 	C1  	 1 	0 	
+   2 	Na 	 1 	PVP3 	C2  	 2 	0 	
+   3 	P4 	 1 	PVP3 	C3  	 3 	0 	
+   4 	Qa 	 1 	PVP3 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+   5 	Qa 	 1 	PVP3 	P1  	 5 	-2.0 	
+   6 	Qa 	 1 	PVP3 	P2  	 6 	-2.0 	
+   7 	Qa 	 1 	PVP3 	P3  	 7 	-2.0 	; New P3 bead
+; Tail part (uses standar Martini v2.0 tail rules)
+   8 	Na 	 1 	PVP3 	GL1 	 8 	0 	
+   9 	Na 	 1 	PVP3 	GL2 	 9 	0 	
+  10 	C1 	 1 	PVP3 	C1A 	10 	0 	
+  11 	C1 	 1 	PVP3 	C2A 	11 	0 	
+  12 	C3 	 1 	PVP3 	D3A 	12 	0 	
+  13 	C1 	 1 	PVP3 	C4A 	13 	0 	
+  14 	C1 	 1 	PVP3 	C1B 	14 	0 	
+  15 	C1 	 1 	PVP3 	C2B 	15 	0 	
+  16 	C1 	 1 	PVP3 	C3B 	16 	0 	
+  17 	C1 	 1 	PVP3 	C4B 	17 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+   2  5 	1 	0.30 	25000 	
+   2  6 	1 	0.35 	30000 	
+   1  5 	1 	0.40 	25000 	
+   3  6 	1 	0.31 	30000 	
+; 5  6  1  0.60  25000 ; Always keep as bond for stability
+   1  7 	1 	0.40 	25000 	; New to add P3 bead - not messured just placed
+   3  7 	1 	0.30 	30000 	; New to add P3 bead - not messured just placed
+; 6  7  1  0.60  25000 ; New to add P3 bead - not messured just placed
+#endif
+   5  6 	1 	0.60 	25000 	; Always keep as bond for stability
+   6  7 	1 	0.60 	25000 	; New to add P3 bead - not messured just placed, added just as bonds to increase stability
+   1  4 	1 	0.35 	1250 	
+   4  8 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   8  9 	1 	0.37 	1250 	
+   8 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+  11 12 	1 	0.47 	1250 	
+  12 13 	1 	0.47 	1250 	
+   9 14 	1 	0.47 	1250 	
+  14 15 	1 	0.47 	1250 	
+  15 16 	1 	0.47 	1250 	
+  16 17 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+; Here we have less angles than in PI, replaced by bonds/constraints
+; Orient Head
+   1  4  8 	2 	140.0 	25.0 	; link to lipid - PI has 30
+; 4    8    9         2 120.00 25.0 ; These are part of the default lipids rules but not used here
+; 4    8   10         2 180.00 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   8 10 11 	2 	180.0 	25.0 	
+  10 11 12 	2 	180.0 	25.0 	
+  11 12 13 	2 	120.0 	45.0 	
+   9 14 15 	2 	180.0 	25.0 	
+  14 15 16 	2 	180.0 	25.0 	
+  15 16 17 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  8  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+   2  5 	1 	0.30 	
+   2  6 	1 	0.35 	
+   1  5 	1 	0.40 	
+   3  6 	1 	0.31 	
+; 5  6  1  0.60 ; Always keep as bond for stability
+   1  7 	1 	0.40 	; New to add P3 bad - not messured just placed
+   3  7 	1 	0.30 	; New to add P3 bad - not messured just placed
+; 6  7  1  0.60 ; New to add P3 bad - not messured just placed, added just as bonds to increase stability
+#endif
+
+ 
+;;;;;; Martini lipid topology for di-C16:1-C18:1 PI (PVPI), generated using:
+; The Martini lipid itp generator version 0.4  Args are: -o martini_v2.0_PVPI_01.itp -alname PVPI -alhead 'PI' -allink 'G G' -altail 'CCDC CCCC'
+; WARNING: Lipids topology was generated following the Martini 2.0 guidelines but this specific lipid type might
+;          not have been tested and should therefore be used with care. 
+;
+; Description:
+;   A general model phosphatidylinositol (PI) lipid corresponding to atomistic e.g. C16:1(11c), C18:1(11c), C18:1(12c) tails.
+; Parameterization:
+;   The lipid head is based on atomistic phosphatidylinositol (PI) simulations, see Lopez et al. 2013 for details. 
+;   The lipid tail follows the standard Martini 2.0 lipid definitions and building block rules.
+; Reference(s): 
+;   C.A. Lopez, Z. Sovova, F.J. van Eerden, A.H. de Vries, S.J. Marrink. Martini force field parameters for glycolipids. JCTC, 
+;   9:1694-1708, 2013. doi:10.1021/ct3009655 
+;   H.I. Ingolfsson, M.N. Melo, F.J. van Eerden, C. Arnarez, C.A. Lopez, T.A. Wassenaar, X. Periole, A.H. De Vries, D.P. Tieleman, 
+;   S.J. Marrink. Lipid organization of the plasma membrane. JACS, 136:14554-14559, 2014. doi:10.1021/ja507832e 
+;   S.J. Marrink, A.H. de Vries, A.E. Mark. Coarse grained model for semi-quantitative lipid simulations. JPC-B, 108:750-760, 
+;   2004. doi:10.1021/jp036508g 
+;   S.J. Marrink, H.J. Risselada, S. Yefimov, D.P. Tieleman, A.H. de Vries. The MARTINI force field: coarse grained model for 
+;   biomolecular simulations. JPC-B, 111:7812-7824, 2007. doi:10.1021/jp071097f
+; Created: 2015.04.20
+; Author(s): Cesar Lopez <C.A.Lopez-Bautista@rug.nl>
+; Modified:
+;   Helgi I. Ingolfsson <h.i.ingolfsson@rug.nl> and Xavier Periole <x.periole@rug.nl>, 2014.06. 
+;   Removed dihedral to increase stability.
+; Warning(s)/Note(s):
+;   Warning, dihedral for head oriantation was removed to make the molecule more stable - this should be 
+;   better tested and compaired to atomistic simulations. 
+;   Node, bonds with force constant > 25000 are treated as constraints, but use harmonic bonds for minimization. 
+;   Add define=-DFLEXIBLE to .mdp options to select harmonic bonds for minimization purposes.
+;
+;@INSANE alhead=PI, allink=G G, altail=CCDC CCCC, alname=PVPI, charge=-1.0
+;@RESNTEST PVP==PVPI if: atoms[0]==C1  and atoms[4]==GL1
+;@BEADS C1 C2 C3 PO4 GL1 GL2 C1A C2A D3A C4A C1B C2B C3B C4B 
+;@BONDS C1-C2 C1-C3 C2-C3 C1-PO4 PO4-GL1 GL1-GL2 GL1-C1A C1A-C2A C2A-D3A D3A-C4A GL2-C1B C1B-C2B C2B-C3B C3B-C4B 
+;
+
+[moleculetype]
+; molname      nrexcl
+  PVPI          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	P1 	 1 	PVPI 	C1  	 1 	0 	
+   2 	P4 	 1 	PVPI 	C2  	 2 	0 	
+   3 	P4 	 1 	PVPI 	C3  	 3 	0 	
+   4 	Qa 	 1 	PVPI 	PO4 	 4 	-1.0 	; Name changed from CP to PO4
+; Tail part (uses standar Martini v2.0 tail rules)
+   5 	Na 	 1 	PVPI 	GL1 	 5 	0 	
+   6 	Na 	 1 	PVPI 	GL2 	 6 	0 	
+   7 	C1 	 1 	PVPI 	C1A 	 7 	0 	
+   8 	C1 	 1 	PVPI 	C2A 	 8 	0 	
+   9 	C3 	 1 	PVPI 	D3A 	 9 	0 	
+  10 	C1 	 1 	PVPI 	C4A 	10 	0 	
+  11 	C1 	 1 	PVPI 	C1B 	11 	0 	
+  12 	C1 	 1 	PVPI 	C2B 	12 	0 	
+  13 	C1 	 1 	PVPI 	C3B 	13 	0 	
+  14 	C1 	 1 	PVPI 	C4B 	14 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+#ifdef FLEXIBLE
+; Using bonds not constraints
+   1  2 	1 	0.40 	30000 	
+   1  3 	1 	0.40 	30000 	
+   2  3 	1 	0.40 	30000 	
+#endif
+   1  4 	1 	0.35 	1250 	
+   4  5 	1 	0.47 	1250 	
+; Tail part (uses standar Martini v2.0 tail rules)
+   5  6 	1 	0.37 	1250 	
+   5  7 	1 	0.47 	1250 	
+   7  8 	1 	0.47 	1250 	
+   8  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+   6 11 	1 	0.47 	1250 	
+  11 12 	1 	0.47 	1250 	
+  12 13 	1 	0.47 	1250 	
+  13 14 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+   3  1  4 	2 	133.0 	100.0 	
+   2  1  4 	2 	100.0 	70.0 	
+; Orient Head
+   1  4  5 	2 	140.0 	30.0 	; link to lipid
+; 4    5    6         2 120.00 25.0 ; These are part of the default lipids rules but not used here
+; 4    5    7         2 180.00 25.0 ; These are part of the default lipids rules but not used here
+; Tail part (uses standar Martini v2.0 tail rules)
+   5  7  8 	2 	180.0 	25.0 	
+   7  8  9 	2 	180.0 	25.0 	
+   8  9 10 	2 	120.0 	45.0 	
+   6 11 12 	2 	180.0 	25.0 	
+  11 12 13 	2 	180.0 	25.0 	
+  12 13 14 	2 	180.0 	25.0 	
+
+[dihedrals]
+;  i  j  k  l 	funct 	angle 	force.c.
+; 3  1  4  5  1  -30.0  5.0  1 ; Removed as it was unstable - WARNING has not been tested
+
+[constraints]
+;  i  j  k 	funct 	length
+#ifndef FLEXIBLE
+; Using constraints not bonds
+   1  2 	1 	0.40 	
+   1  3 	1 	0.40 	
+   2  3 	1 	0.40 	
+#endif
+
+ 

@@ -1,0 +1,30 @@
+#include "martini_v2.1_bmw.itp"
+    
+#define RUBBER_BANDS
+  
+#include "Protein_A.itp"
+#include "Protein_B.itp"
+    
+#include "martini_lipids_bmw.itp"
+
+
+[ system ]
+; name
+Martini protein from martinize.py
+
+Martini membrane from INSANE!
+
+[ molecules ]
+; name        number
+Protein_A 	 1
+Protein_B 	 1
+Protein_A 	 1
+Protein_B 	 1
+Protein_A 	 1
+Protein_B 	 1
+Protein_A 	 1
+Protein_B 	 1
+Protein_A 	 1
+Protein_B 	 1
+Protein_A 	 1
+Protein_B 	 1

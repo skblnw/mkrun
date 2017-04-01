@@ -1,0 +1,109 @@
+;
+; STANDARD MD INPUT OPTIONS FOR MARTINI 2.x
+; Updated 15 Jul 2015 by DdJ
+;
+; for use with GROMACS 5
+; For a thorough comparison of different mdp options in combination with the Martini force field, see:
+; D.H. de Jong et al., Martini straight: boosting performance using a shorter cutoff and GPUs, submitted.
+
+title                    = Martini
+
+; TIMESTEP IN MARTINI 
+; Most simulations are numerically stable with dt=40 fs, 
+; however better energy conservation is achieved using a 
+; 20-30 fs timestep. 
+; Time steps smaller than 20 fs are not required unless specifically stated in the itp file.
+
+integrator               = cg
+dt                       = 0.02
+nsteps                   = 10000
+nstcomm                  = 
+comm-grps		         = 
+
+nstxout                  = 0
+nstvout                  = 0
+nstfout                  = 0
+nstlog                   = 100
+nstenergy                = 
+nstxout-compressed       = 500
+compressed-x-precision   = 100
+compressed-x-grps        = 
+energygrps               = 
+
+; NEIGHBOURLIST and MARTINI 
+; To achieve faster simulations in combination with the Verlet-neighborlist
+; scheme, Martini can be simulated with a straight cutoff. In order to 
+; do so, the cutoff distance is reduced 1.1 nm. 
+; Neighborlist length should be optimized depending on your hardware setup:
+; updating ever 20 steps should be fine for classic systems, while updating
+; every 30-40 steps might be better for GPU based systems.
+; The Verlet neighborlist scheme will automatically choose a proper neighborlist
+; length, based on a energy drift tolerance.
+;
+; Coulomb interactions can alternatively be treated using a reaction-field,
+; giving slightly better properties.
+; Please realize that electrostVatic interactions in the Martini model are 
+; not considered to be very accurate to begin with, especially as the 
+; screening in the system is set to be uniform across the system with 
+; a screening constant of 15. When using PME, please make sure your 
+; system properties are still reasonable.
+;
+; With the polarizable water model, the relative electrostatic screening 
+; (epsilon_r) should have a value of 2.5, representative of a low-dielectric
+; apolar solvent. The polarizable water itself will perform the explicit screening
+; in aqueous environment. In this case, the use of PME is more realistic.
+
+
+cutoff-scheme            = Verlet
+nstlist                  = 10
+ns_type                  = grid
+pbc                      = xyz
+rlist                    = 1.4
+;verlet-buffer-tolerance  = 0.005
+
+
+; MARTINI and NONBONDED 
+; Standard cut-off schemes are used for the non-bonded interactions 
+; in the Martini model: LJ interactions are shifted to zero in the 
+; range 0.9-1.2 nm, and electrostatic interactions in the range 0.0-1.2 nm. 
+; The treatment of the non-bonded cut-offs is considered to be part of 
+; the force field parameterization, so we recommend not to touch these 
+; values as they will alter the overall balance of the force field.
+; In principle you can include long range electrostatics through the use
+; of PME, which could be more realistic in certain applications 
+; Please realize that electrostatic interactions in the Martini model are 
+; not considered to be very accurate to begin with, especially as the 
+; screening in the system is set to be uniform across the system with 
+; a screening constant of 15. When using PME, please make sure your 
+; system properties are still reasonable.
+
+coulombtype              = Reaction-field-zero     ; Cutoff 
+;coulom-modifier          = Potential-shift-Verlet  ; with Cutoff
+rcoulomb_switch          = 0.0
+rcoulomb                 = 1.2          ; 1.1
+epsilon_r                = 15	        ; 2.5 (with polarizable water)
+epsilon_rf               = 0            ; 1
+
+vdw_type                 = Cutoff 
+vdw-modifier             = Force-switch ; Potential-shift-verlet
+rvdw_switch              = 0.9
+rvdw                     = 1.2          ; 1.1
+
+
+; MARTINI and CONSTRAINTS 
+; for ring systems constraints are defined
+; which are best handled using Lincs. 
+; Note, during energy minimization the constrainst should be
+; replaced by stiff bonds.
+
+; OPTIONS FOR BONDS
+constraints              = none 
+; Type of constraint algorithm
+constraint_algorithm     = Lincs
+; Constrain the start configuration
+continuation             = yes
+; Highest order in the expansion of the constraint coupling matrix
+lincs_order              = 4
+; Lincs will write a warning to the stderr if in one step a bond
+; rotates over more degrees than
+lincs_warnangle          = 90 ; 30

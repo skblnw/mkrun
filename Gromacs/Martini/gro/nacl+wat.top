@@ -1,0 +1,13 @@
+#include "martini_v2.0.itp"
+#include "martini_v2.0_ions.itp"
+
+[ system ]
+; name
+NACL + WAT (0.4 M)
+
+[ molecules ]
+; name  number
+NA+ 8
+CL- 8
+W 388
+

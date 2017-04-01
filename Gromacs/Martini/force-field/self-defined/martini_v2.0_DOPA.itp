@@ -1,0 +1,41 @@
+[moleculetype]
+; molname      nrexcl
+  DOPA          1
+
+[atoms]
+; id 	type 	resnr 	residu 	atom 	cgnr 	charge
+   1 	Qa 	 1 	DOPA 	PO4 	 2 	-1.0 	
+   2 	Na 	 1 	DOPA 	GL1 	 3 	0 	
+   3 	Na 	 1 	DOPA 	GL2 	 4 	0 	
+   4 	C1 	 1 	DOPA 	C1A 	 5 	0 	
+   5 	C3 	 1 	DOPA 	D2A 	 6 	0 	
+   6 	C1 	 1 	DOPA 	C3A 	 7 	0 	
+   7 	C1 	 1 	DOPA 	C4A 	 8 	0 	
+   8 	C1 	 1 	DOPA 	C1B 	 9 	0 	
+   9 	C3 	 1 	DOPA 	D2B 	10 	0 	
+  10 	C1 	 1 	DOPA 	C3B 	11 	0 	
+  11 	C1 	 1 	DOPA 	C4B 	12 	0 	
+
+[bonds]
+;  i  j 	funct 	length 	force.c.
+   1  2 	1 	0.47 	1250 	
+   2  3 	1 	0.37 	1250 	
+   2  4 	1 	0.47 	1250 	
+   4  5 	1 	0.47 	1250 	
+   5  6 	1 	0.47 	1250 	
+   6  7 	1 	0.47 	1250 	
+   3  8 	1 	0.47 	1250 	
+   8  9 	1 	0.47 	1250 	
+   9 10 	1 	0.47 	1250 	
+  10 11 	1 	0.47 	1250 	
+
+[angles]
+;  i  j  k 	funct 	angle 	force.c.
+   1  2  3 	2 	120.0 	25.0 	
+   1  2  4 	2 	180.0 	25.0 	
+   2  4  5 	2 	180.0 	25.0 	
+   4  5  6 	2 	120.0 	45.0 	
+   5  6  7 	2 	180.0 	25.0 	
+   3  8  9 	2 	180.0 	25.0 	
+   8  9 10 	2 	120.0 	45.0 	
+   9 10 11 	2 	180.0 	25.0 	

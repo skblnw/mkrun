@@ -1,0 +1,52 @@
+colvarsTrajFrequency     100
+colvarsRestartFrequency  1000
+
+colvar {
+   name orient_ph
+   width 1.0
+
+   orientation {
+      atoms {
+        atomsFile ref_protein.pdb
+        atomsCol B
+        atomsColValue 1.0
+      }
+      refPositionsFile ref_protein.pdb
+      refPositionsCol B
+      refPositionsColValue 1.0
+   }
+
+#   outputValue on
+#   outputVelocity on
+#   outputEnergy on
+#   outputSystemForce on
+   outputAppliedForce on
+}
+
+harmonic {
+  colvars orient_ph
+  centers (1.0, 0.0, 0.0, 0.0)
+  forceConstant 800.0
+}
+
+colvar {
+   name protein_xy
+   distanceXY {
+      ref {
+         dummyAtom ( -1.500, 7.700, 0.000 )
+      }
+      main {
+         atomsFile      ref_protein.pdb
+         atomsCol       B
+         atomsColValue  1.0
+      }
+   }
+   outputValue on
+   outputAppliedForce on
+}
+
+harmonic {
+   colvars protein_xy
+   centers 0
+   forceConstant 800.0
+}

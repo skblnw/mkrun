@@ -1,0 +1,52 @@
+This direction gives an example to run a Gromacs simulation for a patch
+of DOPC lipid bilayer. It shows the whole process of running both the 
+optimization and equilibration.
+
+The length for all the similations are very short as a demonstration. Please
+increase the step as needed.
+
+Inputs:
+
+run.sh
+    an example shell script for runnning the whole process, detailed
+    descriptions inside. 
+dopc.gro
+    initial configuration for the membrane bilayer
+table_NON_NON.xvg, table_SOL_NON.xvg, table_SOL_SOL.xvg
+    interaction tables for different components
+index.ndx
+    index file for different components so that tables could be used
+martini_v2.1_bmw.itp
+    BMW-MARTINI force field file, includes all the type definition and
+    water topology
+martini_v2.1_tmp.itp
+    same as martini_v2.1_bmw.itp but with flexible BMW water for the
+    first step in optimization
+martini_lipids_bmw.itp
+    lipid topology file
+bmw_membrane.top
+    topology file for force field definition and system components
+flexible.top
+    same as bmw_membrane.top but with flexible water definition
+bmw_minimize.mdp, bmw_nvt.mdp, bmw_membrane.mdp
+    md parameter files for minimization, NVT simulation and NPxyPzT
+    simulation
+
+selected outputs:
+
+em1.tpr, em2.tpr, equ1.tpr, equ2.tpr
+    outputs from grompp (inputs for mdrun) for minimizations and 
+    equilibrations
+opt1.gro, opt2.gro, endequ1.gro, endequ2.gro
+    output configurations for minimizations and equilibrations
+outem1.log, outem2.log, outequ1.log, outequ2.log
+    log files
+equ1.xtc, equ2.xtc
+    trajectories for NVT and NPxyPzT equilibrations
+equ1.cpt, equ2.cpt
+    check point files, equ2.cpt can be used to generate later
+    production run inputs
+eequ2.edr
+    energy file
+
+

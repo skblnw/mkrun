@@ -1,0 +1,11 @@
+#include "martini_v2.1_bmw.itp"
+#include "martini_lipids_bmw.itp"
+
+[ system ]
+; name
+water box
+
+[ molecules ]
+; name number
+DOPC 128
+SOL 1971

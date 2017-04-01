@@ -1,0 +1,27 @@
+#!/bin/bash
+#PBS -N bmk-
+#PBS -j oe
+#PBS -l nodes=compute-0-4:ppn=16+nodes=compute-0-5:ppn=16+nodes=compute-0-8:ppn=16+nodes=compute-0-9:ppn=16
+
+export OPENMPI_PATH=/share/apps/openmpi-1.8.6/bin
+MPIRUN=$OPENMPI_PATH/mpirun
+MPIEXEC=$OPENMPI_PATH/mpiexec
+
+export GMX_PATH=/home/kevin/opt/gromacs-5.1.2-MPI-CUDA-single/
+source $GMX_PATH/bin/GMXRC.bash
+export GMXBIN=$GMX_PATH/bin/gmx_mpi
+
+nodefile=/tmp/$PBS_JOBID.nodelist
+echo "" > $nodefile
+nodes=$( cat $PBS_NODEFILE | awk '!seen[$0]++')
+for node in $nodes; do
+   echo $node >> $nodefile
+done
+sed -i '1d' $nodefile
+NP=`cat $PBS_NODEFILE | wc -l`
+NN=`cat $PBS_NODEFILE | awk '!seen[$0]++' | wc -l`
+NP2=$(expr $NP - $NN)
+
+cd $PBS_O_WORKDIR
+date
+$MPIRUN -mca btl self,openib -np $NN -npernode 1 $GMXBIN mdrun -v -ntomp 7 -pin on -s W50k.tpr -deffnm output/gpu-1node-NNomp
