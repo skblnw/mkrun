@@ -108,9 +108,9 @@ if $mini; then
     jobname=mini
     make_pbs $jobname
 
-    fixpdb=(fix_solute 0)
-    nstep=(1000 20000)
-    for ii in {0..1}
+    fixpdb=(fix_solute fix_heavy 0)
+    nstep=(1000 10000 20000)
+    for ii in {0..2}
     do
         if [ $ii -eq 0 ]; then
             inputname=0

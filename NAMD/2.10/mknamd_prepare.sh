@@ -5,10 +5,10 @@ if [ $# -eq 0 ]; then
     exit 0
 fi
 
-TEMPLATE_DIR=/home/kevin/Dropbox/QWD/scripts/MD/NAMD/2.10
+TEMPLATE_DIR=$HOME/scripts/mkrun/NAMD/2.10
 TEMPLATE=$TEMPLATE_DIR/template-make-prepare-sh
 cat $TEMPLATE > make_prepare.sh
-cp -v $TEMPLATE_DIR/{template-namd,make_submit.sh,vm_getcell.tcl,vm_writepdb.tcl} .
+cp -v $TEMPLATE_DIR/{template-namd,make_submit.sh,vm_getcell.tcl,vm_write*.tcl} .
 
 mkdir -p output log
 
@@ -84,8 +84,8 @@ done
 read -p "Is it a protein-only simulation?" -n 1 -r
 echo 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
-    echo "Info: Turn off FlexibleCell"
+    echo "mknamd: Turn off FlexibleCell"
     sed -i 's/^    useFlexibleCell      yes/    useFlexibleCell      no/g' template-namd
-    echo "Info: Turn off ConstantRatio"
+    echo "mknamd: Turn off ConstantRatio"
     sed -i 's/^    useConstantRatio     yes/    useConstantRatio     no/g' template-namd
 fi

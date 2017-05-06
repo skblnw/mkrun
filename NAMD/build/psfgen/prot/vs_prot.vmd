@@ -1,10 +1,10 @@
 #!/usr/local/bin/vmd
-# VMD script written by save_state $Revision: 1.44 $
-# VMD version: 1.9.2beta1
+# VMD script written by save_state $Revision: 1.47 $
+# VMD version: 1.9.2
 set viewplist {}
 set fixedlist {}
 proc vmdrestoremymaterials {} {
-  set mlist { Opaque Transparent BrushedMetal Diffuse Ghost Glass1 Glass2 Glass3 Glossy HardPlastic MetallicPastel Steel Translucent Edgy EdgyShiny EdgyGlass Goodsell AOShiny AOChalky AOEdgy BlownGlass GlassBubble }
+  set mlist { Opaque Transparent BrushedMetal Diffuse Ghost Glass1 Glass2 Glass3 Glossy HardPlastic MetallicPastel Steel Translucent Edgy EdgyShiny EdgyGlass Goodsell AOShiny AOChalky AOEdgy BlownGlass GlassBubble RTChrome }
   set mymlist [material list]
   foreach mat $mlist {
     if { [lsearch $mymlist $mat] == -1 } { 
@@ -14,7 +14,8 @@ proc vmdrestoremymaterials {} {
   material change ambient Opaque 0.000000
   material change diffuse Opaque 0.650000
   material change specular Opaque 0.500000
-  material change shininess Opaque 0.534020
+  material change shininess Opaque 0.534000
+  material change mirror Opaque 0.000000
   material change opacity Opaque 1.000000
   material change outline Opaque 0.000000
   material change outlinewidth Opaque 0.000000
@@ -22,7 +23,8 @@ proc vmdrestoremymaterials {} {
   material change ambient Transparent 0.000000
   material change diffuse Transparent 0.650000
   material change specular Transparent 0.500000
-  material change shininess Transparent 0.534020
+  material change shininess Transparent 0.534000
+  material change mirror Transparent 0.000000
   material change opacity Transparent 0.300000
   material change outline Transparent 0.000000
   material change outlinewidth Transparent 0.000000
@@ -31,6 +33,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse BrushedMetal 0.390000
   material change specular BrushedMetal 0.340000
   material change shininess BrushedMetal 0.150000
+  material change mirror BrushedMetal 0.000000
   material change opacity BrushedMetal 1.000000
   material change outline BrushedMetal 0.000000
   material change outlinewidth BrushedMetal 0.000000
@@ -39,6 +42,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse Diffuse 0.620000
   material change specular Diffuse 0.000000
   material change shininess Diffuse 0.530000
+  material change mirror Diffuse 0.000000
   material change opacity Diffuse 1.000000
   material change outline Diffuse 0.000000
   material change outlinewidth Diffuse 0.000000
@@ -47,6 +51,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse Ghost 0.000000
   material change specular Ghost 1.000000
   material change shininess Ghost 0.230000
+  material change mirror Ghost 0.000000
   material change opacity Ghost 0.100000
   material change outline Ghost 0.000000
   material change outlinewidth Ghost 0.000000
@@ -55,6 +60,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse Glass1 0.500000
   material change specular Glass1 0.650000
   material change shininess Glass1 0.530000
+  material change mirror Glass1 0.000000
   material change opacity Glass1 0.150000
   material change outline Glass1 0.000000
   material change outlinewidth Glass1 0.000000
@@ -63,6 +69,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse Glass2 0.760000
   material change specular Glass2 0.220000
   material change shininess Glass2 0.590000
+  material change mirror Glass2 0.000000
   material change opacity Glass2 0.680000
   material change outline Glass2 0.000000
   material change outlinewidth Glass2 0.000000
@@ -71,6 +78,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse Glass3 0.250000
   material change specular Glass3 0.750000
   material change shininess Glass3 0.800000
+  material change mirror Glass3 0.000000
   material change opacity Glass3 0.500000
   material change outline Glass3 0.000000
   material change outlinewidth Glass3 0.000000
@@ -79,6 +87,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse Glossy 0.650000
   material change specular Glossy 1.000000
   material change shininess Glossy 0.880000
+  material change mirror Glossy 0.000000
   material change opacity Glossy 1.000000
   material change outline Glossy 0.000000
   material change outlinewidth Glossy 0.000000
@@ -87,6 +96,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse HardPlastic 0.560000
   material change specular HardPlastic 0.280000
   material change shininess HardPlastic 0.690000
+  material change mirror HardPlastic 0.000000
   material change opacity HardPlastic 1.000000
   material change outline HardPlastic 0.000000
   material change outlinewidth HardPlastic 0.000000
@@ -95,6 +105,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse MetallicPastel 0.260000
   material change specular MetallicPastel 0.550000
   material change shininess MetallicPastel 0.190000
+  material change mirror MetallicPastel 0.000000
   material change opacity MetallicPastel 1.000000
   material change outline MetallicPastel 0.000000
   material change outlinewidth MetallicPastel 0.000000
@@ -103,6 +114,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse Steel 0.000000
   material change specular Steel 0.380000
   material change shininess Steel 0.320000
+  material change mirror Steel 0.000000
   material change opacity Steel 1.000000
   material change outline Steel 0.000000
   material change outlinewidth Steel 0.000000
@@ -111,6 +123,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse Translucent 0.700000
   material change specular Translucent 0.600000
   material change shininess Translucent 0.300000
+  material change mirror Translucent 0.000000
   material change opacity Translucent 0.800000
   material change outline Translucent 0.000000
   material change outlinewidth Translucent 0.000000
@@ -119,6 +132,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse Edgy 0.660000
   material change specular Edgy 0.000000
   material change shininess Edgy 0.750000
+  material change mirror Edgy 0.000000
   material change opacity Edgy 1.000000
   material change outline Edgy 0.620000
   material change outlinewidth Edgy 0.940000
@@ -127,6 +141,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse EdgyShiny 0.660000
   material change specular EdgyShiny 0.960000
   material change shininess EdgyShiny 0.750000
+  material change mirror EdgyShiny 0.000000
   material change opacity EdgyShiny 1.000000
   material change outline EdgyShiny 0.760000
   material change outlinewidth EdgyShiny 0.940000
@@ -135,6 +150,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse EdgyGlass 0.660000
   material change specular EdgyGlass 0.500000
   material change shininess EdgyGlass 0.750000
+  material change mirror EdgyGlass 0.000000
   material change opacity EdgyGlass 0.620000
   material change outline EdgyGlass 0.620000
   material change outlinewidth EdgyGlass 0.940000
@@ -143,6 +159,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse Goodsell 1.000000
   material change specular Goodsell 0.000000
   material change shininess Goodsell 0.000000
+  material change mirror Goodsell 0.000000
   material change opacity Goodsell 1.000000
   material change outline Goodsell 4.000000
   material change outlinewidth Goodsell 0.900000
@@ -151,6 +168,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse AOShiny 0.850000
   material change specular AOShiny 0.200000
   material change shininess AOShiny 0.530000
+  material change mirror AOShiny 0.000000
   material change opacity AOShiny 1.000000
   material change outline AOShiny 0.000000
   material change outlinewidth AOShiny 0.000000
@@ -159,6 +177,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse AOChalky 0.850000
   material change specular AOChalky 0.000000
   material change shininess AOChalky 0.530000
+  material change mirror AOChalky 0.000000
   material change opacity AOChalky 1.000000
   material change outline AOChalky 0.000000
   material change outlinewidth AOChalky 0.000000
@@ -167,6 +186,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse AOEdgy 0.900000
   material change specular AOEdgy 0.200000
   material change shininess AOEdgy 0.530000
+  material change mirror AOEdgy 0.000000
   material change opacity AOEdgy 1.000000
   material change outline AOEdgy 0.620000
   material change outlinewidth AOEdgy 0.930000
@@ -175,6 +195,7 @@ proc vmdrestoremymaterials {} {
   material change diffuse BlownGlass 0.340000
   material change specular BlownGlass 1.000000
   material change shininess BlownGlass 1.000000
+  material change mirror BlownGlass 0.000000
   material change opacity BlownGlass 0.100000
   material change outline BlownGlass 0.000000
   material change outlinewidth BlownGlass 0.000000
@@ -183,10 +204,20 @@ proc vmdrestoremymaterials {} {
   material change diffuse GlassBubble 0.340000
   material change specular GlassBubble 1.000000
   material change shininess GlassBubble 1.000000
+  material change mirror GlassBubble 0.000000
   material change opacity GlassBubble 0.040000
   material change outline GlassBubble 0.000000
   material change outlinewidth GlassBubble 0.000000
   material change transmode GlassBubble 1.000000
+  material change ambient RTChrome 0.000000
+  material change diffuse RTChrome 0.650000
+  material change specular RTChrome 0.500000
+  material change shininess RTChrome 0.530000
+  material change mirror RTChrome 0.700000
+  material change opacity RTChrome 1.000000
+  material change outline RTChrome 0.000000
+  material change outlinewidth RTChrome 0.000000
+  material change transmode RTChrome 0.000000
 }
 vmdrestoremymaterials
 # Atom selection macros
@@ -240,13 +271,15 @@ atomselect macro lipid {resname DLPE DMPC DPPC GPC LPPC PALM PC PGCL POPC POPE
 }
 atomselect macro lipids {lipid
 }
-atomselect macro ion {resname AL BA CA CAL CD CES CLA CL CO CS CU CU1 CUA HG IN IOD K MG MN3 MO3 MO4 MO5 MO6 NA NAW OC7 PB POT PT RB SOD TB TL WO4 YB ZN ZN1 ZN2
+atomselect macro ion {resname AL BA CA CAL CD CES CLA CL CO CS CU CU1 CUA HG IN IOD K LIT MG MN3 MO3 MO4 MO5 MO6 NA NAW OC7 PB POT PT RB SOD TB TL WO4 YB ZN ZN1 ZN2
 }
 atomselect macro ions {ion
 }
 atomselect macro sugar {resname AGLC
 }
 atomselect macro solvent {not (protein or sugar or nucleic or lipid)
+}
+atomselect macro glycan {resname NAG BGLN FUC AFUC MAN AMAN BMA BMAN
 }
 atomselect macro carbon {name "C.*" and not ion
 }
@@ -280,24 +313,38 @@ atomselect macro drude {type DRUD or type LP
 }
 atomselect macro unparametrized beta<1
 atomselect macro addedmolefacture {occupancy 0.8}
+atomselect macro proteinmcr protein
+atomselect macro nucleicmcr nucleic
+atomselect macro glycanmcr glycan
+atomselect macro heteromcr {hetero and not glycanmcr and not water and not nucleicmcr}
 # Display settings
-display eyesep       0.065000
-display focallength  2.000000
-display height       6.000000
+display eyesep       0.070000
+display focallength  0.100000
+display height       3.200000
 display distance     -2.000000
 display projection   Orthographic
 display nearclip set 0.500000
 display farclip  set 10.000000
-display depthcue   on
+display depthcue   off
+display cuestart   0.500000
+display cueend     10.000000
 display cuestart   0.500000
 display cueend     10.000000
 display cuedensity 0.320000
 display cuemode    Exp2
-mol new ionized.pdb type pdb first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all
+display shadows off
+display ambientocclusion off
+display aoambient 0.800000
+display aodirect 0.300000
+display dof off
+display dof_fnumber 64.000000
+display dof_focaldist 0.700000
+mol new prot_psfgen.psf type psf first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all
+mol addfile prot_psfgen.pdb type pdb first 0 last -1 step 1 filebonds 1 autobonds 1 waitfor all
 mol delrep 0 top
-mol representation Lines
-mol color Name
-mol selection {all}
+mol representation NewCartoon 0.300000 50.000000 4.100000 0
+mol color Structure
+mol selection {protein}
 mol material Opaque
 mol addrep top
 mol selupdate 0 top 0
@@ -329,11 +376,10 @@ mol clipplane center 5 0 top {0.0 0.0 0.0}
 mol clipplane color  5 0 top {0.5 0.5 0.5 }
 mol clipplane normal 5 0 top {0.0 0.0 1.0}
 mol clipplane status 5 0 top {0}
-mol showrep top 0 0
-mol representation QuickSurf 1.000000 0.500000 1.000000 1.000000
-mol color ColorID 6
+mol representation VDW 0.800000 52.000000
+mol color SegName
 mol selection {water}
-mol material GlassBubble
+mol material Opaque
 mol addrep top
 mol selupdate 1 top 0
 mol colupdate 1 top 0
@@ -364,110 +410,8 @@ mol clipplane center 5 1 top {0.0 0.0 0.0}
 mol clipplane color  5 1 top {0.5 0.5 0.5 }
 mol clipplane normal 5 1 top {0.0 0.0 1.0}
 mol clipplane status 5 1 top {0}
-mol representation NewCartoon 0.300000 10.000000 4.100000 0
-mol color Structure
-mol selection {protein}
-mol material Opaque
-mol addrep top
-mol selupdate 2 top 0
-mol colupdate 2 top 0
-mol scaleminmax top 2 0.000000 0.000000
-mol smoothrep top 2 0
-mol drawframes top 2 {now}
-mol clipplane center 0 2 top {0.0 0.0 0.0}
-mol clipplane color  0 2 top {0.5 0.5 0.5 }
-mol clipplane normal 0 2 top {0.0 0.0 1.0}
-mol clipplane status 0 2 top {0}
-mol clipplane center 1 2 top {0.0 0.0 0.0}
-mol clipplane color  1 2 top {0.5 0.5 0.5 }
-mol clipplane normal 1 2 top {0.0 0.0 1.0}
-mol clipplane status 1 2 top {0}
-mol clipplane center 2 2 top {0.0 0.0 0.0}
-mol clipplane color  2 2 top {0.5 0.5 0.5 }
-mol clipplane normal 2 2 top {0.0 0.0 1.0}
-mol clipplane status 2 2 top {0}
-mol clipplane center 3 2 top {0.0 0.0 0.0}
-mol clipplane color  3 2 top {0.5 0.5 0.5 }
-mol clipplane normal 3 2 top {0.0 0.0 1.0}
-mol clipplane status 3 2 top {0}
-mol clipplane center 4 2 top {0.0 0.0 0.0}
-mol clipplane color  4 2 top {0.5 0.5 0.5 }
-mol clipplane normal 4 2 top {0.0 0.0 1.0}
-mol clipplane status 4 2 top {0}
-mol clipplane center 5 2 top {0.0 0.0 0.0}
-mol clipplane color  5 2 top {0.5 0.5 0.5 }
-mol clipplane normal 5 2 top {0.0 0.0 1.0}
-mol clipplane status 5 2 top {0}
-mol representation Lines 1.000000
-mol color Name
-mol selection {not {water or ion or protein}}
-mol material Opaque
-mol addrep top
-mol selupdate 3 top 0
-mol colupdate 3 top 0
-mol scaleminmax top 3 0.000000 0.000000
-mol smoothrep top 3 0
-mol drawframes top 3 {now}
-mol clipplane center 0 3 top {0.0 0.0 0.0}
-mol clipplane color  0 3 top {0.5 0.5 0.5 }
-mol clipplane normal 0 3 top {0.0 0.0 1.0}
-mol clipplane status 0 3 top {0}
-mol clipplane center 1 3 top {0.0 0.0 0.0}
-mol clipplane color  1 3 top {0.5 0.5 0.5 }
-mol clipplane normal 1 3 top {0.0 0.0 1.0}
-mol clipplane status 1 3 top {0}
-mol clipplane center 2 3 top {0.0 0.0 0.0}
-mol clipplane color  2 3 top {0.5 0.5 0.5 }
-mol clipplane normal 2 3 top {0.0 0.0 1.0}
-mol clipplane status 2 3 top {0}
-mol clipplane center 3 3 top {0.0 0.0 0.0}
-mol clipplane color  3 3 top {0.5 0.5 0.5 }
-mol clipplane normal 3 3 top {0.0 0.0 1.0}
-mol clipplane status 3 3 top {0}
-mol clipplane center 4 3 top {0.0 0.0 0.0}
-mol clipplane color  4 3 top {0.5 0.5 0.5 }
-mol clipplane normal 4 3 top {0.0 0.0 1.0}
-mol clipplane status 4 3 top {0}
-mol clipplane center 5 3 top {0.0 0.0 0.0}
-mol clipplane color  5 3 top {0.5 0.5 0.5 }
-mol clipplane normal 5 3 top {0.0 0.0 1.0}
-mol clipplane status 5 3 top {0}
-mol representation VDW 1.000000 12.000000
-mol color ResName
-mol selection {ion}
-mol material Opaque
-mol addrep top
-mol selupdate 4 top 0
-mol colupdate 4 top 0
-mol scaleminmax top 4 0.000000 0.000000
-mol smoothrep top 4 0
-mol drawframes top 4 {now}
-mol clipplane center 0 4 top {0.0 0.0 0.0}
-mol clipplane color  0 4 top {0.5 0.5 0.5 }
-mol clipplane normal 0 4 top {0.0 0.0 1.0}
-mol clipplane status 0 4 top {0}
-mol clipplane center 1 4 top {0.0 0.0 0.0}
-mol clipplane color  1 4 top {0.5 0.5 0.5 }
-mol clipplane normal 1 4 top {0.0 0.0 1.0}
-mol clipplane status 1 4 top {0}
-mol clipplane center 2 4 top {0.0 0.0 0.0}
-mol clipplane color  2 4 top {0.5 0.5 0.5 }
-mol clipplane normal 2 4 top {0.0 0.0 1.0}
-mol clipplane status 2 4 top {0}
-mol clipplane center 3 4 top {0.0 0.0 0.0}
-mol clipplane color  3 4 top {0.5 0.5 0.5 }
-mol clipplane normal 3 4 top {0.0 0.0 1.0}
-mol clipplane status 3 4 top {0}
-mol clipplane center 4 4 top {0.0 0.0 0.0}
-mol clipplane color  4 4 top {0.5 0.5 0.5 }
-mol clipplane normal 4 4 top {0.0 0.0 1.0}
-mol clipplane status 4 4 top {0}
-mol clipplane center 5 4 top {0.0 0.0 0.0}
-mol clipplane color  5 4 top {0.5 0.5 0.5 }
-mol clipplane normal 5 4 top {0.0 0.0 1.0}
-mol clipplane status 5 4 top {0}
-mol rename top ionized.pdb
-set viewpoints([molinfo top]) {{{1 0 0 0.0624135} {0 1 0 -0.0424782} {0 0 1 -30.5964} {0 0 0 1}} {{0.998433 0.0238715 0.0506807 0} {-0.0496934 -0.0402477 0.997959 0} {0.0258624 -0.998912 -0.0389979 0} {0 0 0 1}} {{0.00988178 0 0 0} {0 0.00988178 0 0} {0 0 0.00988178 0} {0 0 0 1}} {{1 0 0 0.00999998} {0 1 0 0.16} {0 0 1 0} {0 0 0 1}}}
+mol rename top prot_psfgen.psf
+set viewpoints([molinfo top]) {{{1 0 0 -9.962} {0 1 0 17.2331} {0 0 1 -31.72} {0 0 0 1}} {{0.474509 0.246172 -0.845126 0} {-0.490957 0.870906 -0.0219733 0} {0.730617 0.425348 0.534114 0} {0 0 0 1}} {{0.0098989 0 0 0} {0 0.0098989 0 0} {0 0 0.0098989 0} {0 0 0 1}} {{1 0 0 0} {0 1 0 0} {0 0 1 0} {0 0 0 1}}}
 lappend viewplist [molinfo top]
 set topmol [molinfo top]
 # done with molecule 0
@@ -610,74 +554,26 @@ color scale colors WBlk {1.0 1.0 1.0} {0.5 0.5 0.5} {0.0 0.0 0.0}
     {color Element {Y} ochre}
     {color Element {Yb} ochre}
     {color Element {Zr} ochre}
-    {color Resname {DOPI} silver}
-    {color Resname {DOPC} green}
-    {color Resname {DOPE} white}
-    {color Resname {DOPA} pink}
-    {color Resname {DOPS} cyan}
-    {color Resname {DOPG} purple}
-    {color Resname {TOCL} lime}
-    {color Resname {SOD} mauve}
-    {color Resname {CLA} ochre}
+    {color Resname {HIC} silver}
     {color Chain {P} blue}
-    {color Chain {L} red}
-    {color Chain {W} gray}
-    {color Chain {I} orange}
+    {color Chain {O} red}
     {color Segname {P1} blue}
-    {color Segname {P2} red}
-    {color Segname {P3} gray}
-    {color Segname {P4} orange}
-    {color Segname {L1} yellow}
-    {color Segname {L2} tan}
-    {color Segname {WT1} silver}
-    {color Segname {WT2} green}
-    {color Segname {WT3} white}
-    {color Segname {WT4} pink}
-    {color Segname {WT5} cyan}
-    {color Segname {WT6} purple}
-    {color Segname {WT7} lime}
-    {color Segname {WT8} mauve}
-    {color Segname {WT9} ochre}
-    {color Segname {WT10} iceblue}
-    {color Segname {WT11} black}
-    {color Segname {WT12} yellow2}
-    {color Segname {WT13} yellow3}
-    {color Segname {WT14} green2}
-    {color Segname {WT15} green3}
-    {color Segname {WT16} cyan2}
-    {color Segname {WT17} cyan3}
-    {color Segname {WT18} blue2}
-    {color Segname {WT19} blue3}
-    {color Segname {WT20} violet}
-    {color Segname {WT21} violet2}
-    {color Segname {WT22} magenta}
-    {color Segname {WT23} magenta2}
-    {color Segname {WT24} red2}
-    {color Segname {WT25} red3}
-    {color Segname {WT26} orange2}
-    {color Segname {WT27} blue}
-    {color Segname {WT28} red}
-    {color Segname {WT29} gray}
-    {color Segname {WT30} orange}
-    {color Segname {WT31} yellow}
-    {color Segname {WT32} tan}
-    {color Segname {WT33} silver}
-    {color Segname {WT34} green}
-    {color Segname {WT35} white}
-    {color Segname {WT36} pink}
-    {color Segname {WT37} cyan}
-    {color Segname {WT38} purple}
-    {color Segname {WT39} lime}
-    {color Segname {WT40} mauve}
-    {color Segname {WT41} ochre}
-    {color Segname {WT42} iceblue}
-    {color Segname {WT43} black}
-    {color Segname {WT44} yellow2}
-    {color Segname {WT45} yellow3}
-    {color Segname {ION} green2}
+    {color Segname {O1} red}
+    {color Segname {P2} gray}
+    {color Segname {P3} orange}
+    {color Segname {O2} yellow}
+    {color Segname {P4} tan}
+    {color Segname {P5} silver}
+    {color Segname {O3} green}
+    {color Segname {P6} white}
+    {color Segname {P7} pink}
+    {color Segname {O4} cyan}
+    {color Segname {P8} purple}
+    {color Segname {P9} lime}
+    {color Segname {O5} mauve}
+    {color Segname {P10} ochre}
     {color Conformation {all} blue}
     {color Molecule {0} blue}
-    {color Molecule {ionized.pdb} blue}
     {color Structure {3_10_Helix} blue}
     {color Surface {Grasp} gray}
     {color Labels {Springs} orange}
