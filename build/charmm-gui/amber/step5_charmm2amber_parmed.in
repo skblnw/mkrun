@@ -1,5 +1,0 @@
-chamber -psf amber/step5_charmm2amber.psf -crd amber/step5_charmm2amber.crd \
-        -top toppar/*.rtf -param toppar/*.prm -str toppar/*.str \
-        nocondense -box 66.7892207,66.7892207,79
-
-outparm amber/step5_charmm2amber.parm7 amber/step5_charmm2amber.rst7
