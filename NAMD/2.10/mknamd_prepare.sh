@@ -7,10 +7,11 @@ fi
 
 TEMPLATE_DIR=$HOME/scripts/mkrun/NAMD/2.10
 TEMPLATE=$TEMPLATE_DIR/template-make-prepare-sh
+cp -v $TEMPLATE_DIR/{template-namd,make_submit.sh,vm_getcell.tcl,vm_writestd.tcl,vm_writecol.tcl} .
+vmd -dispdev text -e vm_getcell.tcl
 cat $TEMPLATE > make_prepare.sh
-cp -v $TEMPLATE_DIR/{template-namd,make_submit.sh,vm_getcell.tcl,vm_write*.tcl} .
 
-mkdir -p output log
+mkdir -p output log restraints
 
 # Choose for cluster gonna use
 PS3='Please enter your choice: '
@@ -21,7 +22,7 @@ do
         "Combo")
             echo "you chose choice 1"
             sed -i 's/^combo=.*$/combo=true/g' make_prepare.sh
-            cp -v $TEMPLATE_DIR/Default/Combo/* .
+            cp -v $TEMPLATE_DIR/Default/Combo/template-job-pbs .
             break
             ;;
         "Titan")
@@ -84,6 +85,8 @@ done
 read -p "Is it a protein-only simulation?" -n 1 -r
 echo 
 if [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "mknamd: Turn off membrane_exist"
+    sed -i 's/^membrane_exist=.*$/membrane_exist=false/g' make_prepare.sh
     echo "mknamd: Turn off FlexibleCell"
     sed -i 's/^    useFlexibleCell      yes/    useFlexibleCell      no/g' template-namd
     echo "mknamd: Turn off ConstantRatio"

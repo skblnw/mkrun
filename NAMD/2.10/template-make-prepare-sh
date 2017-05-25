@@ -1,43 +1,52 @@
 #!/bin/bash
 ################################################
-# 4 Aug 2015
+# Aug 2015
 # CBMSG
 # Kevin
-# I have prepared this script solely for preparing NAMD MD job scripts universally
+# This script was created for preparing NAMD MD jobs ***IN A LAZY WAY***
 #
 # Updates:
+# May 2017
+#  Revised NAMD CUDA-smp-ib commands (highly recommended in the release note)
+#  Deleted NVT equilibirum before releasing constraints
+#  Added releasing constraints to lipid heads
+#  Deleted redundant minimization steps
 # 17 Aug 2016
-# -Created mknamd_prepare
-# -Added function make_pbs
-# -Added clusters as options
+#  Created mknamd_prepare
+#  Added function make_pbs
+#  Added clusters as options
 # 13 Sep 2015
-# -Added option bmk
+#  Added option bmk
 # 4 Aug 2015
-# -Added variable previous
+#  Added variable previous
 # 3 Aug 2015
-# -Added variable COMMAND
-# -Added variable jobname
-# -Added variable nnode and nheader
+#  Added variable COMMAND
+#  Added variable jobname
+#  Added variable nnode and nheader
 ################################################
 # NAMD Commands (GPU):
-# COMBO: \$CHARMRUN +p\$NP2 ++ppn 15 ++scalable-start ++nodelist \$nodefile \$NAMD +setcpuaffinity +pemap 1-15 +commap 0 ++verbose
-# Titan: aprun -n $nnode -r 1 -N 1 -d 15 namd2 +ppn 15 +pemap 1-15 +commap 0
-# College: mpirun -n \$NP \$NAMD
+#   COMBO (remote-shell=ssh): \$CHARMRUN +p\$NP_2 ++ppn 15 ++scalable-start ++nodelist \$nodefile \$NAMD +setcpuaffinity +pemap 1-15 +commap 0 ++verbose
+#   COMBO (remote-shell=ib): \$CHARMRUN +p\$NP_2 ++ppn 15 ++scalable-start ++verbose ++mpiexec ++remote-shell ./mpiexec_wrapper \$NAMD +idlepoll +setcpuaffinity +pemap 1-15 +commap 0
+#   Titan: aprun -n $nnode -r 1 -N 1 -d 15 namd2 +ppn 15 +pemap 1-15 +commap 0
+#   College: mpirun -n \$NP \$NAMD
 ################################################
 # NAMD Commands (CPU):
-# COMBO: \$CHARMRUN +p\$NP ++ppn 16 ++scalable-start ++nodelist \$nodefile \$NAMD ++verbose
+#   COMBO: \$CHARMRUN +p\$NP ++ppn 16 ++scalable-start ++nodelist \$nodefile \$NAMD ++verbose
 ################################################
 # Gromacs Commands (GPU):
-# COMBO: $MPIRUN -mca btl self,openib -np $NN -npernode 1 $GMXBIN mdrun -v -ntomp 7 -pin on -s W50k.tpr -deffnm output/gpu-1node-NNomp
+#   COMBO: $MPIRUN -mca btl self,openib -np $NN -npernode 1 $GMXBIN mdrun -v -ntomp 7 -pin on -s W50k.tpr -deffnm output/gpu-1node-NNomp
 ################################################
 
 mkdir -p output
+mkdir -p log
+mkdir -p restraints
 
-nnode=1
-ncpu=16
+nnode=2
+ncpu=10
 ncpu_1=$(($ncpu-1))
 ncpu_2=$(($ncpu-2))
 
+# Cluster Choosing
 # true if you choose that cluster
 combo=false
 titan=false
@@ -48,7 +57,7 @@ if $combo; then
     if [[ $nnode -eq 1 ]]; then
         COMMAND="\$NAMD +p$ncpu_1"
     else
-        COMMAND="\$CHARMRUN +p\$NP_2 ++ppn $ncpu_2 ++nodelist \$nodefile \$NAMD"
+        COMMAND="\$CHARMRUN +p\${NP_2} ++ppn $ncpu_2 ++scalable-start ++verbose ++mpiexec ++remote-shell ./mpiexec_wrapper \$NAMD +idlepoll +setcpuaffinity +pemap 1-$ncpu_2 +commap 0"
     fi
 elif $titan; then
     COMMAND="aprun -n $nnode -r 1 -N 1 -d 15 namd2 +ppn 15 +pemap 1-15 +commap 0"
@@ -59,6 +68,9 @@ else
     exit 0
 fi
 
+
+membrane_exist=true
+# MD Steps Choosing
 # true to turn on
 mini=false
 heat=false
@@ -103,103 +115,58 @@ make_pbs () {
 }
 
 
+# Minimization
 if $mini; then
     check_exist template-namd
     jobname=mini
     make_pbs $jobname
+    outputname=$jobname
 
     fixpdb=(fix_solute fix_heavy 0)
-    nstep=(1000 10000 20000)
+    # Change these # of steps. DO NOT continue unless you see a plateau. (Kevin, 2017)
+    nstep=(5000 20000 50000)
     for ii in {0..2}
     do
         if [ $ii -eq 0 ]; then
             inputname=0
         else
             jj=$[ii-1]
-            inputname="output\/mini-$jj"
+            inputname="output\/${outputname}-${jj}"
         fi
-        sed -e 's/^set INPUTNAME.*$/set INPUTNAME '$inputname'/g' \
-            -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/mini-'$ii'/g' \
+        sed -e 's/^set INPUTNAME.*$/set INPUTNAME '${inputname}'/g' \
+            -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'-'${ii}'/g' \
             -e 's/^set FIXPDB.*$/set FIXPDB '${fixpdb[$ii]}'/g' \
-            -e 's/^set CONSPDB.*$/set CONSPDB cons_bb_and_P/g' \
+            -e 's/^set CONSPDB.*$/set CONSPDB restraints\/cons_bb_and_P/g' \
             -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
             -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.vel/g' \
             -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.coor/g' \
             -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.xsc/g' \
-            -e 's/^restartfreq.*$/restartfreq 1000/g' \
-            -e 's/^dcdfreq.*$/dcdfreq 1000/g' \
-            -e 's/^xstfreq.*$/xstfreq 1000/g' \
+            -e 's/^restartfreq.*$/restartfreq 5000/g' \
+            -e 's/^dcdfreq.*$/dcdfreq 5000/g' \
+            -e 's/^xstfreq.*$/xstfreq 5000/g' \
             -e 's/^set MS.*$/set MS '${nstep[$ii]}'/g' \
             -e 's/^set SD.*$/set SD 0/g' \
-            template-namd > mini-$ii.namd
-        echo -e "$COMMAND mini-$ii.namd > log/mini-$ii.log\nwait\ndate" >> job-$jobname.pbs
+            template-namd > ${outputname}-${ii}.namd
+        echo -e "$COMMAND ${outputname}-${ii}.namd > log/${outputname}-${ii}.log\nwait\ndate" >> job-$jobname.pbs
     done
-
-#    NN=1
-#    fixname=fix_solute
-#    sed -e 's/^set INPUTNAME.*$/set INPUTNAME 0/g' \
-#        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/mini-'$NN'/g' \
-#        -e 's/^set FIXPDB.*$/set FIXPDB '$fixname'/g' \
-#        -e 's/^set CONSPDB.*$/set CONSPDB cons_bb_and_P/g' \
-#        -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
-#        -e 's/^set MS.*$/set MS 2000/g' \
-#        -e 's/^set SD.*$/set SD 0/g' \
-#        template-namd > mini-$NN.namd
-#    echo -e "$COMMAND mini-$NN.namd > mini-$NN.log\nwait\ndate" >> job-$jobname.pbs
-
-#    NN=2
-#    fixname=fix_all0
-#    sed -e 's/^set INPUTNAME.*$/set INPUTNAME output\/mini-1/g' \
-#        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/mini-'$NN'/g' \
-#        -e 's/^set FIXPDB.*$/set FIXPDB 0/g' \
-#        -e 's/^set CONSPDB.*$/set CONSPDB cons_bb_and_P/g' \
-#        -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
-#        -e 's/^set MS.*$/set MS 2000/g' \
-#        -e 's/^set SD.*$/set SD 0/g' \
-#        template-namd > mini-$NN.namd
-#    echo -e "$COMMAND mini-$NN.namd > mini-$NN.log\nwait\ndate" >> job-$jobname.pbs
-#
-#    NN=2
-#    MM=$(expr $NN - 1)
-#    fixname=fix_backbone
-#    sed -e 's/^set INPUTNAME.*$/set INPUTNAME output\/mini-'$MM'/g' \
-#        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/mini-'$NN'/g' \
-#        -e 's/^set FIXPDB.*$/set FIXPDB '$fixname'/g' \
-#        -e 's/^set CONSPDB.*$/set CONSPDB cons_bb_and_P/g' \
-#        -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
-#        -e 's/^set MS.*$/set MS 5000/g' \
-#        -e 's/^set SD.*$/set SD 0/g' \
-#        template-namd > mini-$NN.namd
-#    echo -e "\$NAMD +ppn $ncpu +pemap 1-$ncpu +commap 0 mini-$NN.namd > mini-$NN.log\nwait\ndate" >> job-mini.pbs
-#
-#    NN=3
-#    MM=$(expr $NN - 1)
-#    fixname=fix_water
-#    sed -e 's/^set INPUTNAME.*$/set INPUTNAME output\/mini-'$MM'/g' \
-#        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/mini-'$NN'/g' \
-#        -e 's/^set FIXPDB.*$/set FIXPDB '$fixname'/g' \
-#        -e 's/^set CONSPDB.*$/set CONSPDB cons_bb_and_P/g' \
-#        -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
-#        -e 's/^set MS.*$/set MS 10000/g' \
-#        -e 's/^set SD.*$/set SD 0/g' \
-#        template-namd > mini-$NN.namd
-#    echo -e "\$NAMD +ppn $ncpu +pemap 1-$ncpu +commap 0 mini-$NN.namd > mini-$NN.log\nwait\ndate" >> job-mini.pbs
 fi
 
 if $heat; then
     check_exist template-namd
     jobname=heat
     make_pbs $jobname
+    outputname=$jobname
 
-    previous=mini-1
+    previous=mini-2
     sed -e 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' \
-        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/heat/g' \
-        -e 's/^set CONSPDB.*$/set CONSPDB cons_bb_and_P/g' \
-        -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
+        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'/g' \
+        -e 's/^set CONSPDB.*$/set CONSPDB restraints\/cons_bb_and_P/g' \
+        -e 's/^set CONSSCALE.*$/set CONSSCALE 10.0/g' \
         -e 's/^set ITEMP.*$/set ITEMP 0/g' \
-        -e 's/^set TS.*$/set TS 50000/g' \
-        template-namd > heat.namd
-    echo -e "$COMMAND heat.namd > log/heat.log\nwait\ndate" >> job-$jobname.pbs
+        -e 's/^set FTEMP.*$/set FTEMP 310/g' \
+        -e 's/^set TS.*$/set TS 100000/g' \
+        template-namd > ${outputname}.namd
+    echo -e "$COMMAND ${outputname}.namd > log/${outputname}.log\nwait\ndate" >> job-$jobname.pbs
 fi
 
 if $pre; then
@@ -207,16 +174,17 @@ if $pre; then
     jobname=pre
     make_pbs $jobname
 
+    outputname=$jobname-npt
     previous=heat
     sed -e 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' \
-        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/pre-npt/g' \
-        -e 's/^set CONSPDB.*$/set CONSPDB cons_bb_and_P/g' \
+        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'/g' \
+        -e 's/^set CONSPDB.*$/set CONSPDB restraints\/cons_bb_and_P/g' \
         -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
         -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
-        -e 's/^margin.*$/margin 3.0/g' \
+        -e 's/^margin.*$/margin 5.0/g' \
         -e 's/^set TS.*$/set TS 500000/g' \
-        template-namd > pre-npt.namd
-    echo -e "$COMMAND pre-npt.namd > log/pre-npt.log\nwait\ndate" >> job-$jobname.pbs
+        template-namd > ${outputname}.namd
+    echo -e "$COMMAND ${outputname}.namd > log/${outputname}.log\nwait\ndate" >> job-$jobname.pbs
 
 #    for ii in {1..5}
 #    do
@@ -252,28 +220,59 @@ if $cons; then
 
     MM=-1
     previous=pre-npt
-    for NN in {50,30,10,5,3,1}
+
+    if $membrane_exist; then
+        outputname=$jobname-memb
+        colfile=${outputname}.col
+        for NN in {5,2,1,0}
+        do
+            # Get membrane_lipid_restraint.namd.col from CHARMM-GUI
+            sed -e 's/Constant \$fc/Constant '$NN'/g' membrane_lipid_restraint.namd.col > restraints/$colfile
+
+            sed   -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'-'$NN'/g' \
+                  -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
+                  -e 's/^set CONSPDB.*$/set CONSPDB restraints\/cons_bb/g' \
+                  -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
+                  -e 's/^set COLFILE.*$/set COLFILE restraints\/'$colfile'/g' \
+                  -e 's/^set TS.*$/set TS 250000/g' \
+                  template-namd > ${outputname}-$NN.namd
+
+            if [ $MM -eq -1 ] ; then
+                sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' ${outputname}-$NN.namd
+            else
+                sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/cons-'$MM'/g' ${outputname}-$NN.namd
+            fi
+
+            echo -e "$COMMAND ${outputname}-$NN.namd > log/${outputname}-$NN.log\nwait\ndate" >> job-$jobname.pbs
+            MM=$NN
+        done
+        MM=-1
+        previous=${outputname}-${NN}
+    fi
+
+    outputname=$jobname
+    for NN in {50,20,10,5,2,1}
     do
         SS=`echo "$NN 0.1" | awk '{printf "%.1f", $1*$2}'`
-        sed   -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/cons-'$NN'/g' \
+        sed   -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'-'$NN'/g' \
               -e 's/^set CONSSCALE.*$/set CONSSCALE '$SS'/g' \
               -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
               -e 's/^set TS.*$/set TS 50000/g' \
               template-namd > cons-$NN.namd
 
         if [ $MM -eq -1 ] ; then
-            sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' cons-$NN.namd
+            sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' ${outputname}-$NN.namd
         else
-            sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/cons-'$MM'/g' cons-$NN.namd
+            sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/'${outputname}'-'$MM'/g' ${outputname}-$NN.namd
         fi
 
         if [ $NN -gt 5 ] ; then
-            sed -i 's/^set CONSPDB.*$/set CONSPDB cons_bb_and_P/g' cons-$NN.namd
+            sed -i 's/^set CONSPDB.*$/set CONSPDB restraints\/cons_bb/g' ${outputname}-$NN.namd
         else
-            sed -i 's/^set CONSPDB.*$/set CONSPDB cons_CA_and_P/g' cons-$NN.namd
+            sed -i 's/^set CONSPDB.*$/set CONSPDB restraints\/cons_CA/g' ${outputname}-$NN.namd
         fi
 
-        echo -e "$COMMAND cons-$NN.namd > log/cons-$NN.log\nwait\ndate" >> job-$jobname.pbs
+        echo -e "$COMMAND ${outputname}-$NN.namd > log/${outputname}-$NN.log\nwait\ndate" >> job-$jobname.pbs
         MM=$NN
     done
 fi
@@ -282,18 +281,21 @@ if $npt1; then
     check_exist template-namd
     jobname=npt1
     make_pbs $jobname
+    outputname=NPT
 
     previous=cons-1
     sed -e 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' \
-        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/NPT-1/g' \
+        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'-1/g' \
         -e 's/^COMmotion.*$/COMmotion no/g' \
+        -e 's/^set ITEMP.*$/set ITEMP 310/g' \
+        -e 's/^set FTEMP.*$/set FTEMP 310/g' \
         -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
         -e 's/^restartfreq.*$/restartfreq 1000/g' \
         -e 's/^dcdfreq.*$/dcdfreq 1000/g' \
         -e 's/^xstfreq.*$/xstfreq 1000/g' \
         -e 's/^set TS.*$/set TS 500000/g' \
-        template-namd > NPT-1.namd
-    echo -e "$COMMAND NPT-1.namd > log/NPT-1.log\nwait\ndate" >> job-$jobname.pbs
+        template-namd > ${outputname}-1.namd
+    echo -e "$COMMAND ${outputname}-1.namd > log/${outputname}-1.log\nwait\ndate" >> job-$jobname.pbs
 fi
 
 if $npt2; then
@@ -302,19 +304,22 @@ if $npt2; then
     do
         jobname=npt$ii
         make_pbs $jobname
+        outputname=NPT
 
         jj=$(expr $ii - 1)
         sed \
-            -e 's/^set INPUTNAME.*$/set INPUTNAME output\/NPT-'$jj'/g' \
-            -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/NPT-'$ii'/g' \
+            -e 's/^set INPUTNAME.*$/set INPUTNAME output\/'${outputname}'-'$jj'/g' \
+            -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'-'$ii'/g' \
             -e 's/^COMmotion.*$/COMmotion yes/g' \
+            -e 's/^set ITEMP.*$/set ITEMP 310/g' \
+            -e 's/^set FTEMP.*$/set FTEMP 310/g' \
             -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
             -e 's/^restartfreq.*$/restartfreq 1000/g' \
             -e 's/^dcdfreq.*$/dcdfreq 1000/g' \
             -e 's/^xstfreq.*$/xstfreq 1000/g' \
             -e 's/^set TS.*$/set TS 25000000/g' \
-            template-namd > NPT-$ii.namd
-        echo -e "$COMMAND NPT-$ii.namd > log/NPT-$ii.log\nwait\ndate" >> job-$jobname.pbs
+            template-namd > ${outputname}-$ii.namd
+        echo -e "$COMMAND ${outputname}-$ii.namd > log/${outputname}-$ii.log\nwait\ndate" >> job-$jobname.pbs
     done
 fi
 
@@ -359,7 +364,7 @@ if $smd; then
             
             jj=$(expr $ii - 1)
             sed -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'$filename'-'$ii'/g' \
-                -e 's/^set FIXPDB.*$/set FIXPDB fix_memb/g' \
+                -e 's/^set FIXPDB.*$/set FIXPDB restraints\/fix_memb/g' \
                 -e 's/^COMmotion.*$/COMmotion no/g' \
                 -e 's/^set PSWITCH.*$/set PSWITCH 0/g' \
                 -e 's/^restartfreq.*$/restartfreq 1000/g' \
