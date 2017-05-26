@@ -7,8 +7,7 @@ fi
 
 TEMPLATE_DIR=$HOME/scripts/mkrun/NAMD/2.10
 TEMPLATE=$TEMPLATE_DIR/template-make-prepare-sh
-cp -v $TEMPLATE_DIR/{template-namd,make_submit.sh,vm_getcell.tcl,vm_writestd.tcl,vm_writecol.tcl} .
-vmd -dispdev text -e vm_getcell.tcl
+cp -v $TEMPLATE_DIR/{template-namd,make_submit.sh,vm_getcell.tcl,vm_writestd.tcl,vm_writecol.tcl,membrane_lipid_restraint.namd.col} .
 cat $TEMPLATE > make_prepare.sh
 
 mkdir -p output log restraints
@@ -61,26 +60,6 @@ else
     sed -i 's/^ncpu=.*$/ncpu='$ncpu'/g' make_prepare.sh
 fi
 
-# Turn on options in make_prepare.sh
-for name in $@; do
-    sed -i 's/^'$name'=.*$/'$name'=true/g' make_prepare.sh
-    case $name in
-        "us1")
-            echo "Info: In case of [$name], we copy some more templates"
-            cp -v $TEMPLATE_DIR/US/template-* .
-            cp -v $TEMPLATE_DIR/US/*.tcl .
-            break
-            ;;
-        "us2")
-            echo "Info: In case of [$name], we copy some more templates"
-            cp -v $TEMPLATE_DIR/US/template-* .
-            cp -v $TEMPLATE_DIR/US/*.tcl .
-            break
-            ;;
-        *) ;;
-    esac
-done
-
 # Ask if protein-only
 read -p "Is it a protein-only simulation?" -n 1 -r
 echo 
@@ -92,3 +71,28 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     echo "mknamd: Turn off ConstantRatio"
     sed -i 's/^    useConstantRatio     yes/    useConstantRatio     no/g' template-namd
 fi
+
+# Turn on options in make_prepare.sh
+for name in $@; do
+    sed -i 's/^'$name'=.*$/'$name'=true/g' make_prepare.sh
+    case $name in
+        "mini")
+            echo "mkprepare: In case of [$name], execute vm_getcell for you."
+            vmd -dispdev text -e vm_getcell.tcl
+            break
+            ;;
+        "us1")
+            echo "mkprepare: In case of [$name], we copy some more templates"
+            cp -v $TEMPLATE_DIR/US/template-* .
+            cp -v $TEMPLATE_DIR/US/*.tcl .
+            break
+            ;;
+        "us2")
+            echo "mkprepare: In case of [$name], we copy some more templates"
+            cp -v $TEMPLATE_DIR/US/template-* .
+            cp -v $TEMPLATE_DIR/US/*.tcl .
+            break
+            ;;
+        *) ;;
+    esac
+done

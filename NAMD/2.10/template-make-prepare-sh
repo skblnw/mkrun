@@ -223,10 +223,10 @@ if $cons; then
 
     if $membrane_exist; then
         outputname=$jobname-memb
-        colfile=${outputname}.col
         for NN in {5,2,1,0}
         do
             # Get membrane_lipid_restraint.namd.col from CHARMM-GUI
+            colfile=${outputname}-$NN.col
             sed -e 's/Constant \$fc/Constant '$NN'/g' membrane_lipid_restraint.namd.col > restraints/$colfile
 
             sed   -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'-'$NN'/g' \
@@ -234,13 +234,20 @@ if $cons; then
                   -e 's/^set CONSPDB.*$/set CONSPDB restraints\/cons_bb/g' \
                   -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
                   -e 's/^set COLFILE.*$/set COLFILE restraints\/'$colfile'/g' \
-                  -e 's/^set TS.*$/set TS 250000/g' \
                   template-namd > ${outputname}-$NN.namd
+
+            if [ $NN -eq 5 ]; then
+                sed -i 's/^set TS.*$/set TS 250000/g' ${outputname}-$NN.namd
+            else
+                sed -i 's/^set TS.*$/set TS 100000/g' ${outputname}-$NN.namd
+            fi
 
             if [ $MM -eq -1 ] ; then
                 sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' ${outputname}-$NN.namd
+                sed -i 's/^set TS.*$/set TS 250000/g' ${outputname}-$NN.namd
             else
-                sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/cons-'$MM'/g' ${outputname}-$NN.namd
+                sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/'${outputname}'-'$MM'/g' ${outputname}-$NN.namd
+                sed -i 's/^set TS.*$/set TS 100000/g' ${outputname}-$NN.namd
             fi
 
             echo -e "$COMMAND ${outputname}-$NN.namd > log/${outputname}-$NN.log\nwait\ndate" >> job-$jobname.pbs
