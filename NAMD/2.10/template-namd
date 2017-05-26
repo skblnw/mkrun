@@ -31,7 +31,7 @@ coordinates $PDBFILE
 # Output
 outputName         $OUTPUTNAME
 firsttimestep         0
-restartfreq        1000;               # every 1000 steps =  2ps
+restartfreq        5000;               # every 1000 steps =  2ps
 dcdfreq            5000;               # every 5000 steps = 10ps
 xstfreq            5000;               # XSTFreq: control how often the extended systen configuration
                                        # will be appended to the XST file
@@ -52,9 +52,9 @@ parameters ../toppar/toppar_all36_lipid_inositol.str
 parameters ../toppar_water_ions_namd.str
 
 if { $INPUTNAME != 0 } {
-    BinVelocities $INPUTNAME.restart.vel.old
-    BinCoordinates $INPUTNAME.restart.coor.old
-    ExtendedSystem $INPUTNAME.restart.xsc.old
+    BinVelocities $INPUTNAME.restart.vel
+    BinCoordinates $INPUTNAME.restart.coor
+    ExtendedSystem $INPUTNAME.restart.xsc
 } else {
     temperature $ITEMP
     source cell_size.str

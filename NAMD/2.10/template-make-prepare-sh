@@ -293,6 +293,9 @@ if $npt1; then
     previous=cons-1
     sed -e 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' \
         -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'-1/g' \
+        -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.restart.vel.old/g' \
+        -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.restart.coor.old/g' \
+        -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.restart.xsc.old/g' \
         -e 's/^COMmotion.*$/COMmotion no/g' \
         -e 's/^set ITEMP.*$/set ITEMP 310/g' \
         -e 's/^set FTEMP.*$/set FTEMP 310/g' \
@@ -317,6 +320,9 @@ if $npt2; then
         sed \
             -e 's/^set INPUTNAME.*$/set INPUTNAME output\/'${outputname}'-'$jj'/g' \
             -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'-'$ii'/g' \
+            -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.restart.vel.old/g' \
+            -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.restart.coor.old/g' \
+            -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.restart.xsc.old/g' \
             -e 's/^COMmotion.*$/COMmotion yes/g' \
             -e 's/^set ITEMP.*$/set ITEMP 310/g' \
             -e 's/^set FTEMP.*$/set FTEMP 310/g' \
