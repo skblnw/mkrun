@@ -141,19 +141,21 @@ if { $PSWITCH != 0 } {
     useFlexibleCell      yes;              
                                            # Turn off if it is protein-only simulation
                                            # yes for anisotropic system like membrane 
-    useConstantRatio     yes;              
-                                           # Turn off if it is protein-only simulation
-                                           # keeps the ratio of the unit cell in the x-y plane constant A=B
+    useConstantArea     yes;
                                            # Turn on if the membrane is from CHARMM-GUI, otherwise "ConstantArea" (Kevin, 2017)
-#    useConstatntArea     yes;
                                            # Turn off if it is protein-only simulation
                                            # No fluctuation in x-y
+#    useConstantRatio     yes;              
+                                           # Turn off if it is protein-only simulation
+                                           # keeps the ratio of the unit cell in the x-y plane constant A=B
     
     langevinPiston        on
     langevinPistonTarget  1.01325
     langevinPistonPeriod  200.;             # From NAMD Manual (2.12), !!! unit: fs !!!
+                                            # 50.   (CHARMM-GUI)
                                             # 2000. (Junfan)
     langevinPistonDecay   100.;             # From NAMD Manual (2.12), !!! unit: fs !!!
+                                            # 25.   (CHARMM-GUI)
                                             # 2000. (Junfan)
     langevinPistonTemp    310.
 }

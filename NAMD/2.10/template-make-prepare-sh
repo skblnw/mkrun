@@ -49,6 +49,8 @@ ncpu_2=$(($ncpu-2))
 # Cluster Choosing
 # true if you choose that cluster
 combo=false
+# Combo has a cpu version of pbs
+combo_cpu=false
 titan=false
 # Titan has a multiple version of pbs
 titan_multiple=false
@@ -56,6 +58,8 @@ college=false
 if $combo; then
     if [[ $nnode -eq 1 ]]; then
         COMMAND="\$NAMD +p$ncpu_1"
+    elif $combo_cpu; then
+        COMMAND="\$CHARMRUN +p$ncpu_1 ++scalable-start ++verbose ++mpiexec ++remote-shell ./mpiexec_wrapper \$NAMD"
     else
         COMMAND="\$CHARMRUN +p\${NP_2} ++ppn $ncpu_2 ++scalable-start ++verbose ++mpiexec ++remote-shell ./mpiexec_wrapper \$NAMD +idlepoll +setcpuaffinity +pemap 1-$ncpu_2 +commap 0"
     fi
@@ -223,7 +227,7 @@ if $cons; then
 
     if $membrane_exist; then
         outputname=$jobname-memb
-        for NN in {5,2,1,0}
+        for NN in {5,2,1}
         do
             # Get membrane_lipid_restraint.namd.col from CHARMM-GUI
             colfile=${outputname}-$NN.col
@@ -237,17 +241,15 @@ if $cons; then
                   template-namd > ${outputname}-$NN.namd
 
             if [ $NN -eq 5 ]; then
-                sed -i 's/^set TS.*$/set TS 250000/g' ${outputname}-$NN.namd
-            else
                 sed -i 's/^set TS.*$/set TS 100000/g' ${outputname}-$NN.namd
+            else
+                sed -i 's/^set TS.*$/set TS 25000/g' ${outputname}-$NN.namd
             fi
 
             if [ $MM -eq -1 ] ; then
                 sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' ${outputname}-$NN.namd
-                sed -i 's/^set TS.*$/set TS 250000/g' ${outputname}-$NN.namd
             else
                 sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/'${outputname}'-'$MM'/g' ${outputname}-$NN.namd
-                sed -i 's/^set TS.*$/set TS 100000/g' ${outputname}-$NN.namd
             fi
 
             echo -e "$COMMAND ${outputname}-$NN.namd > log/${outputname}-$NN.log\nwait\ndate" >> job-$jobname.pbs
