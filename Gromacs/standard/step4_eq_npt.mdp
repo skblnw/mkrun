@@ -11,7 +11,6 @@ nstxout                 = 500     ; save coordinates every 1.0 ps
 nstvout                 = 500     ; save velocities every 1.0 ps
 nstfout                 = 500     ; save forces every 1.0 ps
 nstenergy               = 500     ; save energies every 1.0 ps
-energygrps              = Protein RNA_DNA
 ; Bond parameters
 continuation            = yes
 constraint_algorithm    = lincs       ; holonomic constraints

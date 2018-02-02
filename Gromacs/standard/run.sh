@@ -16,8 +16,3 @@ prefix1=step2_mini
 prefix2=step3_annealing
 gmx grompp -f $prefix2.mdp -o $prefix2.tpr -c output/$prefix1.gro -n pdb2gmx/index.ndx -p pdb2gmx/topol_inter.top
 gmx mdrun -v -s $prefix2.tpr -deffnm output/$prefix2
-
-prefix1=step3_annealing
-prefix2=step4_eq_npt
-gmx grompp -f $prefix2.mdp -o $prefix2.tpr -c output/$prefix1.gro -n pdb2gmx/index.ndx -p pdb2gmx/topol_inter.top
-gmx mdrun -v -s $prefix2.tpr -deffnm output/$prefix2
