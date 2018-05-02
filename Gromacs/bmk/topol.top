@@ -1,8 +1,0 @@
-#include "charmm27.ff/forcefield.itp"
-#include "charmm27.ff/tip3p.itp"
-
-[ system ]
-Water
-
-[ molecules ]
-SOL         166667

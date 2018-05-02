@@ -1,0 +1,18 @@
+#!/bin/bash -l
+#SBATCH -S 4
+#SBATCH -N 64
+#SBATCH -C knl
+#SBATCH -p debug
+#SBATCH -t 00:05:00
+#SBATCH -L cscratch1
+#SBATCH -A m906
+export OMP_NUM_THREADS=4
+module load gromacs/2016.3.knl
+
+NNODE=64
+prefix=PREFIX
+iname=INPUTNAME
+oname=OUTPUTNAME
+
+gmx convert-tpr -s $iname.tpr -o $oname.tpr -extend 100000
+srun -n $(($NNODE*16)) -N $NNODE --cpu_bind=cores -c 16 mdrun_mpi_sp -ntomp 4 -dlb yes -v -s $oname.tpr -cpi output/$iname.cpt -deffnm output/$oname
