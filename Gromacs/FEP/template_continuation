@@ -1,0 +1,25 @@
+#!/bin/bash
+
+MDP=MDP_9
+echo ".mdp files are stored in $MDP"
+
+PDB=pdb2gmx
+echo "structure files are stored in $PDB"
+
+LAMBDA=0
+cd Lambda_$LAMBDA/Production_MD_cont
+LAST=md$LAMBDA
+NEXT=md$LAMBDA-2
+
+#################
+# CONTINUTAION  #
+#################
+echo "Starting production MD simulation..."
+
+#gmx grompp -f ../../$MDP/Production_MD_cont/md_$LAMBDA.mdp -c $LAST.gro -p ../../$PDB/topol.top -o $NEXT.tpr
+gmx convert-tpr -s $LAST.tpr -o $NEXT.tpr -extend 1000
+
+#gmx mdrun -ntomp 2 -deffnm $NEXT
+gmx mdrun -ntomp 2 -cpi $LAST.cpt -deffnm $NEXT
+
+echo "Production MD complete. Job completed for lambda = $LAMBDA"
