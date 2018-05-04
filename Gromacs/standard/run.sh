@@ -33,3 +33,10 @@ if true; then
     gmx grompp -f $prefix2.mdp -o $prefix2.tpr -c output/$prefix1.gro -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
     gmx_cuda mdrun -ntomp 8 -v -s $prefix2.tpr -deffnm output/$prefix2
 fi
+
+if false; then
+    prefix1=step5_md
+    prefix2=step5_md-2
+    gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 1000
+    gmx mdrun -ntomp 8 -v -s $prefix2.tpr -cpi $prefix1.cpt -deffnm output/$prefix2
+fi
