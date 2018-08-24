@@ -5,7 +5,7 @@ if [ $# -eq 0 ]; then
     exit 0
 fi
 
-TEMPLATE_DIR=$HOME/scripts/mkrun/NAMD/2.10
+TEMPLATE_DIR=$HOME/scripts/mkrun/NAMD/2.10/standard
 TEMPLATE=$TEMPLATE_DIR/template-make-prepare-sh
 cp -v $TEMPLATE_DIR/{template-namd,make_submit.sh,vm_getcell.tcl,vm_writestd.tcl,vm_writecol.tcl,membrane_lipid_restraint.namd.col} .
 cat $TEMPLATE > make_prepare.sh

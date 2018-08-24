@@ -1,5 +1,7 @@
 #!/bin/bash
 
+mkdir -p output
+
 if true; then
     prefix=step1_mini_crystal
     gmx grompp -f $prefix.mdp -o $prefix.tpr -c pdb2gmx/ionized.pdb -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
@@ -9,8 +11,8 @@ fi
 if true; then
     prefix1=step1_mini_crystal
     prefix2=step2_mini
-    gmx grompp -f $prefix2.mdp -o $prefix2.tpr -c output/$prefix1.gro -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
-    gmx mdrun -ntomp 8 -v -s $prefix2.tpr -deffnm output/$prefix2
+    gmx_d grompp -f $prefix2.mdp -o $prefix2.tpr -c output/$prefix1.gro -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
+    gmx_d mdrun -ntomp 8 -v -s $prefix2.tpr -deffnm output/$prefix2
 fi
 
 if true; then
