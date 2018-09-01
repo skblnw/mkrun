@@ -1,7 +1,7 @@
 proc get_cell {} { 
     set fout [open "cell_size.str" w]
 
-    set all [atomselect top all] 
+    set all [atomselect top water] 
     set minmax [measure minmax $all] 
     set vec [vecsub [lindex $minmax 1] [lindex $minmax 0]] 
     puts $fout "cellBasisVector1 [lindex $vec 0] 0 0" 
@@ -14,6 +14,6 @@ proc get_cell {} {
     close $fout
 }
 
-mol new ../ionized.pdb
+mol new ionized.pdb
 get_cell
 quit

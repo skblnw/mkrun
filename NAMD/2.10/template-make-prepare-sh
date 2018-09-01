@@ -55,6 +55,7 @@ titan=false
 # Titan has a multiple version of pbs
 titan_multiple=false
 college=false
+chenglab=true
 if $combo; then
     if [[ $nnode -eq 1 ]]; then
         COMMAND="\$NAMD +p$ncpu_1"
@@ -67,13 +68,15 @@ elif $titan; then
     COMMAND="aprun -n $nnode -r 1 -N 1 -d 15 namd2 +ppn 15 +pemap 1-15 +commap 0"
 elif $college; then
     COMMAND="mpirun -n \$NP \$NAMD"
+elif $chenglab; then
+    COMMAND="\$NAMD +p$ncpu"
 else
     echo "Specify on which machine you are gonna run!"
     exit 0
 fi
 
 
-membrane_exist=true
+membrane_exist=false
 # MD Steps Choosing
 # true to turn on
 mini=false
@@ -90,7 +93,7 @@ us2=false
 # Check existence of a file
 check_exist () {
     if [ ! -s "$1" ]; then
-        echo "$1 does not exist! Be careful!"
+        echo "$1 DOES NOT EXIST! Be careful!"
         exit 1
     fi
 }
@@ -312,7 +315,7 @@ fi
 
 if $npt2; then
     check_exist template-namd
-    for ii in {2..5}
+    for ii in {2..3}
     do
         jobname=npt$ii
         make_pbs $jobname

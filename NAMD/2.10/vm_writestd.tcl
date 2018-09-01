@@ -5,7 +5,7 @@
 ## USAGE: vmd -dispdev text -e writepdb.tcl
 #################################
 
-mol new ../ionized.pdb type pdb waitfor all
+mol new ionized.pdb type pdb waitfor all
 set all [atomselect top "all"]
 
 $all set beta 0
