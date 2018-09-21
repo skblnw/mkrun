@@ -1,0 +1,10 @@
+#!/bin/bash
+#PBS -N NAME
+#PBS -A PAS1326
+#PBS -l walltime=04:00:00
+#PBS -l nodes=1:ppn=28
+#PBS -j oe
+
+cd $PBS_O_WORKDIR
+
+sh vina-complex.sh
