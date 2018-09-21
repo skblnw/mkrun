@@ -5,7 +5,11 @@ import argparse
 import os
 import shutil
 
+<<<<<<< HEAD
 N = 100  # the number of files in seach subfolder folder
+=======
+N = 500  # the number of files in seach subfolder folder
+>>>>>>> d7d70b49415ece8f5ef77fe7e6157055ac85eae2
 
 
 def move_files(abs_dirname):

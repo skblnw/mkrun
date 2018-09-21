@@ -32,7 +32,7 @@ fourierspacing          = 0.16           ; grid spacing for FFT
 
 ; Temperature coupling
 tcoupl                  = V-rescale
-tc_grps                 = Protein_RNA_DNA    Water_and_ions
+tc_grps                 = Protein    Water_and_ions
 tau_t                   = 0.1    0.1
 ref_t                   = 310    310
 ;

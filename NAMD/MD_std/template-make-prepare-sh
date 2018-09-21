@@ -25,16 +25,17 @@
 #  Added variable nnode and nheader
 ################################################
 # NAMD Commands (GPU):
-#   COMBO (remote-shell=ssh): \$CHARMRUN +p\$NP_2 ++ppn 15 ++scalable-start ++nodelist \$nodefile \$NAMD +setcpuaffinity +pemap 1-15 +commap 0 ++verbose
-#   COMBO (remote-shell=ib): \$CHARMRUN +p\$NP_2 ++ppn 15 ++scalable-start ++verbose ++mpiexec ++remote-shell ./mpiexec_wrapper \$NAMD +idlepoll +setcpuaffinity +pemap 1-15 +commap 0
+#   COMBO (remote-shell=ssh): \$CHARMRUN +p\${NP_2} ++ppn $ncpu_2 ++scalable-start ++verbose ++nodelist \$nodefile \$NAMD +idlepoll +setcpuaffinity +pemap 1-$ncpu_2 +commap 0
+#   COMBO (remote-shell=ib):  \$CHARMRUN +p\${NP_2} ++ppn $ncpu_2 ++scalable-start ++verbose ++mpiexec ++remote-shell ./mpiexec_wrapper \$NAMD +idlepoll +setcpuaffinity +pemap 1-$ncpu_2 +commap 0
 #   Titan: aprun -n $nnode -r 1 -N 1 -d 15 namd2 +ppn 15 +pemap 1-15 +commap 0
 #   College: mpirun -n \$NP \$NAMD
 ################################################
 # NAMD Commands (CPU):
-#   COMBO: \$CHARMRUN +p\$NP ++ppn 16 ++scalable-start ++nodelist \$nodefile \$NAMD ++verbose
+#   COMBO (remote-shell=ssh): \$CHARMRUN +p\${NP_1} ++ppn $ncpu_1 ++scalable-start ++verbose ++nodelist \$nodefile \$NAMD
+#   COMBO (remote-shell=ib):  \$CHARMRUN +p\${NP_1} ++scalable-start ++verbose ++mpiexec ++remote-shell ./mpiexec_wrapper \$NAMD
 ################################################
 # Gromacs Commands (GPU):
-#   COMBO: $MPIRUN -mca btl self,openib -np $NN -npernode 1 $GMXBIN mdrun -v -ntomp 7 -pin on -s W50k.tpr -deffnm output/gpu-1node-NNomp
+#   COMBO: $MPIRUN -mca btl self,openib -np \${NN} -npernode 1 $GMXBIN mdrun -v -ntomp 7 -pin on -s W50k.tpr -deffnm output/gpu-1node-NNomp
 ################################################
 
 mkdir -p output
