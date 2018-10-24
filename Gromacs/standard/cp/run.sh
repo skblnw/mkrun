@@ -37,13 +37,13 @@ fi
 
 if $md1; then
     prefix1=step4_eq_npt
-    prefix2=step5_md
+    prefix2=step5_md-1
     gmx grompp -f $prefix2.mdp -o $prefix2.tpr -c output/$prefix1.gro -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
     gmx_cuda mdrun -ntomp 8 -v -s $prefix2.tpr -deffnm output/$prefix2
 fi
 
 if $md2; then
-    prefix1=step5_md
+    prefix1=step5_md-1
     prefix2=step5_md-2
     gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
     gmx mdrun -ntomp 8 -v -s $prefix2.tpr -cpi output/$prefix1.cpt -deffnm output/$prefix2
