@@ -1,11 +1,11 @@
 #!/bin/bash
 
 mkdir -p output
-mini1=false
-mini2=false
-heat=false
-eq_npt=false
-md1=true
+mini1=true
+mini2=true
+heat=true
+eq_npt=true
+md1=false
 md2=false
 
 if $mini1; then
@@ -45,6 +45,6 @@ fi
 if $md2; then
     prefix1=step5_md
     prefix2=step5_md-2
-    gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 1000
-    gmx mdrun -ntomp 8 -v -s $prefix2.tpr -cpi $prefix1.cpt -deffnm output/$prefix2
+    gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
+    gmx mdrun -ntomp 8 -v -s $prefix2.tpr -cpi output/$prefix1.cpt -deffnm output/$prefix2
 fi
