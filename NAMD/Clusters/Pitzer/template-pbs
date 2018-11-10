@@ -1,0 +1,12 @@
+#PBS -N Ups1-Mdm35-NN
+#PBS -l nodes=15:ppn=40
+#PBS -l walltime=24:00:00
+#PBS -S /bin/bash
+#PBS -j oe
+#PBS -A PAS1326
+module load namd
+cd $PBS_O_WORKDIR
+pbsdcp -p *.prm *.str NPT-MM.restart.xsc NPT-MM.restart.coor NPT-MM.restart.vel NPT-NN.namd ionized.pdb ionized.psf $TMPDIR
+cd $TMPDIR
+run_namd NPT-NN.namd > NPT-NN.log
+pbsdcp -p '*' $PBS_O_WORKDIR

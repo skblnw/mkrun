@@ -1,0 +1,30 @@
+#!/bin/bash
+#PBS -A bip126
+#PBS -N NAME
+#PBS -j oe
+#PBS -l walltime=02:00:00
+#PBS -l nodes=64
+#PBS -M junfan@cityu.edu.hk,cchan2242-c@my.cityu.edu.hk
+#PBS -m ae
+##PBS -r n
+##PBS -W depend=afterany:MM
+##
+#
+#./opt/modules/3.2.6.7/init/bash
+source $MODULESHOME/init/bash
+
+module swap PrgEnv-pgi PrgEnv-gnu
+module load fftw
+module load cudatoolkit
+module load craype-hugepages8M
+module load namd/2.11
+
+#NAMD_BIN=/sw/xk6/namd/2.10b/cle5.2up04_gnu4.9.0/bin/NAMD_2.10b1_CRAY-XE-ugni-smp-Titan-CUDA/namd2
+
+export MPICH_PTL_SEND_CREDITS=-1
+export MPICH_MAX_SHORT_MSG_SIZE=8000
+export MPICH_PTL_UNEX_EVENTS=80000
+export MPICH_UNEX_BUFFER_SIZE=100M
+
+cd $PBS_O_WORKDIR
+date

@@ -1,0 +1,23 @@
+# GROMACS Tutorial for Solvation Study of Spider Toxin Peptide
+# see fwspider_tutor.pdf
+#PBS -N dp-atp-pose2-NN
+#PBS -l nodes=5:ppn=40
+#PBS -l walltime=36:00:00
+#PBS -S /bin/bash
+#PBS -j oe
+#PBS -A PAS1326
+
+module load gromacs
+# PBS_O_WORKDIR refers to the directory from which the job was submitted.
+cd $PBS_O_WORKDIR
+
+prefix=step5_md
+gmx convert-tpr -s ${prefix}-MM.tpr -o ${prefix}-NN.tpr -extend 100000
+
+pbsdcp -p ${prefix}-MM.cpt ${prefix}-NN.tpr $TMPDIR
+# Use TMPDIR for best performance.
+cd $TMPDIR
+
+mpiexec gmx_mpi mdrun -v -deffnm ${prefix}-NN
+
+pbsdcp -p * $PBS_O_WORKDIR/

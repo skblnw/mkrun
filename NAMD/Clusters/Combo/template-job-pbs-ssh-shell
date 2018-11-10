@@ -1,0 +1,31 @@
+#!/bin/bash
+#PBS -N NAME
+#PBS -j oe
+#PBS -l nodes=2:ppn=16
+
+# Openmpi
+export OPENMPI_PATH=/share/apps/openmpi-1.8.6/bin
+export LD_LIBRARY_PATH=$OPENMPI_PATH/lib64:$LD_LIBRARY_PATH
+MPIRUN=$OPENMPI_PATH/mpirun
+MPIEXEC=$OPENMPI_PATH/mpiexec
+#module load openmpi/1.8.5
+
+# NAMD
+export NAMD_PATH=/share/apps/NAMD_2.11_Linux-x86_64-ib-smp-cuda
+export LD_LIBRARY_PATH=$NAMD_PATH:$LD_LIBRARY_PATH
+export NAMD=$NAMD_PATH/namd2
+export CHARMRUN=$NAMD_PATH/charmrun
+
+nodefile=/tmp/$PBS_JOBID.nodelist
+echo group main ++cpus 16 ++shell ssh > $nodefile
+nodes=$( cat $PBS_NODEFILE | awk '!seen[$0]++')
+for node in $nodes; do
+   echo host $node >> $nodefile
+done
+NP=`cat $PBS_NODEFILE | wc -l`
+NN=`cat $PBS_NODEFILE | awk '!seen[$0]++' | wc -l`
+NP_1=$(expr $NP - $NN)
+NP_2=$(($NP-$NN*2))
+
+cd $PBS_O_WORKDIR
+date
