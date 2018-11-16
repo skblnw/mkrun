@@ -7,8 +7,8 @@ do
     LAST=$(qsub pitzer.pbs)
 done
 
-if false; then
-for ii in {12..20}
+if true; then
+for ii in {3..10}
 do
     jj=$(expr $ii - 1)
     sed -e 's/MM/'$jj'/g' -e 's/NN/'$ii'/g' template-pbs > pitzer.pbs
