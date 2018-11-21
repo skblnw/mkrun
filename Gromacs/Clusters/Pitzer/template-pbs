@@ -4,6 +4,7 @@
 #PBS -S /bin/bash
 #PBS -j oe
 #PBS -A PAS1326
+trap "cd $PBS_O_WORKDIR; rsync -avh $TMPDIR/ .; exit" TERM
 
 date
 
@@ -11,11 +12,11 @@ module load gromacs
 # PBS_O_WORKDIR refers to the directory from which the job was submitted.
 cd $PBS_O_WORKDIR
 prefix=step5_md
+gmx convert-tpr -s ${prefix}-MM.tpr -o ${prefix}-NN.tpr -extend 200000
 pbsdcp -p ${prefix}-MM.cpt ${prefix}-NN.tpr $TMPDIR
 # Use TMPDIR for best performance.
 cd $TMPDIR
 
-mpiexec gmx_mpi mdrun -v -deffnm ${prefix}-NN
+mpiexec gmx_mpi mdrun -v -noappend -cpi ${prefix}-MM.cpt -deffnm ${prefix}-NN
 
 pbsdcp -p * $PBS_O_WORKDIR/
-trap "cd $PBS_O_WORKDIR; mkdir $PBS_JOBID; cp -R $TMPDIR/* $PBS_JOBID; exit" TERM

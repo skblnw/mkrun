@@ -1,10 +1,10 @@
 #!/bin/bash
-# gmx mdrun -v -deffnm md -nsteps 10000
 
-for ii in 2 8 16 32
-do
+bmk=true
 
-  sed -e 's/NN/'$ii'/g' template-pbs > bmk.pbs
-  qsub bmk.pbs
+if $bmk; then
+    gmx mdrun -ntomp 8 -v -deffnm run_md -nsteps 10000
+    mv run_md.log 150k.log
+    rm -f run_md.*
+fi
 
-done
