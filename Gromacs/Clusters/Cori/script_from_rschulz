@@ -1,0 +1,9 @@
+#!/bin/bash -l
+#SBATCH -S 4
+#SBATCH -N 32
+#SBATCH -p knl -C knl,quad,flat
+#SBATCH -t 12:00:00
+
+N=32
+
+srun  -n $[16*$N] -N $N --cpu_bind=cores -c 16 -C knl numactl -m 1 /global/homes/r/rschulz/gromacs2016/icc17u1.knl.ipo/bin/mdrun_mpi  -s Run_NPT300K.tpr -deffnm Run_NPT300K -cpi Run_NPT300K.cpt -noappend  -ntomp 4 -dlb yes -pin off -npme $[8*$N]  -maxh 11.95 &
