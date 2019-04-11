@@ -45,6 +45,6 @@ fi
 if $md2; then
     prefix1=step5_md-1
     prefix2=step5_md-2
-    gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
-    gmx mdrun -pin on -ntmpi 1 -ntomp 8 -v -s $prefix2.tpr -cpi output/$prefix1.cpt -deffnm output/$prefix2
+#    gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
+    gmx mdrun -pin on -ntmpi 1 -ntomp 8 -v -noappend -s step5_md-1.tpr -cpi output/$prefix1.cpt -deffnm output/$prefix2 -nsteps -1
 fi
