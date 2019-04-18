@@ -7,7 +7,7 @@ define = -DFLEXIBLE -DPOSRES
 integrator = steep           ; Algorithm (steep = steepest descent minimization)
 emtol      = 1000.0          ; Stop minimization when the maximum force < 10.0 kJ/mol
 emstep     = 0.01            ; Energy step size
-nsteps     = 1000            ; Maximum number of (minimization) steps to perform
+nsteps     = 5000            ; Maximum number of (minimization) steps to perform
 nstenergy  = 100             ; Write energies to disk every nstenergy steps
 
 ; Parameters describing how to find the neighbors of each atom and how to calculate the interactions
