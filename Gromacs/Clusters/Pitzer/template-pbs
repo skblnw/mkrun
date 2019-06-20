@@ -7,16 +7,16 @@
 trap "cd $PBS_O_WORKDIR; rsync -avh $TMPDIR/ .; exit" TERM
 
 date
+echo $TMPDIR
 
 module load gromacs
 # PBS_O_WORKDIR refers to the directory from which the job was submitted.
 cd $PBS_O_WORKDIR
 prefix=step5_md
 gmx convert-tpr -s ${prefix}-MM.tpr -o ${prefix}-NN.tpr -extend 200000
-pbsdcp -p ${prefix}-MM.cpt ${prefix}-NN.tpr $TMPDIR
+
 # Use TMPDIR for best performance.
+pbsdcp -p ${prefix}-MM.cpt ${prefix}-NN.tpr $TMPDIR
 cd $TMPDIR
-
 mpiexec gmx_mpi mdrun -v -noappend -cpi ${prefix}-MM.cpt -deffnm ${prefix}-NN
-
-pbsdcp -p * $PBS_O_WORKDIR/
+pbsdcp -g '*' $PBS_O_WORKDIR/
