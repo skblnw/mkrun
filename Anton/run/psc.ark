@@ -1,0 +1,133 @@
+anton.tune {
+    machine_size = [4 4 8]                     # 128-node PSC machine
+    last_time = 1200000                           # ps (multiple of trajectory.interval)
+    trajectory {
+        interval = 120                         # ps (multiple of energy.interval)
+    }
+
+    #energy {                                  # uncomment for an optional energy trajectory
+    #    format = "etr"                        #    at a finer granularity than the trajectory interval
+    #    interval = 2.4                        # ps (multiple of dt*barostat.interval)
+    #    outdir = "energy.etr"
+    #}
+
+}
+
+# initial structure taken from 10-ns regualr NPT
+anton.tune.optional.ConstraintThreshold = 0.1
+
+# restraints to avoid tumbling
+anton.chem.group_restraints {
+    interval = 18
+    groups   = [ 
+        {
+        name   = R1
+        center = mass
+        query  = "index 840"
+        }
+        {
+        name   = R2
+        center = mass
+        query  = "index 889"
+        }
+        {
+        name   = R3
+        center = mass
+        query  = "index 927"
+        }
+      ]
+    restraints = [
+        { 
+        type            = position
+        groups          = [ R1 ]
+        position        = [ 108.45 94.05 73.91 ]
+        form            = simple_harmonic
+        spring_constant = 0.6
+        equilibria      = [0]
+        }
+        { 
+        type            = position
+        groups          = [ R2 ]
+        position        = [ 105.93 97.66 71.56 ]
+        form            = simple_harmonic
+        spring_constant = 0.6
+        equilibria      = [0]
+        }
+        { 
+        type            = position
+        groups          = [ R3 ]
+        position        = [ 103.61 95.99 67.30 ]
+        form            = simple_harmonic
+        spring_constant = 0.6
+        equilibria      = [0]
+        }
+      ]
+}
+
+anton.chem {
+    average_dispersion_type = auto           # key required for semi_isotropic NPT but harmless otherwise
+}
+
+integrator {
+    Multigrator {
+        barostat {
+            MTK {
+                T_ref = "310.00"
+                tau = "0.0416667"
+                thermostat {
+                    NoseHoover {
+                        chain {
+                            mts = "4"
+                            tau = ["0.0416667" "0.0416667" "0.0416667"]
+                        }
+                    }
+                    type = "NoseHoover"
+                }
+            }
+            interval = "480"                           # barostat interval in timesteps (multiple of thermostat.interval)
+            type = "MTK"                               # Change to "None" for NVT
+        }
+        thermostat {
+            NoseHoover {
+                chains = [{
+                    mts = "1"
+                    tau = [".0416667" ".0416667" ".0416667"]
+                }]
+                use_molecular_ke = "true"
+            }
+            interval = "24"                            # thermostat interval in timestep (multiple of respa.nonbonded_far_interval)
+            type = NoseHoover
+        }
+    }
+
+    dt = "0.0025"                                      # ps
+
+    pressure {
+        isotropy = "isotropic"                         #  Change to "semi_isotropic" for a membrane
+        p_ref = "1.0"
+        tension_ref = ["0." "0." "0." "0." "0." "0." "0." "0." "0."]
+    }
+
+    remove_com_motion = "true"
+
+    respa {
+        bonded_interval = "1"
+        nonbonded_far_interval = "3"                   # respa interval in timesteps
+        nonbonded_near_interval = "1"
+    }
+
+    temperature = [{
+        T_ref = "310.00"                               # thermostat temperature in K
+    }]
+
+    type = "Multigrator"                               # Change to "V_NVE" for NVE
+}
+
+# n.b.: use v2mdsim -showparams <substring> for documentation on parameters, e.g.:
+#
+# garden with -m v2software/$V2SOFTWARE_VERSION/bin v2mdsim -showparams barostat.MTK.T_ref #
+# name                                       type   default
+# ----                                       ----   -------
+#
+# integrator.Multigrator.barostat.MTK.T_ref  float  298.15
+#    The reference temperature for the barostat piston's bath. Ordinarily this should match the system reference temperature.
