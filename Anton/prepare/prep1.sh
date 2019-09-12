@@ -1,4 +1,3 @@
-#/bin/bash
 prefix=md
 module load gromacs/2016.1
 source  /usr/local/packages/gromacs/2016.1/bin/GMXRC.bash

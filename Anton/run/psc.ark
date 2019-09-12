@@ -42,7 +42,7 @@ anton.chem.group_restraints {
         groups          = [ R1 ]
         position        = [ 108.45 94.05 73.91 ]
         form            = simple_harmonic
-        spring_constant = 0.6
+        spring_constant = 1.2
         equilibria      = [0]
         }
         { 
@@ -50,7 +50,7 @@ anton.chem.group_restraints {
         groups          = [ R2 ]
         position        = [ 105.93 97.66 71.56 ]
         form            = simple_harmonic
-        spring_constant = 0.6
+        spring_constant = 1.2
         equilibria      = [0]
         }
         { 
@@ -58,7 +58,7 @@ anton.chem.group_restraints {
         groups          = [ R3 ]
         position        = [ 103.61 95.99 67.30 ]
         form            = simple_harmonic
-        spring_constant = 0.6
+        spring_constant = 1.2
         equilibria      = [0]
         }
       ]
