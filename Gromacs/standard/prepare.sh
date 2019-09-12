@@ -5,5 +5,6 @@ gmx editconf -f conf.gro -o editconf.pdb -d 2 -c -princ
 gmx solvate -cp editconf.pdb -o solvate.gro -p topol.top
 # Add ions to make it neutral and of 0.15 M NaCl
 # If you want KCl, add -pname K
+rm -f ions.tpr
 gmx grompp -f ions.mdp -c solvate.gro -o ions.tpr -p topol.top -maxwarn 1
 gmx genion -s ions.tpr -o ionized.pdb -conc 0.15 -neutral -p topol.top
