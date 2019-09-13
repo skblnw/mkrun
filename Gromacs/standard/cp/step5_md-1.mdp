@@ -1,5 +1,6 @@
 ; LINES STARTING WITH ';' ARE COMMENTS
 title                   = Protein-ligand complex MD simulation
+;define                  = -DPOSRES_NOMOVE
 ; Run parameters
 integrator              = md       ; leap-frog integrator
 dt                      = 0.002    ; 2 fs
