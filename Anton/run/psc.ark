@@ -15,6 +15,7 @@ anton.tune {
 
 # initial structure taken from 10-ns regualr NPT
 anton.tune.optional.ConstraintThreshold = 0.1
+anton.chem.angle.permitFloppyAngles = true
 
 # restraints to avoid tumbling
 anton.chem.group_restraints {
