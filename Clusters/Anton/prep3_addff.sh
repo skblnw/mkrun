@@ -12,3 +12,4 @@ prefix=md
 
 garden with -m viparr/4.7.12c7/bin -m viparr-ffpublic/1.0.3c7/data -- viparr -f aa.amber.ff14SB -f na.amber.OL15 -f na.amber.OL3 -f water.tip3p -f ions.amber1234lm_anton.tip3p ${prefix}_out.dms out.dms
 #garden with -m viparr/4.7.12c7/bin -m viparr-ffpublic/1.0.3c7/data -- viparr -f aa.amber.ff99SB-ILDN -f water.tip3p ${prefix}_out.dms out.dms
+#garden with -m viparr/4.7.12c7/bin -m viparr-ffpublic/1.0.3c7/data -- viparr -f aa.charmm.c36m -f lipid.charmm.c36 -f water.tip3p -f ions.charmm36 ${prefix}_out.dms out.dms

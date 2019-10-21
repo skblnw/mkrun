@@ -1,6 +1,6 @@
 anton.tune {
     machine_size = [4 4 8]                     # 128-node PSC machine
-    last_time = 1200000                           # ps (multiple of trajectory.interval)
+    last_time = 600000                           # ps (multiple of trajectory.interval)
     trajectory {
         interval = 120                         # ps (multiple of energy.interval)
     }
@@ -24,24 +24,19 @@ anton.chem.group_restraints {
         {
         name   = R1
         center = mass
-        query  = "index 840"
+        query  = "index 16948"
         }
         {
         name   = R2
         center = mass
-        query  = "index 889"
-        }
-        {
-        name   = R3
-        center = mass
-        query  = "index 927"
+        query  = "index 17495"
         }
       ]
     restraints = [
         { 
         type            = position
         groups          = [ R1 ]
-        position        = [ 108.45 94.05 73.91 ]
+        position        = [ 89.24 69.99 67.48 ]
         form            = simple_harmonic
         spring_constant = 1.2
         equilibria      = [0]
@@ -49,15 +44,7 @@ anton.chem.group_restraints {
         { 
         type            = position
         groups          = [ R2 ]
-        position        = [ 105.93 97.66 71.56 ]
-        form            = simple_harmonic
-        spring_constant = 1.2
-        equilibria      = [0]
-        }
-        { 
-        type            = position
-        groups          = [ R3 ]
-        position        = [ 103.61 95.99 67.30 ]
+        position        = [ 70.74 88.44 64.01 ]
         form            = simple_harmonic
         spring_constant = 1.2
         equilibria      = [0]

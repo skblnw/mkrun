@@ -1,0 +1,9 @@
+package require pbctools
+mol new out.dms
+animate delete all
+mol addfile run.stk first FIRST last LAST waitfor all
+#pbc unwrap -all
+
+animate write trr NN.trr
+
+quit

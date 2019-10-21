@@ -1,0 +1,8 @@
+#/bin/bash -u -e -x -o pipefail
+
+JOBNAME=PREFIX
+
+WD=/anton2fs/raw/$USER/$JOBNAME/workdir.NN
+
+ASW=v2software/1.40.0c7/bin
+anton2 submit $WD --send-email=always 
