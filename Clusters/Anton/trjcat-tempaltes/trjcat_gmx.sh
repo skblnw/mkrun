@@ -1,10 +1,11 @@
 #!/bin/bash
 
-TOTAL=100000       # Total number of frames
+TOTAL=20000       # Total number of frames
+STEPP=5000
 
 nn=0
 rm -f tmpfile
-for ii in $(seq 0 10000 $TOTAL)
+for ii in $(seq 0 $STEPP $TOTAL)
 do
     beg=$(( $ii - 10000 ))
     end=$(( $ii - 1     ))
@@ -22,14 +23,14 @@ EOF
         vmd -dispdev text -e tmpfile
         rm -f tmpfile
     else
-        echo -e "Total number of frame set to $TOTAL. Expect to have $(($TOTAL / 10000)) trajectories"
+        echo -e "Total number of frame set to $TOTAL. Expect to have $(($TOTAL / $STEPP)) trajectories"
     fi 
     nn=$(($nn + 1))
 done
 
 input=""
 comma=""
-for ii in $(seq 1 $(($TOTAL / 10000))); do
+for ii in $(seq 1 $(($TOTAL / $STEPP))); do
     input="$input $ii.trr"
     comma=$comma$'c\n'
 done
