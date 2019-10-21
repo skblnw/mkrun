@@ -26,3 +26,14 @@ EOF
     fi 
     nn=$(($nn + 1))
 done
+
+input=""
+comma=""
+for ii in $(seq 1 $(($TOTAL / 10000))); do
+    input="$input $ii.trr"
+    comma=$comma$'c\n'
+done
+gmx trjcat -f $input -o out.xtc -settime << EOF
+0
+$comma
+EOF
