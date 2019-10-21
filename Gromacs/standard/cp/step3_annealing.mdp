@@ -6,12 +6,12 @@ integrator              = md       ; leap-frog integrator
 dt                      = 0.001    ; 1 fs
 nsteps                  = 500000   ; 1 * 500000 = 500 ps
 ; Output control
-nstlog                  = 1000     ; update log file every 1.0 ps
-nstxout                 = 1000     ; save coordinates every 1.0 ps
-nstvout                 = 1000     ; save velocities every 1.0 ps
-nstfout                 = 1000     ; save forces every 1.0 ps
+nstlog                  = 2000     ; update log file every 1.0 ps
+nstxout                 = 2000     ; save coordinates every 1.0 ps
+nstvout                 = 2000     ; save velocities every 1.0 ps
+nstfout                 = 2000     ; save forces every 1.0 ps
+nstenergy               = 2000     ; save energies every 1.0 ps
 nstcalcenergy           = 100
-nstenergy               = 1000     ; save energies every 1.0 ps
 ; Bond parameters
 continuation            = no
 constraint_algorithm    = lincs       ; holonomic constraints
