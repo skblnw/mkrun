@@ -1,3 +1,4 @@
+rm -f editconf.pdb solvate.gro ions.tpr ionized.pdb
 # Create a cubic box of 2 nm on each side and place the system to the center and align its principle axes to the reference axes
 # -princ usually helps to reduce your system size
 gmx editconf -f conf.gro -o editconf.pdb -d 2 -princ

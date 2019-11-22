@@ -1,16 +1,18 @@
 #!/bin/bash
 
-TOTAL=20000       # Total number of frames
-STEPP=5000
+TOTAL=10000       # Total number of frames
+STEPP=1000        # Number of frames for each trajectory fragment
+TSTEP=120         # Timestep in ps
 
 nn=0
 rm -f tmpfile
 for ii in $(seq 0 $STEPP $TOTAL)
 do
-    beg=$(( $ii - 10000 ))
+    beg=$(( $ii - $STEPP ))
     end=$(( $ii - 1     ))
     if [[ $nn -ne 0 ]]
     then
+        echo $nn $beg $end
         cat >> tmpfile << EOF
 package require pbctools
 mol new out.dms
@@ -29,12 +31,8 @@ EOF
 done
 
 input=""
-comma=""
 for ii in $(seq 1 $(($TOTAL / $STEPP))); do
     input="$input $ii.trr"
-    comma=$comma$'c\n'
 done
-gmx trjcat -f $input -o out.xtc -settime << EOF
-0
-$comma
-EOF
+gmx trjcat -f $input -o out.xtc -cat
+gmx trjconv -f out.xtc -o pf${TSTEP}ps.xtc -timestep $TSTEP
