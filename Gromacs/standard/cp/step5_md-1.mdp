@@ -15,7 +15,7 @@ nstxout-compressed      = 1000     ; write .xtc trajectory every 2.0 ps
 
 ; Bond parameters
 constraint_algorithm    = lincs       ; holonomic constraints
-constraints             = all-bonds   ; all bonds (even heavy atom-H bonds) constrained
+constraints             = all-bonds   ; all bonds (even heavy atom-H bonds) constrained, h-bonds?
 lincs_iter              = 1           ; accuracy of LINCS
 lincs_order             = 4           ; also related to accuracy
 ; Neighborsearching

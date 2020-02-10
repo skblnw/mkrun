@@ -1,0 +1,9 @@
+source leaprc.protein.ff14SB
+source leaprc.RNA.OL3
+source leaprc.DNA.OL15
+source leaprc.water.tip3p
+
+mol = loadpdb mol.pdb
+solvatebox mol TIP3PBOX 10
+addions mol K+ 154 Cl- 91
+saveamberparm mol ionized.parm7 ionized.rst7
