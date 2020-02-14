@@ -6,7 +6,7 @@ do
     echo $jj $ii 
     mkdir -p $ii 
     cp ../pulling/$jj.pdb $ii/mol.pdb
-    cp fix.tcl *.in COM_dist.RST $ii
+    cp fix.tcl COM_dist.RST $ii
     cd $ii; vmd -dispdev text -e fix.tcl; sed -i "s/DISTHERE/${ii}/g" COM_dist.RST; tleap -f ../build.leap; cd ..
 
     jj=$((jj+1))
