@@ -1,0 +1,16 @@
+#PBS -A PAA0030
+#PBS -N SP_cluster1_0
+#PBS -j oe
+#PBS -l walltime=100:00:00
+#PBS -l nodes=1:ppn=1
+#PBS -S /bin/sh
+qstat -f $PBS_JOBID
+module load schrodinger
+cd $PBS_O_WORKDIR
+cp SP_cluster1_0.in $TMPDIR
+cd $TMPDIR
+host=`cat $PBS_NODEFILE|head -1`
+nproc=`cat $PBS_NODEFILE|wc -l`
+glide -WAIT -HOST ${host}:${nproc} SP_cluster1_0.in
+ls -l
+pbsdcp -p '*' $PBS_O_WORKDIR

@@ -1,0 +1,6 @@
+GRIDFILE /users/PAS1146/osu0316/full_nci_database/cluster1/cluster1.zip
+DOCKING_METHOD confgen
+PRECISION SP
+LIGANDFILE /users/PAS1146/osu0316/full_nci_database/cluster1/SP/ligprep_cluster1_0-out.maegz
+OUTPUTDIR /users/PAS1146/osu0316/full_nci_database/cluster1/SP/
+WRITEREPT True

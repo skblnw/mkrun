@@ -1,12 +1,13 @@
 #!/bin/bash
 
 jj=0
-for ii in 44.0 42.5 41.0 39.5
+for ii in 50.0 48.5 47.0 45.5
 do
     export CUDA_VISIBLE_DEVICES=$jj
 
-    cp *.in $ii
+    cp *.in COM_dist.RST $ii
     cd $ii
+    sed -i "s/DISTHERE/${ii}/g" COM_dist.RST
     bash ../run.sh &
     cd ..
 
