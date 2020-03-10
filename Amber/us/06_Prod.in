@@ -1,8 +1,8 @@
- prod 5ns LIPID 303K
+ prod 10ns 303K
  &cntrl
    imin=0, ntx=5, irest=1, 
    ntc=2, ntf=2, tol=0.0000001,
-   nstlim=50000000, ntt=3, gamma_ln=1.0,
+   nstlim=5000000, ntt=3, gamma_ln=1.0,
    temp0=303.0,
    ntpr=1000, ntwr=500000, ntwx=1000,
    dt=0.002, ig=-1,
