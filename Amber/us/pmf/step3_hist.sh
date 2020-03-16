@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for ii in $(seq 32.0 1.5 60.5)
+for ii in $(seq 32.0 1.5 54.5)
 do
 
 echo "Creating histogram for window $ii"
