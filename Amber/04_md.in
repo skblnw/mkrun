@@ -22,5 +22,15 @@ npt 300K
     ntc=2,
     ntf=2, 
     ntb=2, 
-    cut=10.0
+    cut=10.0,
+
+    ntr=1,
  /
+Fix CA
+1
+FIND
+CA * * *
+SEARCH
+RES 1 1300
+END
+END
