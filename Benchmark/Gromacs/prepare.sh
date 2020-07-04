@@ -11,6 +11,6 @@ EOF
 
 gmx grompp -f mini.mdp -o run_mini.tpr -c solvate.pdb -p topol.top
 gmx mdrun -v -deffnm run_mini
-gmx grompp -f md.mdp -o run_md.tpr -c mini.gro -p topol.top
+gmx grompp -f md.mdp -o run_md.tpr -c run_mini.gro -p topol.top
 
 rm -f conf.gro topol.top run_mini.*
