@@ -8,6 +8,9 @@ It prepares a water box (estimate your own atom numbers) and mininmizes automati
 run.sh:
 It runs an MD from inputs produced by "prepare.sh" also using Gromacs
 
+grep.sh:
+It greps the benchmark numbers from multiple logs so you can plot it
+
 > Estimate your own atom numbers
 "-box 10 10 10 -maxsol 32000" serves as a standard box of 32000 waters, therefore 32000x3=96000 atoms
 To increase the number of atoms, also increase the box a little bit. Remember a 10% increase in length leads to ~30% in volume as 1.1^3=1.331
