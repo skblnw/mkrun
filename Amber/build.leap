@@ -1,6 +1,6 @@
 source leaprc.protein.ff14SB
 source leaprc.RNA.OL3
-source leaprc.DNA.OL15
+source leaprc.DNA.bsc1
 source leaprc.water.tip3p
 
 mol = loadpdb mol.pdb
