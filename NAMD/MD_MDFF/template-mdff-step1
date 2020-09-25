@@ -1,0 +1,57 @@
+###  Docking -- Step 1
+ 
+set PSFFILE ionized.psf
+set PDBFILE ionized.pdb
+set GRIDPDB ionized-grid.pdb
+set GBISON 0
+set DIEL 1
+set SCALING_1_4 1.0
+set ITEMP 300
+set FTEMP 300
+set GRIDFILE 6tetramer-grid.dx
+set GSCALE 0.1
+set EXTRAB {ionized-extrabonds.txt ionized-extrabonds-cispeptide.txt ionized-extrabonds-chirality.txt}
+set CONSPDB 0
+set FIXPDB  0
+ 
+set INPUTNAME 0
+set OUTPUTNAME 6tetramer-step1
+ 
+set TS 100000
+set MS 200
+ 
+set MARGIN 0
+ 
+####################################
+ 
+structure $PSFFILE
+coordinates $PDBFILE
+ 
+paraTypeCharmm on
+parameters par_all27_prot_lipid_na.inp
+
+if {[info exists INPUTNAME]} {
+  BinVelocities $INPUTNAME.restart.vel
+  BinCoordinates $INPUTNAME.restart.coor
+  ExtendedSystem $INPUTNAME.restart.xsc
+} else {
+  temperature $ITEMP
+  cellBasisVector1 416.93798828125 0 0
+  cellBasisVector2 0 239.61400604248047 0
+  cellBasisVector3 0 0 224.17000579833984
+  cellOrigin 74.21477508544922 217.7665252685547 -20.883047103881836
+}
+PME yes
+PMEGridSpacing 1.0
+PMEPencils 1
+wrapAll on
+
+symmetryRestraints on	 
+symmetryfile symmetry.pdb	 
+symmetryk 200	 
+symmetryMatrixFile symmetry.txt	 
+symmetryfirststep 2001	 
+symmetryfirstfullstep 502000
+ 
+ 
+source mdff_template.namd
