@@ -1,3 +1,5 @@
+#!/bin/bash
+
 rm -f editconf.pdb solvate.gro ions.tpr ionized.pdb
 
 cat > ions.mdp << EOF

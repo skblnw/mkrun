@@ -4,14 +4,14 @@ title                   = Protein-ligand complex MD simulation
 ; Run parameters
 integrator              = md       ; leap-frog integrator
 dt                      = 0.002    ; 2 fs
-nsteps                  = 5000000  ; 2 * 500000 = 1 ns
+nsteps                  = 5000000  ; 10 ns
 ; Output control
 nstlog                  = 1000     ; update log file every 2.0 ps
 nstxout                 = 0        ; suppress .trr output 
 nstvout                 = 0        ; suppress .trr output
 nstfout                 = 0        ; suppress .trr output
 nstenergy               = 1000     ; save energies every 2.0 ps
-nstxout-compressed      = 1000     ; write .xtc trajectory every 2.0 ps
+nstxout-compressed      = 5000     ; write 1000 frames xtc trajectory 
 
 ; Bond parameters
 constraint_algorithm    = lincs       ; holonomic constraints
