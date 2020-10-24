@@ -8,8 +8,8 @@ eq_npt=true
 md1=false
 md2=false
 
-[ ! -d pdb2gmx ] && echo -e "mkgmx> Directory pdb2gmx not found!"; exit 1 
-[ ! -f pdb2gmx/index.ndx ] && echo -e "mkgmx> Index file not found!"; exit 1 
+[ ! -d pdb2gmx ] && echo -e "mkgmx> Directory pdb2gmx not found!" && exit 1 
+[ ! -f pdb2gmx/index.ndx ] && echo -e "mkgmx> Index file not found!" && exit 1 
 
 if $mini; then
     prefix=step1_mini
