@@ -26,4 +26,6 @@ gmx solvate -cp editconf.pdb -o solvate.gro -p topol.top
 gmx grompp -f ions.mdp -c solvate.gro -o ions.tpr -p topol.top -maxwarn 1
 gmx genion -s ions.tpr -o ionized.pdb -conc 0.15 -neutral -p topol.top
 
+gmx make_ndx -f ionized.pdb
+
 rm -f \#* editconf.pdb solvate.gro ions.mdp ions.tpr mdout.mdp
