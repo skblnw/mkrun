@@ -35,7 +35,7 @@ DispCorr                = EnerPres  ; account for cut-off vdW scheme
 
 ; Temperature coupling
 tcoupl                  = V-rescale
-tc_grps                 = Protein    Water_and_ions
+tc_grps                 = non-Water Water
 tau_t                   = 0.1    0.1
 ref_t                   = 310    310
 
