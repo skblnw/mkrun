@@ -1,0 +1,16 @@
+#PBS -A PAA0203
+#PBS -N SDGR_ligprep
+#PBS -j oe
+#PBS -m ae
+#PBS -M chan.773@osu.edu
+#PBS -l walltime=1:00:00
+#PBS -l mem=4315MB
+#PBS -S /bin/sh
+qstat -f $PBS_JOBID
+module load schrodinger
+echo "Success loading schrodinger"
+cd $PBS_O_WORKDIR
+host=`cat $PBS_NODEFILE|head -1`
+nproc=`cat $PBS_NODEFILE|wc -l`
+$SCHRODINGER/ligprep -WAIT -HOST ${host}:${nproc} -isd lig.sdf -omae lig.maegz -bff 14 -i 2 -W i,-ph,7.0,-pht,0.0 -ac -s 10
+date
