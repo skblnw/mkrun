@@ -1,0 +1,28 @@
+#PBS -A PAA0203
+#PBS -N SDGR-dock
+#PBS -j oe
+#PBS -m ae
+#PBS -M chan.773@osu.edu
+#PBS -l walltime=1:00:00
+#PBS -l mem=4315MB
+#PBS -l software=glide+1
+#PBS -S /bin/sh
+
+qstat -f $PBS_JOBID
+module load schrodinger
+echo "Success loading schrodinger"
+cd $PBS_O_WORKDIR
+echo -e "Working in $(pwd)"
+host=`cat $PBS_NODEFILE|head -1`
+nproc=`cat $PBS_NODEFILE|wc -l`
+$SCHRODINGER/glide -WAIT -HOST ${host}:${nproc} docking.in
+date
+
+tmp=$(date +%Y%m%d%H%M%S)
+mkdir -p $tmp
+cd $tmp
+$SCHRODINGER/run split_structure.py ../docking_pv.maegz out.pdb -m pdb -many_files
+for ii in out_ligand*.pdb; do
+  prefix=$(basename $ii .pdb)
+  $SCHRODINGER/utilities/structconvert -ipdb $ii -omol $prefix.mol2
+done
