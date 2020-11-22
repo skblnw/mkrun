@@ -1,9 +1,9 @@
 #!/bin/bash
 
-for ii in $(seq 1 3); do
+for ii in $(seq 1 1); do
     prefix1=step4_eq_npt
     prefix2=t${ii}-1
     rm -f $prefix2.tpr
     gmx grompp -f step5_md-1.mdp -o output/$prefix2.tpr -c output/$prefix1.gro -r pdb2gmx/ionized.pdb -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
-    gmx mdrun -ntmpi 1 -ntomp 4 -v -deffnm output/$prefix2 &
+    gmx mdrun -ntmpi 1 -ntomp 8 -v -deffnm output/$prefix2 
 done
