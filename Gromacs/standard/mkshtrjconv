@@ -1,0 +1,10 @@
+#!/bin/bash
+
+gmx editconf -f pdb2gmx/ionized.pdb -n pdb2gmx/index.ndx -o stripped.pdb
+for ii in $(seq 1 1); do
+  echo 0 | gmx trjconv -f output/t$ii-1.xtc -s output/t$ii-1.tpr -n pdb2gmx/index.ndx -pbc nojump -o unwrap.xtc 
+  echo 0 | gmx trjconv -f output/t$ii-1.cpt -s output/t$ii-1.tpr -n pdb2gmx/index.ndx -pbc nojump -o $ii.restart.pdb
+  gmx trjconv -f unwrap.xtc -s output/t$ii-1.tpr -n pdb2gmx/index.ndx -fit rot+trans -o $ii.xtc -dt 1000
+  gmx convert-tpr -s output/t$ii-1.tpr -n pdb2gmx/index.ndx -o $ii.tpr
+done
+rm -f \#* unwrap.xtc
