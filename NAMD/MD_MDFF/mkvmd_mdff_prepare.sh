@@ -5,9 +5,9 @@
 # 2. prot_charmmgui.pdb
 # 3. map.mrc
 
-alias vmd='rlwrap /Applications/VMD\ 1.9.4a38.app/Contents/MacOs/startup.command'
+source ~/.zshrc
 
-PREFIX=ysingle
+PREFIX=
 PSF=${PREFIX}_charmmgui.psf
 PDB=${PREFIX}_charmmgui.pdb
 MAP=${PREFIX}.mrc

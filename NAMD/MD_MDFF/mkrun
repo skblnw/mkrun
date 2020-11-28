@@ -1,0 +1,10 @@
+#!/bin/bash
+
+PREFIX=ref28
+
+for ii in 1 5 9; do
+  cd ${PREFIX}_gs$ii
+  namd2 +p12 mdff-step1.namd > LOG 
+  cd ..
+done
+

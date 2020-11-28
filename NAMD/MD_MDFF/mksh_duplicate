@@ -1,0 +1,9 @@
+#!/bin/bash
+
+PREFIX=nup205
+for ii in 5 9; do 
+  rsync -avh ${PREFIX}_gs1/ ${PREFIX}_gs$ii
+  cd ${PREFIX}_gs$ii
+  sed -i 's/^set GSCALE 0.1/set GSCALE 0.'$ii'/g' mdff-step1.namd
+  cd ..
+done

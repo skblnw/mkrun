@@ -1,0 +1,41 @@
+###  Docking -- Step 1
+ 
+set PSFFILE _charmmgui.psf
+set PDBFILE _charmmgui.pdb
+set GRIDPDB _grid.pdb
+set GBISON 0
+set DIEL 80
+set SCALING_1_4 1.0
+set ITEMP 300
+set FTEMP 300
+set GRIDFILE _grid.dx
+set GSCALE 0.1
+set EXTRAB {_ssrestraints.txt _cispeptide.txt _chirality.txt}
+set CONSPDB 0
+set FIXPDB  0
+set GRIDON 1
+ 
+set OUTPUTNAME mdff-step1
+ 
+set TS 10000
+set MS 200
+ 
+set MARGIN 0
+ 
+####################################
+ 
+structure $PSFFILE
+coordinates $PDBFILE
+ 
+paraTypeCharmm on
+parameters par_all36_prot.prm
+
+if {[info exists INPUTNAME]} {
+  BinVelocities $INPUTNAME.restart.vel
+  BinCoordinates $INPUTNAME.restart.coor
+} else {
+  temperature $ITEMP
+}
+ 
+ 
+source mdff_template.namd
