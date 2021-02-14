@@ -1,14 +1,17 @@
 #!/bin/bash
+GMX="gmx"
+MDRUN="gmx mdrun"
+#MDRUN="gmx mdrun -ntmpi 1 -ntomp 12"
 
 for ii in $(seq 1 1); do
     prefix1=step4_eq_npt
     prefix2=t${ii}-1
     rm -f $prefix2.tpr
-    gmx grompp -f step5_md-1.mdp -o output/$prefix2.tpr -c output/$prefix1.gro -r pdb2gmx/ionized.pdb -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
+    $GMX grompp -f step5_md.mdp -o output/$prefix2.tpr -c output/$prefix1.gro -r pdb2gmx/ionized.pdb -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
     
-    gmx mdrun -ntmpi 1 -ntomp 8 -v -deffnm output/$prefix2 
+    $MDRUN -v -deffnm output/$prefix2 
 
 #    jj=$(expr $ii - 1)
 #    export CUDA_VISIBLE_DEVICES=$jj
-#    gmx mdrun -ntmpi 1 -ntomp 8 -v -deffnm output/$prefix2 > LOG$jj 2>&1 &
+#    $MDRUN -v -deffnm output/$prefix2 > LOG$jj 2>&1 &
 done

@@ -1,4 +1,7 @@
 #!/bin/bash
+GMX="gmx"
+MDRUN="gmx mdrun"
+#MDRUN="gmx mdrun -ntmpi 1 -ntomp 12"
 
 mkdir -p output
 mini=true
@@ -9,50 +12,59 @@ md1=false
 md2=false
 
 [ ! -d pdb2gmx ] && echo -e "mkgmx> Directory pdb2gmx not found!" && exit 1 
-[ ! -f pdb2gmx/index.ndx ] && echo -e "mkgmx> Index file not found!" && exit 1 
+[ ! -f $NDX ] && echo -e "mkgmx> Index file not found!" && exit 1 
+
+INITIAL_PDB=./$INITIAL_PDB
+NDX=./$NDX
+TOP=./$TOP
 
 if $mini; then
     prefix=step1_mini
-    rm -f $prefix.tpr
-    gmx grompp -f $prefix.mdp -o output/$prefix.tpr -c pdb2gmx/ionized.pdb -r pdb2gmx/ionized.pdb -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
-    gmx mdrun -ntmpi 1 -ntomp 12 -v -deffnm output/$prefix
+    TPR=./output/$prefix.tpr
+    rm -f $TPR
+    $GMX grompp -f $prefix.mdp -o $TPR -c $INITIAL_PDB -r $INITIAL_PDB -n $NDX -p $TOP
+    $MDRUN -v -deffnm output/$prefix
 fi
     
 if $double; then
     prefix1=step1_mini
     prefix2=step1_mini_double
-    rm -f $prefix2.tpr
-    gmx_d grompp -f $prefix2.mdp -o output/$prefix2.tpr -c output/$prefix1.gro -r pdb2gmx/ionized.pdb -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
+    TPR=./output/$prefix2.tpr
+    rm -f $TPR
+    gmx_d grompp -f $prefix2.mdp -o $TPR -c output/$prefix1.gro -r $INITIAL_PDB -n $NDX -p $TOP
     gmx_d mdrun -ntmpi 1 -ntomp 12 -v -deffnm output/$prefix2
 fi
 
 if $heat; then
     prefix1=step1_mini
     prefix2=step3_annealing
-    rm -f $prefix2.tpr
-    gmx grompp -f $prefix2.mdp -o output/$prefix2.tpr -c output/$prefix1.gro -r pdb2gmx/ionized.pdb -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
-    gmx mdrun -ntmpi 1 -ntomp 12 -v -deffnm output/$prefix2
+    TPR=./output/$prefix2.tpr
+    rm -f $TPR
+    $GMX grompp -f $prefix2.mdp -o $TPR -c output/$prefix1.gro -r $INITIAL_PDB -n $NDX -p $TOP
+    $MDRUN -v -deffnm output/$prefix2
 fi
 
 if $eq_npt; then
     prefix1=step3_annealing
     prefix2=step4_eq_npt
-    rm -f $prefix2.tpr
-    gmx grompp -f $prefix2.mdp -o output/$prefix2.tpr -c output/$prefix1.gro -r pdb2gmx/ionized.pdb -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
-    gmx mdrun -ntmpi 1 -ntomp 12 -v -deffnm output/$prefix2
+    TPR=./output/$prefix2.tpr
+    rm -f $TPR
+    $GMX grompp -f $prefix2.mdp -o $TPR -c output/$prefix1.gro -r $INITIAL_PDB -n $NDX -p $TOP
+    $MDRUN -v -deffnm output/$prefix2
 fi
 
 if $md1; then
     prefix1=step4_eq_npt
-    prefix2=step5_md-1
-    rm -f $prefix2.tpr
-    gmx grompp -f $prefix2.mdp -o output/$prefix2.tpr -c output/$prefix1.gro -r pdb2gmx/ionized.pdb -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
-    gmx mdrun -ntmpi 1 -ntomp 12 -v -deffnm output/$prefix2
+    prefix2=step5_md
+    TPR=./output/$prefix2.tpr
+    rm -f $TPR
+    $GMX grompp -f $prefix2.mdp -o $TPR -c output/$prefix1.gro -r $INITIAL_PDB -n $NDX -p $TOP
+    $MDRUN -v -deffnm output/$prefix2
 fi
 
 if $md2; then
-    prefix1=step5_md-1
+    prefix1=step5_md
     prefix2=step5_md-2
 #    gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
-    gmx mdrun -ntmpi 1 -ntomp 12 -v -noappend -s output/step5_md-1.tpr -cpi output/$prefix1.cpt -deffnm output/$prefix2 -nsteps -1
+    $MDRUN -v -noappend -s output/step5_md.tpr -cpi output/$prefix1.cpt -deffnm output/$prefix2 -nsteps -1
 fi
