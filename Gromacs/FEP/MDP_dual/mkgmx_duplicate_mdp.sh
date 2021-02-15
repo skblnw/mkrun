@@ -10,7 +10,7 @@ TEMPLATE="$1"
 prefix=$(basename $TEMPLATE .mdp)
 echo "mkgmx> The prefix is $prefix"
 
-for ii in $(seq 0 29)
+for ii in $(seq 0 11)
 do
     echo "mkgmx> Initial Lambda State $ii"
 
