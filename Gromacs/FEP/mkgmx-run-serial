@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# Set some environment variables 
+FREE_ENERGY=`pwd`
+echo "Free energy home directory set to $FREE_ENERGY"
+MDP=$FREE_ENERGY/MDP
+echo ".mdp files are stored in $MDP"
+
+# Change to the location of your GROMACS-2018 installation
+GMX="gmx"
+MDRUN="gmx mdrun"
+
+for (( i=0; i<21; i++ ))
+do
+    LAMBDA=$i
+
+    mkdir Lambda_$LAMBDA
+    cd Lambda_$LAMBDA
+
+    ##############################
+    # ENERGY MINIMIZATION STEEP  #
+    ##############################
+    echo "Starting minimization for lambda = $LAMBDA..." 
+
+    mkdir EM
+    cd EM
+
+    # Iterative calls to grompp and mdrun to run the simulations
+
+    $GMX grompp -f $MDP/em_steep_$LAMBDA.mdp -c $FREE_ENERGY/ionized.pdb -p $FREE_ENERGY/topol.top -o em.tpr
+
+    $MDRUN -deffnm em
+
+    sleep 10
+
+    #####################
+    # NVT EQUILIBRATION #
+    #####################
+    echo "Starting constant volume equilibration..."
+
+    cd ../
+    mkdir NVT
+    cd NVT
+
+    $GMX grompp -f $MDP/nvt_$LAMBDA.mdp -c ../EM/em.gro -p $FREE_ENERGY/topol.top -o nvt.tpr
+
+    $MDRUN -deffnm nvt
+
+    echo "Constant volume equilibration complete."
+
+    sleep 10
+
+    #####################
+    # NPT EQUILIBRATION #
+    #####################
+    echo "Starting constant pressure equilibration..."
+
+    cd ../
+    mkdir NPT
+    cd NPT
+
+    $GMX grompp -f $MDP/npt_$LAMBDA.mdp -c ../NVT/nvt.gro -p $FREE_ENERGY/topol.top -t ../NVT/nvt.cpt -o npt.tpr
+
+    $MDRUN -deffnm npt
+
+    echo "Constant pressure equilibration complete."
+
+    sleep 10
+
+    #################
+    # PRODUCTION MD #
+    #################
+    echo "Starting production MD simulation..."
+
+    cd ../
+    mkdir Production_MD
+    cd Production_MD
+
+    $GMX grompp -f $MDP/md_$LAMBDA.mdp -c ../NPT/npt.gro -p $FREE_ENERGY/topol.top -t ../NPT/npt.cpt -o md.tpr
+
+    $MDRUN -deffnm md
+
+    echo "Production MD complete."
+
+    # End
+    echo "Ending. Job completed for lambda = $LAMBDA"
+
+    cd $FREE_ENERGY
+done
+
+exit;

@@ -1,0 +1,128 @@
+#!/bin/bash
+
+# Set some environment variables 
+FREE_ENERGY=`pwd`
+echo "Free energy home directory set to $FREE_ENERGY"
+MDP=$FREE_ENERGY/MDP
+echo ".mdp files are stored in $MDP"
+
+# Change to the location of your GROMACS-2018 installation
+GMX="/opt/gromacs/2020.5-MPI/bin/gmx_mpi"
+MDRUN="$GMX mdrun -pin on -ntomp 1"
+
+# Number of windows
+NN=30
+NN_1=$(($NN - 1))
+
+for i in $(seq 0 ${NN_1}); do
+    LAMBDA=$i
+    if [[ -d Lambda_$LAMBDA ]]; then
+        echo "mkgmx> Lambda_$LAMBDA exists!"
+        exit 0
+    else
+        mkdir -p Lambda_$LAMBDA
+        for name in EM NVT NPT Production_MD; do
+            mkdir -p Lambda_$LAMBDA/$name
+        done
+    fi
+done
+
+DIR_LIST=""
+for i in $(seq 0 ${NN_1})
+do
+    LAMBDA=$i
+
+    cd Lambda_$LAMBDA/EM
+    DIR_LIST="$DIR_LIST Lambda_$LAMBDA/EM"
+
+    ##############################
+    # ENERGY MINIMIZATION STEEP  #
+    ##############################
+    echo "Starting minimization for lambda = $LAMBDA..." 
+
+    # Iterative calls to grompp and mdrun to run the simulations
+
+    $GMX grompp -f $MDP/em_$LAMBDA.mdp -c $FREE_ENERGY/pdb2gmx/ionized.pdb -p $FREE_ENERGY/pdb2gmx/topol.top -o em.tpr
+    #$GMX mdrun -v -deffnm em
+
+    cd $FREE_ENERGY
+done
+
+mpiexec -np $NN $MDRUN -v -multidir $DIR_LIST -s em.tpr -deffnm em 
+
+sleep 10
+
+DIR_LIST=""
+for i in $(seq 0 ${NN_1})
+do
+    LAMBDA=$i
+
+    cd Lambda_$LAMBDA/NVT
+    DIR_LIST="$DIR_LIST Lambda_$LAMBDA/NVT"
+
+    #####################
+    # NVT EQUILIBRATION #
+    #####################
+    echo "Starting constant volume equilibration..."
+
+    $GMX grompp -f $MDP/nvt_$LAMBDA.mdp -c ../EM/em.gro -p $FREE_ENERGY/pdb2gmx/topol.top -o nvt.tpr
+
+    cd $FREE_ENERGY
+done
+
+mpiexec -np $NN $MDRUN -v -multidir $DIR_LIST -s nvt.tpr -deffnm nvt
+
+echo "Constant volume equilibration complete."
+
+sleep 10
+
+DIR_LIST=""
+for i in $(seq 0 ${NN_1})
+do
+    LAMBDA=$i
+
+    cd Lambda_$LAMBDA/NPT
+    DIR_LIST="$DIR_LIST Lambda_$LAMBDA/NPT"
+
+    #####################
+    # NPT EQUILIBRATION #
+    #####################
+    echo "Starting constant pressure equilibration..."
+
+    $GMX grompp -f $MDP/npt_$LAMBDA.mdp -c ../NVT/nvt.gro -p $FREE_ENERGY/pdb2gmx/topol.top -t ../NVT/nvt.cpt -o npt.tpr
+    
+    cd $FREE_ENERGY
+done
+
+mpiexec -np $NN $MDRUN -v -multidir $DIR_LIST -s npt.tpr -deffnm npt
+
+echo "Constant pressure equilibration complete."
+
+sleep 10
+
+DIR_LIST=""
+for i in $(seq 0 ${NN_1})
+do
+    LAMBDA=$i
+
+    cd Lambda_$LAMBDA/Production_MD
+    DIR_LIST="$DIR_LIST Lambda_$LAMBDA/Production_MD"
+
+    #################
+    # PRODUCTION MD #
+    #################
+    echo "Starting production MD simulation..."
+
+    $GMX grompp -f $MDP/md_$LAMBDA.mdp -c ../NPT/npt.gro -p $FREE_ENERGY/pdb2gmx/topol.top -t ../NPT/npt.cpt -o md.tpr
+
+    cd $FREE_ENERGY
+done
+
+mpiexec -np $NN $MDRUN -v -multidir $DIR_LIST -s md.tpr -deffnm md -replex 1000 -nex 500000
+
+echo "Production MD complete."
+
+# End
+echo "Ending. Job completed for lambda = $LAMBDA"
+
+exit;
