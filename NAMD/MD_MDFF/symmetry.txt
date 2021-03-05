@@ -1,0 +1,6 @@
+symmetryRestraints on    
+symmetryfile symmetry.pdb    
+symmetryk 200    
+symmetryMatrixFile symmetry.txt  
+symmetryfirststep 2001   
+symmetryfirstfullstep 502000

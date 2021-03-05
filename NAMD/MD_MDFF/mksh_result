@@ -4,12 +4,11 @@ source ~/.zshrc
 INDEX="1 5 9"
 PREFIX=6xra
 
-for ii in $INDEX; do rsync -avh xclab05:/data1/kevin/sarscov2/6xra/ref28_gs$ii/mdff-step1.restart.coor ./$ii.coor; done
+for ii in $INDEX; do rsync -avh xclab05:/data1/kevin/sarscov2/${PREFIX}_gs$ii/mdff-step1.restart.coor ./$ii.coor; done
 
 cat > tcl << EOF
-mol new ${PREFIX}_charmmgui.psf
-mol addfile ${PREFIX}_charmmgui.pdb
-set sel [atomselect top "chain C"]; \$sel set chain J
+mol new ${PREFIX}.psf
+mol addfile ${PREFIX}.pdb
 foreach ii {A B C D E F G H I} {set sel [atomselect top "segname PRO\$ii"]; \$sel set chain \$ii}
 foreach ii {$INDEX} {mol addfile \$ii.coor}
 set sel [atomselect top "not hydrogen"]
