@@ -10,8 +10,10 @@ cat > tcl << EOF
 mol new ${PREFIX}.psf
 mol addfile ${PREFIX}.pdb
 foreach ii {A B C D E F G H I} {set sel [atomselect top "segname PRO\$ii"]; \$sel set chain \$ii}
+set sel [atomselect top "resname HSD HSE HSP"]; \$sel set resname HIS
+set sel [atomselect top "resname ILE and name CD"]; \$sel set name CD1
 foreach ii {$INDEX} {mol addfile \$ii.coor}
-set sel [atomselect top "not hydrogen"]
+set sel [atomselect top "not hydrogen and protein"]
 foreach ii {1 2 3} jj {$INDEX} {\$sel frame \$ii; \$sel writepdb \$jj.pdb}
 quit
 EOF

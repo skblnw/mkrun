@@ -7,7 +7,7 @@
 
 source ~/.zshrc
 
-PREFIX=
+PREFIX=ionized
 PSF=${PREFIX}.psf
 PDB=${PREFIX}.pdb
 MAP=${PREFIX}.mrc

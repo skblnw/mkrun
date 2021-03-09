@@ -1,0 +1,78 @@
+#!/bin/bash
+source ~/.zshrc
+
+cat > tcl <<'EOF'
+mol new 133nter_swiss1xks_interfaceinner.pdb
+set sel [atomselect top "not hydrogen"]
+$sel set chain u
+$sel writepdb tmp1.pdb
+
+mol new 133mid_galaxy_interfaceinner_518-582.pdb
+set sel [atomselect top "not hydrogen"]
+$sel writepdb tmp.pdb
+mol new tmp.pdb
+set sel [atomselect top all]
+set oldNumbering [$sel get residue]
+set newNumbering {}
+foreach resid $oldNumbering {lappend newNumbering [expr {$resid + 518}]}
+$sel set resid $newNumbering
+$sel set chain v
+$sel writepdb tmp2.pdb
+
+mol new 133_swiss5a9q_interfaceinner_518-889.pdb
+set sel [atomselect top "not hydrogen and resid 583 to 889"]
+$sel set chain v
+$sel writepdb tmp3.pdb
+
+mol new 133_swiss5a9q_interfaceinner_905-1139.pdb
+set sel [atomselect top "not hydrogen and resid 905 to 1139"]
+$sel set chain w
+$sel writepdb tmp4.pdb
+
+mol new 133nter_swiss1xks_interfaceouter.pdb
+set sel [atomselect top "not hydrogen"]
+$sel set chain x
+$sel writepdb tmp5.pdb
+
+mol new 133mid_galaxy_interfaceouter_518-582.pdb
+set sel [atomselect top "not hydrogen"]
+$sel writepdb tmp.pdb
+mol new tmp.pdb
+set sel [atomselect top all]
+set oldNumbering [$sel get residue]
+set newNumbering {}
+foreach resid $oldNumbering {lappend newNumbering [expr {$resid + 518}]}
+$sel set resid $newNumbering
+$sel set chain y
+$sel writepdb tmp6.pdb
+
+mol new 133_swiss5a9q_interfaceouter_518-889.pdb
+set sel [atomselect top "not hydrogen and resid 583 to 889"]
+$sel set chain y
+$sel writepdb tmp7.pdb
+
+mol new 133_swiss5a9q_interfaceouter_905-1139.pdb
+set sel [atomselect top "not hydrogen and resid 905 to 1139"]
+$sel set chain z
+$sel writepdb tmp8.pdb
+
+quit
+EOF
+vmd -dispdev text -e tcl
+
+rm -f mol.pdb
+for ii in $(seq 1 8); do
+  grep "^ATOM" tmp$ii.pdb >> mol.pdb
+done
+
+cat > tcl <<'EOF'
+mol new mol.pdb
+set sel [atomselect top "resname HSD"]; $sel set resname HIS
+set sel [atomselect top "resname ILE and name CD"]; $sel set name CD1
+set sel [atomselect top "not hydrogen"]
+$sel writepdb mol.pdb
+quit
+EOF
+vmd -dispdev text -e tcl
+
+rm -f tcl tmp*.pdb
