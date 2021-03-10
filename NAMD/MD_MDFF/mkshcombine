@@ -67,7 +67,7 @@ done
 
 cat > tcl <<'EOF'
 mol new mol.pdb
-set sel [atomselect top "resname HSD"]; $sel set resname HIS
+set sel [atomselect top "resname HSD HSE HSP"]; $sel set resname HIS
 set sel [atomselect top "resname ILE and name CD"]; $sel set name CD1
 set sel [atomselect top "not hydrogen"]
 $sel writepdb mol.pdb
