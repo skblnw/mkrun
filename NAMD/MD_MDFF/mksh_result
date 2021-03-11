@@ -2,13 +2,19 @@
 source ~/.zshrc
 
 INDEX="1 5 9"
-PREFIX=6xra
+PREFIX=
+solvate=true
+if $solvate; then
+    SYSTEM=ionized
+else 
+    SYSTEM=prot
+fi
 
-for ii in $INDEX; do rsync -avh xclab05:/data1/kevin/sarscov2/${PREFIX}_gs$ii/mdff-step1.restart.coor ./$ii.coor; done
+for ii in $INDEX; do rsync -avh uc62:/data/kevin/npc/${PREFIX}_gs$ii/mdff-step1.restart.coor ./$ii.coor; done
 
 cat > tcl << EOF
-mol new ${PREFIX}.psf
-mol addfile ${PREFIX}.pdb
+mol new ${SYSTEM}.psf
+mol addfile ${SYSTEM}.pdb
 foreach ii {A B C D E F G H I} {set sel [atomselect top "segname PRO\$ii"]; \$sel set chain \$ii}
 set sel [atomselect top "resname HSD HSE HSP"]; \$sel set resname HIS
 set sel [atomselect top "resname ILE and name CD"]; \$sel set name CD1
