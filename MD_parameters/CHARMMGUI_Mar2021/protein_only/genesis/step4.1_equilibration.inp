@@ -1,0 +1,63 @@
+[INPUT]
+topfile = ../toppar/top_all36_prot.rtf, ../toppar/top_all36_na.rtf, ../toppar/top_all36_carb.rtf, ../toppar/top_all36_lipid.rtf, ../toppar/top_all36_cgenff.rtf, ../toppar/top_interface.rtf 
+parfile = ../toppar/par_all36m_prot.prm, ../toppar/par_all36_na.prm, ../toppar/par_all36_carb.prm, ../toppar/par_all36_lipid.prm, ../toppar/par_all36_cgenff.prm, ../toppar/par_interface.prm 
+strfile = ../toppar/toppar_all36_nano_lig.str, ../toppar/toppar_all36_nanolig_patch.str, ../toppar/toppar_all36_synthetic_polymer.str, ../toppar/toppar_all36_synthetic_polymer_patch.str, ../toppar/toppar_all36_polymer_solvent.str, ../toppar/toppar_water_ions.str, ../toppar/toppar_dum_noble_gases.str, ../toppar/toppar_ions_won.str, ../toppar/toppar_all36_prot_arg0.str, ../toppar/toppar_all36_prot_c36m_d_aminoacids.str, ../toppar/toppar_all36_prot_fluoro_alkanes.str, ../toppar/toppar_all36_prot_heme.str, ../toppar/toppar_all36_prot_na_combined.str, ../toppar/toppar_all36_prot_retinol.str, ../toppar/toppar_all36_prot_modify_res.str, ../toppar/toppar_all36_na_nad_ppi.str, ../toppar/toppar_all36_na_rna_modified.str, ../toppar/toppar_all36_lipid_archaeal.str, ../toppar/toppar_all36_lipid_bacterial.str, ../toppar/toppar_all36_lipid_cardiolipin.str, ../toppar/toppar_all36_lipid_cholesterol.str, ../toppar/toppar_all36_lipid_dag.str, ../toppar/toppar_all36_lipid_inositol.str, ../toppar/toppar_all36_lipid_lps.str, ../toppar/toppar_all36_lipid_mycobacterial.str, ../toppar/toppar_all36_lipid_miscellaneous.str, ../toppar/toppar_all36_lipid_model.str, ../toppar/toppar_all36_lipid_prot.str, ../toppar/toppar_all36_lipid_sphingo.str, ../toppar/toppar_all36_lipid_yeast.str, ../toppar/toppar_all36_lipid_hmmm.str, ../toppar/toppar_all36_lipid_detergent.str, ../toppar/toppar_all36_lipid_ether.str, ../toppar/toppar_all36_carb_glycolipid.str, ../toppar/toppar_all36_carb_glycopeptide.str, ../toppar/toppar_all36_carb_imlab.str, ../toppar/toppar_all36_label_spin.str, ../toppar/toppar_all36_label_fluorophore.str 
+
+psffile = step3_input.psf                 # protein structure file
+pdbfile = step3_input.pdb                 # PDB file
+reffile = step3_input.pdb
+rstfile = step4.0_minimization.rst              # restart file
+ 
+[OUTPUT]
+rstfile = step4.1_equilibration.rst
+dcdfile = step4.1_equilibration.dcd
+
+[ENERGY]
+forcefield      = CHARMM        # [CHARMM]
+electrostatic   = PME           # [CUTOFF,PME]
+switchdist      = 10.0          # switch distance
+cutoffdist      = 12.0          # cutoff distance
+pairlistdist    = 13.5          # pair-list distance
+pme_nspline     = 4
+water_model     = NONE
+vdw_force_switch = YES
+
+[DYNAMICS]
+integrator      = LEAP          # [LEAP,VVER]
+timestep        = 0.001         # timestep (ps)
+nsteps          = 125000        # number of MD steps
+crdout_period   = 5000
+eneout_period   = 1000          # energy output period
+rstout_period   = 1000      
+nbupdate_period = 10
+ 
+[CONSTRAINTS]
+rigid_bond      = YES           # constraints all bonds involving hydrogen
+fast_water      = YES         
+shake_tolerance = 1.0D-10
+
+[ENSEMBLE]
+ensemble        = NVT           # [NVE,NVT,NPT]
+tpcontrol       = LANGEVIN      # thermostat and barostat
+temperature     = 303.15
+gamma_t         = 1.0
+
+[BOUNDARY]
+type            = PBC           # [PBC]
+
+[SELECTION]
+group1          = (sid:PROA) and backbone
+group2          = (sid:PROA) and not backbone and not hydrogen
+
+[RESTRAINTS]
+nfunctions      = 2
+
+function1       = POSI
+constant1       = 1.0
+select_index1   = 1
+
+function2       = POSI
+constant2       = 0.1
+select_index2   = 2
+
+

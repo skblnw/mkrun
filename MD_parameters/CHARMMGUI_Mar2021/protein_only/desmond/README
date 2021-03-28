@@ -1,0 +1,8 @@
+#!/bin/sh
+#The inputs in this fold are compatible with Desmond_Maestro
+#Type "desmond -h" to see how to run parallel and GPU simulations
+desmond -c step4.0_minimization.cfg
+desmond -c step4.1_equilibration.cfg
+desmond -c step5_production.cfg 
+#continue a job
+#desmond -restore step5_production.cpt -in step3_input.cms
