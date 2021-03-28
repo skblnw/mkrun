@@ -10,8 +10,11 @@ echo ".mdp files are stored in $MDP"
 GMX="/opt/gromacs/2020.5-MPI/bin/gmx_mpi"
 MDRUN="$GMX mdrun -pin on -ntomp 1"
 
+#gmx grompp -f $MDP/em.mdp -c $FREE_ENERGY/pdb2gmx/ionized.pdb -p $FREE_ENERGY/pdb2gmx/topol.top -o em.tpr >& LOG
+#exit 0
+
 # Number of windows
-NN=30
+NN=12
 NN_1=$(($NN - 1))
 
 for i in $(seq 0 ${NN_1}); do
