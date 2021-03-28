@@ -1,0 +1,9 @@
+#!/bin/bash
+conda activate pmx
+export GMXLIB=/opt/anaconda3/envs/pmx/lib/python2.7/site-packages/pmx-2.0+41.g7725833-py2.7-macosx-10.7-x86_64.egg/pmx/data/mutff45
+
+gmx pdb2gmx -f peptide.pdb
+
+pmx mutate -f conf.gro -ff amber99sb-star-ildn-mut.ff -o peptide_mutate.pdb
+
+rm \#*
