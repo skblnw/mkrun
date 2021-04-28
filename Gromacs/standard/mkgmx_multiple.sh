@@ -5,7 +5,7 @@ MDRUN="gmx mdrun"
 
 for ii in $(seq 1 1); do
     prefix1=step4_eq_npt
-    prefix2=t${ii}-1
+    prefix2=t${ii}
     rm -f $prefix2.tpr
     $GMX grompp -f step5_md.mdp -o output/$prefix2.tpr -c output/$prefix1.gro -r pdb2gmx/ionized.pdb -n pdb2gmx/index.ndx -p pdb2gmx/topol.top
     

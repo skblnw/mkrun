@@ -1,14 +1,13 @@
 #!/bin/bash
 GMX="gmx"
-MDRUN="gmx mdrun"
-#MDRUN="gmx mdrun -ntmpi 1 -ntomp 12"
+MDRUN="gmx mdrun -ntmpi 1 -ntomp 16 -gpu_id 0"
 
 mkdir -p output
 mini=true
 double=false
 heat=true
 eq_npt=true
-md1=false
+md1=true
 md2=false
 
 [ ! -d pdb2gmx ] && echo -e "mkgmx> Directory pdb2gmx not found!" && exit 1 
@@ -31,7 +30,7 @@ if $double; then
     prefix2=step1_mini_double
     TPR=./output/$prefix2.tpr
     rm -f $TPR
-    gmx_d grompp -f $prefix2.mdp -o $TPR -c output/$prefix1.gro -r $INITIAL_PDB -n $NDX -p $TOP
+    $GMX grompp -f $prefix2.mdp -o $TPR -c output/$prefix1.gro -r $INITIAL_PDB -n $NDX -p $TOP
     gmx_d mdrun -ntmpi 1 -ntomp 12 -v -deffnm output/$prefix2
 fi
 
@@ -63,8 +62,9 @@ if $md1; then
 fi
 
 if $md2; then
-    prefix1=step5_md
-    prefix2=step5_md-2
+    prefix=t1
+    previous=step5_md-2
+    next=$prefix
 #    gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
-    $MDRUN -v -noappend -s output/step5_md.tpr -cpi output/$prefix1.cpt -deffnm output/$prefix2 -nsteps -1
+    $MDRUN -v -noappend -s $prefix/$previous.tpr -cpi $prefix/$previous.cpt -deffnm $prefix/$next -nsteps -1
 fi
