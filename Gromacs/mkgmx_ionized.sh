@@ -3,9 +3,8 @@
 rm -f editconf.pdb solvate.gro ions.tpr ionized.pdb
 
 cat > ions.mdp << EOF
-integrator  = steep
-emtol       = 1000.0
-emstep      = 0.01
+integrator  = md
+dt          = 0.002
 nsteps      = 50000
 nstlist         = 1
 cutoff-scheme   = Verlet

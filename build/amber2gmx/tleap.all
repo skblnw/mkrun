@@ -1,0 +1,10 @@
+source leaprc.protein.ff14SB
+source leaprc.gaff
+source leaprc.water.tip3p
+
+LIG = loadmol2 LIG.mol2
+loadamberparams LIG.frcmod
+check LIG
+saveAmberParm LIG LIG.top LIG.crd
+
+quit
