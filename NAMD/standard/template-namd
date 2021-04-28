@@ -6,8 +6,8 @@
 #3 minimize all unfrozen 10K steps
 
 
-set PSFFILE ../ionized.psf
-set PDBFILE ../ionized.pdb
+set PSFFILE ../pdb2namd/solvate/ionized.psf
+set PDBFILE ../pdb2namd/solvate/ionized.pdb
 set ITEMP 310
 set FTEMP 310
 set PSWITCH 0
@@ -47,8 +47,8 @@ parameters ../toppar/par_all36_prot.prm
 mergeCrossterms yes
 parameters ../toppar/par_all36_lipid.prm
 parameters ../toppar/par_all36_carb.prm
+parameters ../toppar/par_all36_na.prm
 parameters ../toppar/par_all36_cgenff.prm
-parameters ../toppar/toppar_all36_lipid_inositol.str
 parameters ../toppar_water_ions_namd.str
 
 if { $INPUTNAME != 0 } {
@@ -101,7 +101,7 @@ rigidBonds          all;               # Bound constraint all bonds involving H 
 nonbondedFreq       1;                 # nonbonded forces every step
 fullElectFrequency  2;                 # 1 in CHARMM-GUI
                                        # PME every 2 steps
-									   
+                                       
 wrapWater           on;                # wrap water to central cell
 wrapAll             on;                # wrap other molecules too
                                        # !!!Disable this when using colvars for dihedral angles!!! (Kev, Jun 2015)

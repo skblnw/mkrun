@@ -22,8 +22,8 @@ a = MyModel(env,
 				alnfile  = 'alignment.ali',
 				knowns   = 'chainA',
 				sequence = 'chainA_loop')
-a.starting_model= 1
-a.ending_model  = 1
+a.starting_model = 1
+a.ending_model   = 1
 
 a.loop.starting_model = 1
 a.loop.ending_model   = 2
