@@ -16,12 +16,12 @@ NN_1=$(($NN - 1))
 
 ##################### Switches #####################
 
-check_directory=false # Turn on for the first-time run
-mini=false
+check_directory=true # Turn on for the first-time run
+mini=true
 minidouble=false
-nvt=true
-npt=true
-production=true
+nvt=false
+npt=false
+production=false
 
 ##################### Switches #####################
 
