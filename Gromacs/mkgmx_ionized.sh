@@ -4,7 +4,7 @@ rm -f editconf.pdb solvate.gro ions.tpr ionized.pdb
 
 cat > ions.mdp << EOF
 integrator  = md
-dt          = 0.002
+dt          = 0.001
 nsteps      = 50000
 nstlist         = 1
 cutoff-scheme   = Verlet
@@ -19,7 +19,7 @@ EOF
 
 # Create a cubic box of 2 nm on each side and place the system to the center and align its principle axes to the reference axes
 # -princ usually helps to reduce your system size
-echo 0 | gmx editconf -f conf.gro -o editconf.pdb -princ -d 1.2
+echo 0 | gmx editconf -f conf.gro -o editconf.pdb -princ -d 1.4
 #echo 0 | gmx editconf -f conf.gro -o editconf.pdb -princ -center 3.7 3.4 2.4 -box 8.0 12.2 5.2
 
 # Solvate the box

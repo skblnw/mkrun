@@ -108,7 +108,7 @@ do
     #####################
     echo "Starting constant volume equilibration..."
 
-    $GMX grompp -f $MDP/nvt_$LAMBDA.mdp -c ../EM/em_double.gro -p $FREE_ENERGY/pdb2gmx/topol.top -o nvt.tpr  -maxwarn 3
+    $GMX grompp -f $MDP/nvt_$LAMBDA.mdp -c ../EM/em.gro -p $FREE_ENERGY/pdb2gmx/topol.top -o nvt.tpr  -maxwarn 3
 
     cd $FREE_ENERGY
 done
