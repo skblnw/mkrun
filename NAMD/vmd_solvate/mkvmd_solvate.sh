@@ -2,7 +2,7 @@
 
 cat > tcl <<'EOF'
 package require Orient
-set filename ../psfgen/prot
+set filename ../prot
 mol new $filename.pdb
 set sel [atomselect top "all"]
 set I [Orient::calc_principalaxes $sel]

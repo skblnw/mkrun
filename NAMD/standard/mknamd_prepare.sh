@@ -99,7 +99,7 @@ mkdir run run/output run/log restraints
 touch run/run.sh
 
 cat > tcl <<'EOF'
-mol new pdb2namd/solvate/ionized.pdb type pdb waitfor all
+mol new pdb2namd/vmd_solvate/ionized.pdb type pdb waitfor all
 set all [atomselect top "all"]
 
 $all set beta 0
