@@ -110,7 +110,7 @@ foreach {ii tt} {H 120 L 108} {
   segment PRO$ii { 
     pdb chains/$ii.pdb 
   }
-  patch CTER PRO$ii:$tt
+  #patch CTER PRO$ii:$tt
   coordpdb chains/$ii.pdb PRO$ii
 }
 

@@ -6,8 +6,8 @@
 #3 minimize all unfrozen 10K steps
 
 
-set PSFFILE ../pdb2namd/solvate/ionized.psf
-set PDBFILE ../pdb2namd/solvate/ionized.pdb
+set PSFFILE ../pdb2namd/vmd_solvate/ionized.psf
+set PDBFILE ../pdb2namd/vmd_solvate/ionized.pdb
 set ITEMP 310
 set FTEMP 310
 set PSWITCH 0

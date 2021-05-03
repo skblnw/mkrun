@@ -1,0 +1,135 @@
+###################################################
+# Y2A FORWARD DECOUPLE ON
+###################################################
+
+
+# INPUT
+
+set temp                300.0
+
+parameters              ../../common/par_all22_prot.inp
+paraTypeCharmm          on
+
+exclude                 scaled1-4
+1-4scaling              1.0
+
+
+# TOPOLOGY
+
+structure               solvate.psf
+
+# INITIAL CONDITIONS
+
+coordinates             solvate.pdb
+bincoordinates          aqua-equil.coor
+binvelocities           aqua-equil.vel
+extendedsystem          aqua-equil.xsc
+
+# OUTPUT FREQUENCIES
+
+outputenergies          100
+outputtiming            100
+outputpressure          100
+restartfreq             100
+XSTFreq                 100
+
+
+# OUTPUT AND RESTART
+
+outputname              forward-on
+restartname             forward-on
+
+binaryoutput            yes
+binaryrestart           yes
+
+# CONSTANT-T
+langevin                on
+langevinTemp            $temp
+langevinDamping         1.0
+
+# PME
+
+PME                     yes
+PMETolerance            10e-6
+PMEInterpOrder          4
+
+PMEGridSpacing          1.0
+
+# Periodic Boundary Conditions
+#cellBasisVector1    30.0    0.   0.
+#cellBasisVector2     0.    30.0   0.
+#cellBasisVector3     0.    0    30.0
+#cellOrigin          0.0 0.0 0.0
+
+
+# WRAP WATER FOR OUTPUT
+
+wrapAll                 on
+
+# CONSTANT-P
+
+LangevinPiston          on
+LangevinPistonTarget    1
+LangevinPistonPeriod    100
+LangevinPistonDecay     100
+LangevinPistonTemp      $temp
+
+StrainRate              0.0 0.0 0.0
+useGroupPressure        yes
+
+useFlexibleCell         no
+
+# SPACE PARTITIONING
+
+stepspercycle           20
+margin                  1.0
+
+# CUT-OFFS
+
+switching               on
+switchdist              10.0
+cutoff                  11.0
+pairlistdist            12.0
+
+
+# RESPA PROPAGATOR
+
+timestep                1.0
+fullElectFrequency      4
+nonbondedFreq           2
+
+
+# SHAKE
+
+rigidbonds              all
+rigidtolerance          0.000001
+rigiditerations         400
+
+
+# COM
+
+ComMotion            no
+
+
+# FEP PARAMETERS
+
+source                  ../../tools/fep.tcl
+
+alch                    on
+alchType                FEP
+alchFile                solvate.fep
+alchCol                 B
+alchOutFile             forward-on.fepout
+alchOutFreq             10
+
+alchVdwLambdaEnd        1.0
+alchElecLambdaStart     0.5
+alchVdWShiftCoeff       4.0
+alchDecouple            on
+
+alchEquilSteps          100
+set numSteps            500
+
+runFEP 0.0 1.0 0.05 $numSteps
+
+
