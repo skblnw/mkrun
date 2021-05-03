@@ -37,7 +37,8 @@ outputenergies          1000
 outputtiming            1000
 outputpressure          1000
 restartfreq             1000
-XSTFreq                 1000
+xstfreq                 1000
+dcdfreq                 1000
 
 
 # OUTPUT AND RESTART
