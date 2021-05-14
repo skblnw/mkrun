@@ -1,5 +1,5 @@
 cat > tcl <<'EOF'
-mol new pdb2namd/vmd_solvate/ionized.pdb type pdb waitfor all
+mol new ionized.pdb type pdb waitfor all
 set all [atomselect top "all"]
 
 set fout [open "cell_size.str" w]

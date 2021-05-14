@@ -1,6 +1,6 @@
 #!/bin/bash
 GMX="gmx"
-MDRUN="gmx mdrun -ntmpi 1 -ntomp 16 -gpu_id 0"
+MDRUN="gmx mdrun -ntmpi 1 -ntomp 16 -gpu_id 1"
 
 mkdir -p output
 mini=true
@@ -8,7 +8,7 @@ double=false
 heat=true
 eq_npt=true
 md1=true
-md2=true
+md2=false
 
 [ ! -d pdb2gmx ] && echo -e "mkgmx> Directory pdb2gmx not found!" && exit 1 
 [ ! -f $NDX ] && echo -e "mkgmx> Index file not found!" && exit 1 
@@ -54,16 +54,16 @@ fi
 
 if $md1; then
     prefix1=step4_eq_npt
-    prefix2=step5_md
-    TPR=output/$prefix2.tpr
+    prefix2=t1
+    MDP=step5_md.mdp
+    TPR=output/step5_md.tpr
     rm -f $TPR
-    $GMX grompp -f $prefix2.mdp -o $TPR -c output/$prefix1.gro -r $INITIAL_PDB -n $NDX -p $TOP
-    $MDRUN -v -deffnm output/$prefix2
+    $GMX grompp -f $MDP -o $TPR -c output/$prefix1.gro -r $INITIAL_PDB -n $NDX -p $TOP
+    $MDRUN -v -s $TPR -deffnm output/$prefix2
 fi
 
 if $md2; then
-    prefix1=output/step5_md
-    prefix2=t1
+    prefix1=output/t1
 #    gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
-    $MDRUN -v -noappend -s $prefix1.tpr -cpi $prefix1.cpt -deffnm output/$prefix2 -nsteps -1
+    $MDRUN -v -noappend -s $prefix1.tpr -cpi $prefix1.cpt -deffnm output/$prefix1 -nsteps -1
 fi

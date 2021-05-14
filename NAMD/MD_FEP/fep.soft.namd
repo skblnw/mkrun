@@ -5,7 +5,7 @@
 
 # INPUT
 
-set temp                298.0
+set temp                310.0
 
 paraTypeCharmm on
 parameters ../toppar/par_all36m_prot.prm
@@ -33,12 +33,12 @@ extendedSystem     equilibrate.xsc
 
 # OUTPUT FREQUENCIES
 
-outputenergies          1000
+outputenergies          10000
 outputtiming            1000
-outputpressure          1000
-restartfreq             1000
-xstfreq                 1000
-dcdfreq                 1000
+outputpressure          10000
+restartfreq             10000
+xstfreq                 10000
+#dcdfreq                 1000
 
 
 # OUTPUT AND RESTART
@@ -113,14 +113,14 @@ ComMotion            no
 
 # FEP PARAMETERS
 
-source                  ../tools/fep.tcl
+source                  ../fep.tcl
 
 alch                    on
 alchType                FEP
 alchFile                ionized.fep
 alchCol                 B
 alchOutFile             alchemy.fepout
-alchOutFreq             100
+alchOutFreq             1
 
 alchVdwLambdaEnd        1.0
 alchElecLambdaStart     0.1
@@ -128,7 +128,7 @@ alchVdWShiftCoeff       1.0
 alchDecouple            off
 
 alchEquilSteps          100000
-set numSteps            600000
+set numSteps            400000
 
 set all { 0.00 0.00001 0.0001 0.001 0.01 0.02 0.06 0.1 0.14 0.18 0.22 0.26 0.30 0.34 0.38 0.42 0.46 0.5 0.54 0.58 0.62 0.66 0.7 0.74 0.78 0.82 0.86 0.9 0.94 0.98 0.99 0.999 0.9999 0.99999 1.00 }
 

@@ -5,7 +5,7 @@
 
 # INPUT
 
-set temp                298.0
+set temp                310.0
 
 paraTypeCharmm on
 parameters ../toppar/par_all36m_prot.prm
@@ -31,11 +31,11 @@ temperature             $temp
 
 # OUTPUT FREQUENCIES
 
-outputenergies          1000
-outputtiming            1000
-outputpressure          1000
-restartfreq             1000
-XSTFreq                 1000
+outputenergies          10000
+outputtiming            10000
+outputpressure          10000
+restartfreq             10000
+XSTFreq                 10000
 
 
 # OUTPUT AND RESTART
@@ -60,7 +60,7 @@ PMEInterpOrder          4
 PMEGridSpacing          1.0
 
 # Periodic Boundary Conditions
-source cell_size.str
+source ../pdb2namd/vmd_solvate/cell_size.str
 
 
 # WRAP WATER FOR OUTPUT
@@ -114,14 +114,14 @@ ComMotion            no
 
 # FEP PARAMETERS
 
-source                  ../tools/fep.tcl
+source                  ../fep.tcl
 
 alch                    on
 alchType                FEP
 alchFile                ionized.fep
 alchCol                 B
 alchOutFile             equilibrate.fepout
-alchOutFreq             1000
+alchOutFreq             10000
 
 alchVdwLambdaEnd        1.0
 alchElecLambdaStart     0.1
@@ -129,7 +129,7 @@ alchVdWShiftCoeff       1.0
 alchDecouple            off
 
 alchEquilSteps          10000
-set numSteps            90000
+set numSteps           100000
 
 set numMinSteps         5000
 
