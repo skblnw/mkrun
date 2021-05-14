@@ -19,7 +19,7 @@ EOF
 
 # Create a cubic box of 2 nm on each side and place the system to the center and align its principle axes to the reference axes
 # -princ usually helps to reduce your system size
-echo 0 | gmx editconf -f conf.gro -o editconf.pdb -princ -d 1.8
+echo 0 | gmx editconf -f conf.gro -o editconf.pdb -princ -d 1.0 -bt cubic
 #echo 0 | gmx editconf -f conf.gro -o editconf.pdb -princ -center 3.7 3.4 2.4 -box 8.0 12.2 5.2
 
 # Solvate the box
