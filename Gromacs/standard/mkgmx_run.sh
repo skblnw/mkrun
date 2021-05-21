@@ -54,16 +54,15 @@ fi
 
 if $md1; then
     prefix1=step4_eq_npt
-    prefix2=t1
-    MDP=step5_md.mdp
-    TPR=output/step5_md.tpr
+    prefix2=step5_md
+    TPR=output/$prefix2.tpr
     rm -f $TPR
-    $GMX grompp -f $MDP -o $TPR -c output/$prefix1.gro -r $INITIAL_PDB -n $NDX -p $TOP
-    $MDRUN -v -s $TPR -deffnm output/$prefix2
+    $GMX grompp -f $prefix2.mdp -o $TPR -c output/$prefix1.gro -r $INITIAL_PDB -n $NDX -p $TOP
+    $MDRUN -v -deffnm output/$prefix2
 fi
 
 if $md2; then
-    prefix1=output/t1
+    prefix=output/t1
 #    gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
-    $MDRUN -v -noappend -s $prefix1.tpr -cpi $prefix1.cpt -deffnm output/$prefix1 -nsteps -1
+    $MDRUN -v -noappend -s output/step5_md.tpr -cpi output/step5_md.cpt -deffnm $prefix -nsteps -1
 fi

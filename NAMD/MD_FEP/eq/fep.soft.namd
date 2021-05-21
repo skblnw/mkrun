@@ -117,7 +117,7 @@ source                  ../fep.tcl
 
 alch                    on
 alchType                FEP
-alchFile                ionized.fep
+alchFile                ../ionized.fep
 alchCol                 B
 alchOutFile             alchemy.fepout
 alchOutFreq             1
