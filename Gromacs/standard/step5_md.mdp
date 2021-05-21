@@ -20,7 +20,7 @@ lincs_iter              = 1                         ; accuracy of LINCS
 lincs_order             = 4                         ; also related to accuracy
 ; Neighborsearching
 cutoff-scheme           = Verlet
-ns_type                 = grid                      ; search neighboring grid cells
+;ns_type                 = grid                      ; search neighboring grid cells
 rlist                   = 1.2                       ; If "cutoff-scheme=Verlet", rlist=verlet-buffer-tolerance
 vdwtype                 = cutoff                    ; Twin range cut-offs with neighbor list cut-off rlist and VdW cut-off rvdw
 vdw-modifier            = force-switch              ; Suggested for CHARMM36 by the Gromacs team
@@ -33,9 +33,9 @@ coulombtype             = PME                       ; Particle Mesh Ewald for lo
                                                     ; Grid dimensions are controlled with fourierspacing and the interpolation order with pme-order
                                                     ; coulomb-modifier = Potential-shift-Verlet
 rcoulomb                = 1.2                       ; electrostatic cutoff (in nm)
-pme_order               = 4                         ; cubic interpolation. 4 equals cubic interpolation. 
+;pme_order               = 4                         ; cubic interpolation. 4 equals cubic interpolation. 
                                                     ; Try 6/8/10 when running in parallel and simultaneously decrease grid dimension.
-fourierspacing          = 0.12                      ; grid spacing for FFT
+;fourierspacing          = 0.12                      ; grid spacing for FFT
 ; Dispersion correction
 DispCorr                = no                        ; Suggested for CHARMM36 by the Gromacs team
                                                     ; EnerPres: account for cut-off vdW scheme
