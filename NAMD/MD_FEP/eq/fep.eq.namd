@@ -118,7 +118,7 @@ source                  ../fep.tcl
 
 alch                    on
 alchType                FEP
-alchFile                ionized.fep
+alchFile                ../ionized.fep
 alchCol                 B
 alchOutFile             equilibrate.fepout
 alchOutFreq             10000

@@ -1,3 +1,4 @@
+#!/home/kevin/anaconda3/envs/modeller/bin/python
 from modeller import *
 # Get the sequence of the 1qg8 PDB file, and write to an alignment file
 code = 'prot'
