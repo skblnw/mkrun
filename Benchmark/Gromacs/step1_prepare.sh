@@ -13,4 +13,4 @@ gmx grompp -f mini.mdp -o run_mini.tpr -c solvate.pdb -p topol.top
 gmx mdrun -v -deffnm run_mini
 gmx grompp -f md.mdp -o run_md.tpr -c run_mini.gro -p topol.top
 
-rm -f solvate.pdb run_mini.*
+rm -f solvate.pdb mdout.mdp run_mini.*
