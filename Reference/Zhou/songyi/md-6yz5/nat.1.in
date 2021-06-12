@@ -1,0 +1,127 @@
+#configuration parameters
+paraTypeCharmm          on
+paraTypeXplor           off
+
+# molecular systems initial files
+coordinates             ../complex_psfgen.pdb
+structure               ../complex.psf
+
+#molecular system restart files
+binvelocities           ../r0/nat.0.rstr.vel
+bincoordinates          ../r0/nat.0.rstr.coor
+extendedSystem          ../r0/nat.0.rstr.xsc
+
+#force fied 
+parameters		../common/par_all36_prot.prm
+parameters              ../common/toppar_water_ions.str
+
+
+numsteps                100000000
+firsttimestep           000
+
+
+#temperature            310K
+#seed                   12345
+
+# periodic cell
+#cellBasisVector1       90.0   0.0   0.0
+#cellBasisVector2        0.0  90.0   0.0
+#cellBasisVector3        0.0   0.0  90.0
+#cellOrigin              0.0   0.0   0.0
+wrapAll                 on
+
+# output params
+outputname              natFinal
+binaryoutput            yes 
+
+
+DCDfreq                 10000
+
+### these two lines to be changed
+DCDfile                 nat.1.traj.dcd 
+restartname             nat.1.rstr
+
+restartfreq             10000
+binaryrestart yes 
+
+outputEnergies          1000
+outputTiming            5000
+ldbPeriod               50000000
+mergeCrossterms         no # add a separate "CROSS" field to the output
+
+# integrator params
+timestep                2.0
+fullElectFrequency      2
+nonbondedFreq           1
+longSplitting           C2
+
+# force field params
+exclude                 scaled1-4
+1-4scaling              1.0
+rigidBonds              all
+rigidTolerance          1.0e-7
+useSettle               on
+margin                  1.0
+
+switching               on
+switchdist              10.0
+cutoff                  12.0         
+pairlistdist            13.5
+stepspercycle           20
+
+# full electrostatics
+PME                     on
+PMEGridSpacing          1.0
+#PMEGridSizeX           96 
+#PMEGridSizeY           96
+#PMEGridSizeZ            96
+FFTWuseWisdom           on
+#PMETolerance           1.0e-6
+PMEInterpOrder          4
+PMEPencils              16
+PMEProcessors           256
+
+
+# Constant pressure parameters
+
+useGroupPressure        yes
+#useFlexibleCell        yes
+#useConstantArea        yes
+
+LangevinPiston          on
+LangevinPistonTarget    1.01325
+LangevinPistonTemp      310
+LangevinPistonPeriod    100
+LangevinPistonDecay     50
+
+#BerendsenPressureTarget                1.01325
+#BerendsenPressureCompressibility       4.57E-5                
+#BerendsenPressureRelaxationTime        200
+               
+#BerendsenPressureFreq                  10
+
+#constraints  on    
+#consref      ../constraints.pdb  
+#conskfile    ../constraints.pdb    
+#conskcol     B  
+
+# Constant temperature  reassign parameters
+
+langevin                on
+langevindamping         10
+langevintemp            310
+
+
+## BlueGene specific options
+#
+##numAtomsSelf            88
+##numAtomsPair            140
+
+
+#twoAwayX                yes       # when #atoms/#cpus < 200
+#twoAwayY               yes       # when #atoms/#cpus < 50 
+#twoAwayZ               yes       # when #atoms/#cpus < 20
+
+
+
+
