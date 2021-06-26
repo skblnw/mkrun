@@ -1,0 +1,25 @@
+#!/bin/bash
+
+ncore=16
+nn=10
+for ii in $ncore; do 
+    echo "> Using $ii CPU cores for 1 GPU card"
+    echo -n "> Performing $nn trials of GPU simulations and the benchmark is... "
+    total=0
+    for jj in $(seq 1 $nn); do
+        namd3 +p$ncore +devices 1 fep.soft.namd > LOG
+        res=`grep Benchmark LOG | awk '{sum+=$8} END {print sum/NR}'`
+        total=`echo "${total} + ${res}" | bc`
+    done
+    echo "scale=1; $nn / $total" | bc
+    rm LOG
+    echo -n "> Performing $nn trials of GPU (Single-Node, fully offload) simulations and the benchmark is... "
+    total=0
+    for jj in $(seq 1 $nn); do
+        namd3 +p1 +devices 1 fep.soft.gpu.namd > LOG
+        res=`grep TIMING: LOG | awk '{sum+=$9} END {print sum/NR}'`
+        total=`echo "${total} + ${res}" | bc`
+    done
+    echo "scale=1; $total / $nn" | bc
+done
+rm FFTW_* alchemy*

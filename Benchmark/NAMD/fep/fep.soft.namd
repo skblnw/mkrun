@@ -1,0 +1,135 @@
+###################################################
+# EQUILIBRATION
+###################################################
+
+
+# INPUT
+
+set temp                310.0
+
+paraTypeCharmm on
+parameters input/par_all36m_prot.prm
+mergeCrossterms yes
+parameters input/par_all36_lipid.prm
+parameters input/par_all36_carb.prm
+parameters input/par_all36_na.prm
+parameters input/par_all36_cgenff.prm
+parameters input/toppar_water_ions_namd.str
+
+exclude                 scaled1-4
+1-4scaling              1.0
+
+
+# TOPOLOGY
+
+structure          input/ionized.psf
+
+# INITIAL CONDITIONS
+
+coordinates        input/ionized.pdb
+binCoordinates     input/equilibrate.coor
+binvelocities      input/equilibrate.vel
+extendedSystem     input/equilibrate.xsc
+
+# OUTPUT FREQUENCIES
+
+outputenergies          400
+outputtiming            400
+outputpressure          400
+restartfreq             2000
+xstfreq                 2000
+dcdfreq                 2000
+
+
+# OUTPUT AND RESTART
+
+outputname              alchemy
+restartname             alchemy
+
+binaryoutput            yes
+binaryrestart           yes
+
+# CONSTANT-T
+langevin                on
+langevinTemp            $temp
+langevinDamping         1.0
+
+# PME
+
+PME                     yes
+PMETolerance            10e-6
+PMEInterpOrder          4
+
+PMEGridSpacing          1.0
+
+# WRAP WATER FOR OUTPUT
+
+wrapAll                 on
+
+# CONSTANT-P
+
+LangevinPiston          on
+LangevinPistonTarget    1
+LangevinPistonPeriod    100
+LangevinPistonDecay     100
+LangevinPistonTemp      $temp
+
+StrainRate              0.0 0.0 0.0
+useGroupPressure        yes
+
+useFlexibleCell         no
+
+# SPACE PARTITIONING
+
+stepspercycle           20
+margin                  1.0
+
+# CUT-OFFS
+
+switching               on
+switchdist              10.0
+cutoff                  12.0
+pairlistdist            13.5
+
+
+# RESPA PROPAGATOR
+
+timestep                1.0
+fullElectFrequency      4
+nonbondedFreq           2
+
+
+# SHAKE
+
+rigidbonds              all
+rigidtolerance          0.000001
+rigiditerations         400
+
+
+# COM
+
+ComMotion            no
+
+
+# FEP PARAMETERS
+
+source                  input/fep.tcl
+
+alch                    on
+alchType                FEP
+alchFile                input/ionized.fep
+alchCol                 B
+alchOutFile             alchemy.fepout
+alchOutFreq             400
+
+alchVdwLambdaEnd        1.0
+alchElecLambdaStart     0.1
+alchVdWShiftCoeff       1.0
+alchDecouple            off
+
+alchEquilSteps          1
+set numSteps            4000
+
+set all { 0.00001 0.0001 }
+
+runFEPlist $all $numSteps
