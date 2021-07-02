@@ -1,10 +1,8 @@
 #!/bin/bash
 
-NAMD="namd3 +p16 +devices 0"
+NAMD="namd3 +p1 +devices 1"
 
 for ii in $(seq 1 5); do
-    rsync -avh eq/ t$ii --exclude="*.BAK" --exclude="*.old" --exclude="*.fepout" --exclude="LOG_eq"
-    cd t$ii
-    $NAMD fep.soft.namd >& LOG_fep
-    cd ..
+    rsync -avh eq/fep.soft.gpu.namd eq/equilibrate.coor eq/equilibrate.vel eq/equilibrate.xsc t$ii
+    $NAMD t$ii/fep.soft.namd >& t$ii/LOG_fep
 done
