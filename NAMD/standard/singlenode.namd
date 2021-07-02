@@ -12,7 +12,7 @@ bincoordinates          ../r0/nat.0.rstr.coor
 extendedSystem          ../r0/nat.0.rstr.xsc
 
 #force fied 
-parameters		../common/par_all36_prot.prm
+parameters		        ../common/par_all36_prot.prm
 parameters              ../common/toppar_water_ions.str
 
 
@@ -34,19 +34,18 @@ wrapAll                 on
 outputname              natFinal
 binaryoutput            yes 
 
-
-DCDfreq                 10000
+dcdfreq                 2000
 
 ### these two lines to be changed
 DCDfile                 nat.1.traj.dcd 
 restartname             nat.1.rstr
 
-restartfreq             10000
+restartfreq             2000
 binaryrestart yes 
 
-outputEnergies          1000
-outputTiming            5000
-ldbPeriod               50000000
+outputEnergies          2000
+outputTiming            2000
+#ldbPeriod               50000000
 mergeCrossterms         no # add a separate "CROSS" field to the output
 
 # integrator params
@@ -61,27 +60,20 @@ exclude                 scaled1-4
 rigidBonds              all
 rigidTolerance          1.0e-7
 useSettle               on
-margin                  8.0
 
 switching               on
 switchdist              10.0
 cutoff                  12.0         
 pairlistdist            13.5
-stepspercycle           400
-pairlistsPerCycle        40
 
 # full electrostatics
 PME                     on
 PMEGridSpacing          1.0
-#PMEGridSizeX           96 
-#PMEGridSizeY           96
-#PMEGridSizeZ            96
 FFTWuseWisdom           on
 #PMETolerance           1.0e-6
 PMEInterpOrder          4
 PMEPencils              16
 PMEProcessors           256
-
 
 # Constant pressure parameters
 
@@ -95,38 +87,14 @@ LangevinPistonTemp      310
 LangevinPistonPeriod    100
 LangevinPistonDecay     50
 
-#BerendsenPressureTarget                1.01325
-#BerendsenPressureCompressibility       4.57E-5                
-#BerendsenPressureRelaxationTime        200
-               
-#BerendsenPressureFreq                  10
-
-#constraints  on    
-#consref      ../constraints.pdb  
-#conskfile    ../constraints.pdb    
-#conskcol     B  
-
 # Constant temperature  reassign parameters
 
 langevin                on
 langevindamping         10
 langevintemp            310
 
-
-## BlueGene specific options
-#
-##numAtomsSelf            88
-##numAtomsPair            140
-
-
-#twoAwayX                yes       # when #atoms/#cpus < 200
-#twoAwayY               yes       # when #atoms/#cpus < 50 
-#twoAwayZ               yes       # when #atoms/#cpus < 20
-
-
-
-
 # GPU ACCELERATION
 CUDASOAintegrate         on
-
-
+stepspercycle           400
+pairlistsPerCycle        40
+margin                  8.0
