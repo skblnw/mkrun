@@ -26,7 +26,7 @@ echo 0 | gmx editconf -f conf.gro -o editconf.pdb -princ -d 1.0 -bt cubic
 gmx solvate -cp editconf.pdb -o solvate.gro -p topol.top
 # Add ions to make it neutral and of 0.15 M NaCl
 # If you want KCl, add -pname K
-gmx grompp -f ions.mdp -c solvate.gro -o ions.tpr -p topol.top -maxwarn 1 >& LOG_grompp
+gmx grompp -f ions.mdp -c solvate.gro -o ions.tpr -p topol.top -maxwarn 1 > LOG_grompp 2>&1
 gmx genion -s ions.tpr -o ionized.pdb -conc 0.15 -neutral -p topol.top
 echo q | gmx make_ndx -f ionized.pdb 
 
