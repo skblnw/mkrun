@@ -107,7 +107,7 @@ ComMotion                no
 
 # SPACE PARTITIONING
 stepspercycle           400
-parlistsPerCycle         40
+pairlistsPerCycle        40
 margin                  8.0
 
 # GPU ACCELERATION
