@@ -45,7 +45,6 @@ EOF
 vmd -dispdev text -e tmp.tcl 
 
 cp mdff-step1.namd mdff-step1.namd.BAK
-
 sed -e "s/parameters par_all36_prot.prm//g" \
 -e "s/paraTypeCharmm on/paraTypeCharmm on\nparameters par_all36m_prot.prm\nmergeCrossterms yes\nparameters par_all36_lipid.prm\nparameters par_all36_carb.prm\nparameters par_all36_na.prm\nparameters par_all36_cgenff.prm\nparameters toppar_water_ions_namd.str\n\nmgridforcechecksize 0 off/g" \
 mdff-step1.namd.BAK > mdff-step1.namd
