@@ -1,6 +1,7 @@
 #!/bin/bash
 
-rm -rf chains
+rm -rf chains prot*
+mkdir chains
 
 cat > tcl <<'EOF'
 package require alchemify
@@ -8,19 +9,9 @@ package require psfgen
 package require readcharmmtop
 package require mutator 1.5
 
-exec rm -r chains
-exec mkdir chains
 mol new md.pdb
-foreach ii {A} {
-    set sel [atomselect top "chain A"]
-    $sel writepdb chains/$ii.pdb
-}
 foreach ii {B} {
-    set sel [atomselect top "chain B and resid 1 to 111"]
-    $sel writepdb chains/$ii.pdb
-}
-foreach ii {C} {
-    set sel [atomselect top "chain C and resid 1 to 127"]
+    set sel [atomselect top "chain $ii"]
     $sel writepdb chains/$ii.pdb
 }
 
@@ -86,11 +77,11 @@ topology readcharmmtop1.2/top_all36_hybrid.inp
   pdbalias atom ASN 2HD2 HD22
 
 segment MUT {
-  pdb chains/A.pdb
+  pdb chains/B.pdb
   mutate 452 L2R
-  mutate 484 E2Q
+  mutate 478 T2K
 }
-coordpdb chains/A.pdb MUT
+coordpdb chains/B.pdb MUT
 regenerate angles dihedrals
 guesscoord
 writepdb tmp.pdb
@@ -99,6 +90,7 @@ writepsf tmp.psf
 resetpsf
 topology readcharmmtop1.2/top_all36_prot.rtf
 topology readcharmmtop1.2/top_all36_hybrid.inp
+#topology readcharmmtop1.2/toppar_water_ions_namd.str
 
 # Aliases borrowed from AutoPSF
   pdbalias residue G GUA
@@ -158,13 +150,8 @@ topology readcharmmtop1.2/top_all36_hybrid.inp
   pdbalias atom ASN 2HD2 HD22
 
 segment PROA { pdb tmp.pdb }
+#patch CTER PROA:120
 coordpdb tmp.pdb PROA
-
-foreach {ii tt} {B 120 C 108} {
-  segment PRO$ii { pdb chains/$ii.pdb }
-  #patch CTER PRO$ii:$tt
-  coordpdb chains/$ii.pdb PRO$ii
-}
 
 guesscoord
 writepsf prot.psf
@@ -172,4 +159,4 @@ writepdb prot.pdb
 quit
 EOF
 vmd -dispdev text -e tcl 
-rm -rf tcl tmp.p* chains
+rm -f tcl tmp.p*
