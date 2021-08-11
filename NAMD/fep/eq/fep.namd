@@ -33,9 +33,9 @@ extendedSystem     equilibrate.xsc
 
 # OUTPUT FREQUENCIES
 
-outputenergies           2000
-outputtiming             2000
-outputpressure           2000
+outputtiming              400
+outputenergies            400
+outputpressure            400
 restartfreq              2000
 xstfreq                  2000
 dcdfreq                  2000
@@ -106,9 +106,9 @@ ComMotion                no
 
 
 # SPACE PARTITIONING
-stepspercycle           400
-pairlistsPerCycle        40
-margin                  8.0
+#stepspercycle           400
+#pairlistsPerCycle        40
+#margin                  8.0
 
 # GPU ACCELERATION
 
@@ -131,9 +131,9 @@ alchElecLambdaStart     0.1
 alchVdWShiftCoeff       1.0
 alchDecouple            off
 
-alchEquilSteps           10000
-set numSteps            310000
+alchEquilSteps          300000
+set numSteps            600000
 
-set all { 0.00001 0.0001 0.001 0.01 0.02 0.06 0.1 0.14 0.18 0.22 0.26 0.30 0.34 0.38 0.42 0.46 0.5 0.54 0.58 0.62 0.66 0.7 0.74 0.78 0.82 0.86 0.9 0.94 0.98 0.99 0.999 0.9999 0.99999 1.00 }
+set all { 0.00001 0.0001 0.001 0.01 0.02 0.06 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.94 0.98 0.99 0.999 0.9999 0.99999 1.00 }
 
 runFEPlist $all $numSteps

@@ -13,11 +13,12 @@ $sel move $A
 set I [Orient::calc_principalaxes $sel]
 set A [Orient::orient $sel [lindex $I 1] {0 1 0}]
 $sel move $A
+$sel moveby [vecinvert [measure center $sel]]
 $sel writepdb tmp.pdb
 
 package require solvate
-#solvate $filename.psf tmp.pdb -b 2.4 -minmax {{-77 -76 -35} {77 76 130}} -o solvated
-solvate $filename.psf tmp.pdb -b 2.4 -t 10 -o solvated
+solvate $filename.psf tmp.pdb -b 2.4 -minmax {{-43 -49 -70} {43 49 70}} -o solvated
+#solvate $filename.psf tmp.pdb -b 2.4 -t 10 -o solvated
 package require autoionize
 autoionize -psf solvated.psf -pdb solvated.pdb -sc 0.15 -cation POT -o ionized
 quit

@@ -113,7 +113,7 @@ ComMotion            no
 
 # FEP PARAMETERS
 
-source                  ../fep.tcl
+source                  fep.tcl
 
 alch                    on
 alchType                FEP
