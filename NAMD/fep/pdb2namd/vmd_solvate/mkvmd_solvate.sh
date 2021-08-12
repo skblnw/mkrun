@@ -20,7 +20,7 @@ package require solvate
 solvate $filename.psf tmp.pdb -b 2.4 -minmax {{-43 -49 -70} {43 49 70}} -o solvated
 #solvate $filename.psf tmp.pdb -b 2.4 -t 10 -o solvated
 package require autoionize
-autoionize -psf solvated.psf -pdb solvated.pdb -sc 0.15 -cation POT -o ionized
+autoionize -psf solvated.psf -pdb solvated.pdb -sc 0.15 -o ionized
 quit
 EOF
 

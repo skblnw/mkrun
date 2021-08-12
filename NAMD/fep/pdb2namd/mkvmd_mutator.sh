@@ -10,7 +10,7 @@ package require readcharmmtop
 package require mutator 1.5
 
 mol new md.pdb
-foreach ii {A H L} {
+foreach ii {B} {
     set sel [atomselect top "chain $ii"]
     $sel writepdb chains/$ii.pdb
 }
@@ -77,18 +77,17 @@ topology readcharmmtop1.2/top_all27_prot_lipid_na.inp
   pdbalias atom ASN 1HD2 HD21
   pdbalias atom ASN 2HD2 HD22
 
-foreach ii {H L} {
-  segment PRO$ii {pdb chains/$ii.pdb}
-  coordpdb chains/$ii.pdb PRO$ii
-}
+# foreach ii {H L} {
+#   segment PRO$ii {pdb chains/$ii.pdb}
+#   coordpdb chains/$ii.pdb PRO$ii
+# }
 
-
-foreach ii {A} {
+foreach ii {B} {
   segment MUT {
     pdb chains/$ii.pdb
-    mutate 452 L2R
-    mutate 478 T2K
+    mutate 484 E2Q
   }
+  patch DISU MUT:480 MUT:488
   coordpdb chains/$ii.pdb MUT
 }
 
