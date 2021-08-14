@@ -85,7 +85,7 @@ topology readcharmmtop1.2/top_all27_prot_lipid_na.inp
 foreach ii {B} {
   segment MUT {
     pdb chains/$ii.pdb
-    mutate 484 E2Q
+    mutate 452 L2R
   }
   patch DISU MUT:480 MUT:488
   coordpdb chains/$ii.pdb MUT
