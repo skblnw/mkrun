@@ -10,8 +10,12 @@ package require readcharmmtop
 package require mutator 1.5
 
 mol new md.pdb
-foreach ii {B} {
+foreach ii {A B} {
     set sel [atomselect top "chain $ii"]
+    $sel writepdb chains/$ii.pdb
+}
+foreach ii {ZN} {
+    set sel [atomselect top "name $ii"]
     $sel writepdb chains/$ii.pdb
 }
 
@@ -19,6 +23,7 @@ resetpsf
 topology readcharmmtop1.2/top_all36_prot.rtf
 topology readcharmmtop1.2/top_all36_hybrid.inp
 topology readcharmmtop1.2/top_all27_prot_lipid_na.inp
+topology readcharmmtop1.2/toppar_water_ions_namd.str
 
 # Aliases borrowed from AutoPSF
   pdbalias residue G GUA
@@ -77,19 +82,22 @@ topology readcharmmtop1.2/top_all27_prot_lipid_na.inp
   pdbalias atom ASN 1HD2 HD21
   pdbalias atom ASN 2HD2 HD22
 
-# foreach ii {H L} {
-#   segment PRO$ii {pdb chains/$ii.pdb}
-#   coordpdb chains/$ii.pdb PRO$ii
-# }
+foreach ii {A} {
+  segment PRO$ii {pdb chains/$ii.pdb}
+  coordpdb chains/$ii.pdb PRO$ii
+}
 
 foreach ii {B} {
   segment MUT {
     pdb chains/$ii.pdb
-    mutate 452 L2R
+    mutate 478 T2K
   }
   patch DISU MUT:480 MUT:488
   coordpdb chains/$ii.pdb MUT
 }
+
+segment IONZ {pdb chains/ZN.pdb}
+coordpdb chains/ZN.pdb IONZ
 
 regenerate angles dihedrals
 guesscoord

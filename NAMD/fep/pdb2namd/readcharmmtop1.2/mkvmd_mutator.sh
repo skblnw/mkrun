@@ -1,1 +1,0 @@
-/home/kevin/github/mkrun/NAMD/MD_FEP/psfgen/mkvmd_mutator.sh
