@@ -64,5 +64,6 @@ fi
 if $md2; then
     prefix=output/t1
 #    gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
-    $MDRUN -v -noappend -s output/step5_md.tpr -cpi output/step5_md.cpt -deffnm $prefix -nsteps -1
+#    $MDRUN -v -noappend -s output/step5_md.tpr -cpi output/step5_md.cpt -deffnm $prefix -nsteps -1
+    $MDRUN -v -nb gpu -pme gpu -bonded gpu -update gpu -noappend -s output/step5_md.tpr -cpi output/step5_md.cpt -deffnm $prefix -nsteps -1
 fi
