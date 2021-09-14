@@ -38,9 +38,9 @@
 #   COMBO: $MPIRUN -mca btl self,openib -np \${NN} -npernode 1 $GMXBIN mdrun -v -ntomp 7 -pin on -s W50k.tpr -deffnm output/gpu-1node-NNomp
 ################################################
 
-################################################
-#    Functions
-################################################
+# /--------------------------/
+# /     Useful Functions     /
+# /--------------------------/
 
 # Check existence of a file
 check_exist () {
@@ -74,27 +74,25 @@ make_pbs () {
 }
 
 add_pbs () {
-    if [ "$#" -eq 0 ] || [ "$#" -gt 2 ]; then
+    if [ "$#" -ne 2 ]; then
         echo "> Wrong argument number"
         exit 1
     fi
 
-    if [ "$#" -eq 2 ]; then
-        echo -e "$COMMAND $1-$2.namd > log/$1-$2.log\nwait\ndate" >> run/run.sh
+    echo "echo -e \"mknamd> Working hard with $1...\nmknamd> Finished at:\"" >> $2
+    if $acceleration; then
+        echo -e "$CUDARUN $1.namd > log/$1.log\nwait\ndate" >> $2
     else
-        echo -e "$COMMAND $1.namd > log/$1.log\nwait\ndate" >> run/run.sh
+        echo -e "$NORMRUN $1.namd > log/$1.log\nwait\ndate" >> $2
     fi
 }
 
-################################################
-#    Functions
-################################################
+# /---------------------------------/
+# /     Prepare restraint files     /
+# /---------------------------------/
 
-################################################
-#    Some preparation work
-################################################
-
-rm -rf run restraints
+[ -d "run" ] && { echo "mknamd> Directory run exists! Backing up to run.BAK"; rm -rf run.BAK; mv run run.BAK; }
+[ -d "restraints" ] && { echo "mknamd> Directory restraints exists! Backing up to restraints.BAK"; rm -rf restraints.BAK; mv restraints restraints.BAK; }
 mkdir run run/output run/log restraints
 touch run/run.sh
 
@@ -105,58 +103,36 @@ set all [atomselect top "all"]
 $all set beta 0
 set sel [atomselect top {not segname "WT.*" ION}]
 $sel set beta 1
-$all writepdb restraints/fix_solute.pdb
+$all writepdb restraints/cons_solute.pdb
 
 $all set beta 0
-set sel [atomselect top {backbone or segname "W." or name P}]
+set sel [atomselect top {noh and not segname "WT.*" ION}]
 $sel set beta 1
-$all writepdb restraints/fix_heavy.pdb
+$all writepdb restraints/cons_heavy.pdb
 
 $all set beta 0
-set sel [atomselect top {backbone or segname "W." or name P}]
+set sel [atomselect top {noh and backbone and not segname "WT.*" ION}]
 $sel set beta 1
-$all writepdb restraints/cons_bb_and_P.pdb
+$all writepdb restraints/cons_backbone.pdb
 
 $all set beta 0
-set sel [atomselect top {name CA P or segname "W."}]
-$sel set beta 1
-$all writepdb restraints/cons_CA_and_P.pdb
-
-$all set beta 0
-set sel [atomselect top {backbone or segname "W."}]
-$sel set beta 1
-$all writepdb restraints/cons_bb.pdb
-
-$all set beta 0
-set sel [atomselect top {name CA or segname "W."}]
+set sel [atomselect top {name CA and not segname "WT.*" ION}]
 $sel set beta 1
 $all writepdb restraints/cons_CA.pdb
-
-set fout [open "run/cell_size.str" w]
-set all [atomselect top water] 
-set minmax [measure minmax $all] 
-set vec [vecsub [lindex $minmax 1] [lindex $minmax 0]] 
-puts $fout "cellBasisVector1 [lindex $vec 0] 0 0" 
-puts $fout "cellBasisVector2 0 [lindex $vec 1] 0" 
-puts $fout "cellBasisVector3 0 0 [lindex $vec 2]" 
-set center [measure center $all] 
-puts $fout "cellOrigin $center" 
-close $fout
-
 quit
 EOF
-vmd -dispdev text -e tcl
-rm -f tcl 
+vmd -dispdev text -e tcl > LOG_vmd
+rm tcl 
 
-################################################
-#    Some preparation work
-################################################
 
-################################################
-#    If running on a cluster
-################################################
+# /-------------------/
+# /     Main body     /
+# /-------------------/
 
-COMMAND="namd2 +p20"
+# /--------------------------------------/
+# /     Only if you run on a cluster     /
+# /--------------------------------------/
+
 run_on_cluster=false
 nnode=2
 ncpu=10
@@ -192,19 +168,26 @@ else
     exit 0
 fi
 
-################################################
-#    If running on a cluster
-################################################
+COMMAND="namd3 +p1 +devices 1"
 
+# /-------------------------------/
+# /     RUN Command Switches      /
+# /-------------------------------/
 
+NORMRUN="namd3 +p8 +devices 1"
+CUDARUN="namd3 +p1 +devices 1"
+
+# /-------------------/
+# /     Switches      /
+# /-------------------/
 
 membrane_exist=false
 # MD Steps Choosing
 # true to turn on
 mini=true
 heat=true
-pre=true
-cons=false
+pre=false
+cons=true
 md=true
 md_continue=false
 bmk=false
@@ -213,67 +196,82 @@ us1=false
 us2=false
 
 
-
-# Minimization
+# /-----------------------/
+# /     Minimization      /
+# /-----------------------/
 if $mini; then
+    acceleration=false
     check_exist template-namd
-    jobname=mini
-    if $run_on_cluster; then
-        make_pbs $jobname
-    fi
-    outputname=$jobname
+    prefix=mini
+    frequency=5000
 
-    fixpdb=(fix_solute fix_heavy 0)
+    if $run_on_cluster; then
+        make_pbs $prefix
+    fi
+
     # Change these # of steps. DO NOT continue unless you see a plateau. (Kevin, 2017)
-    nstep=(10000 10000 10000)
-    for ii in {1..3}
+    nstep=(5000 5000 10000)
+    ii=1
+    for conspdb in cons_solute cons_heavy cons_backbone
     do
+        jj=$((ii-1))
         if [ $ii -eq 1 ]; then
             inputname=0
+            outputname="output\/${prefix}-${ii}"
         else
-            jj=$[ii-1]
-            inputname="output\/${outputname}-${jj}"
+            inputname="output\/${prefix}-${jj}"
+            outputname="output\/${prefix}-${ii}"
         fi
+
         sed -e 's/^set INPUTNAME.*$/set INPUTNAME '${inputname}'/g' \
-            -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'-'${ii}'/g' \
-            -e 's/^set FIXPDB.*$/set FIXPDB ..\/restraints\/'${fixpdb[$ii]}'/g' \
-            -e 's/^set CONSPDB.*$/set CONSPDB ..\/restraints\/cons_bb_and_P/g' \
-            -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
+            -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME '${outputname}'/g' \
             -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.vel/g' \
             -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.coor/g' \
             -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.xsc/g' \
-            -e 's/^restartfreq.*$/restartfreq 5000/g' \
-            -e 's/^dcdfreq.*$/dcdfreq 5000/g' \
-            -e 's/^xstfreq.*$/xstfreq 5000/g' \
-            -e 's/^set MS.*$/set MS '${nstep[$ii]}'/g' \
+            -e 's/^set FIXPDB.*$/set FIXPDB 0/g' \
+            -e 's/^set CONSPDB.*$/set CONSPDB ..\/restraints\/'${conspdb}'/g' \
+            -e 's/^set CONSSCALE.*$/set CONSSCALE 50.0/g' \
+            -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
+            -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
+            -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
+            -e 's/^set MS.*$/set MS '${nstep[$jj]}'/g' \
             -e 's/^set SD.*$/set SD 0/g' \
-            template-namd > run/${outputname}-${ii}.namd
+            template-namd > run/${prefix}-${ii}.namd
 
-        add_pbs $outputname $ii
+        add_pbs ${prefix}-${ii} run/run.sh
+        ii=$((ii+1))
     done
 fi
-
+# /-----------------------/
+# /       Annealing       /
+# /-----------------------/
 if $heat; then
+    acceleration=false
     check_exist template-namd
-    jobname=heat
-    if $run_on_cluster; then
-        make_pbs $jobname
-    fi
-    outputname=$jobname
+    prefix=heat
+    frequency=5000
 
-    previous=mini-2
-    sed -e 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' \
-        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'/g' \
-        -e 's/^set CONSPDB.*$/set CONSPDB ..\/restraints\/cons_bb_and_P/g' \
-        -e 's/^set CONSSCALE.*$/set CONSSCALE 10.0/g' \
+    if $run_on_cluster; then
+        make_pbs $prefix
+    else 
+        touch run/run.sh
+    fi
+
+    previous="output\/mini-3"
+    outputname="output\/${prefix}"
+
+    sed -e 's/^set INPUTNAME.*$/set INPUTNAME '${previous}'/g' \
+        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME '${outputname}'/g' \
+        -e 's/^set CONSPDB.*$/set CONSPDB ..\/restraints\/cons_backbone/g' \
+        -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
         -e 's/^set ITEMP.*$/set ITEMP 0/g' \
-        -e 's/^set FTEMP.*$/set FTEMP 310/g' \
-        -e 's/^restartfreq.*$/restartfreq 10000/g' \
-        -e 's/^dcdfreq.*$/dcdfreq 10000/g' \
-        -e 's/^xstfreq.*$/xstfreq 10000/g' \
-        -e 's/^set TS.*$/set TS 100000/g' \
-        template-namd > run/${outputname}.namd
-    add_pbs $outputname
+        -e 's/^set FTEMP.*$/set FTEMP 303/g' \
+        -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
+        -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
+        -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
+        -e 's/^set TS.*$/set TS 50000/g' \
+        template-namd > run/${prefix}.namd
+    add_pbs ${prefix} run/run.sh
 fi
 
 if $pre; then
@@ -325,17 +323,21 @@ if $pre; then
 #    echo -e "$COMMAND pre-nvt.namd > log/pre-nvt.log\nwait\ndate" >> job-$jobname.pbs
 fi
 
+# /-----------------------------/
+# /     Constraining Runs       /
+# /-----------------------------/
 if $cons; then
+    acceleration=false
     check_exist template-namd
-    jobname=cons
+    prefix=cons
+    frequency=10000
+
     if $run_on_cluster; then
         make_pbs $jobname
     fi
 
-    MM=-1
-    previous=pre-npt
-
     if $membrane_exist; then
+
         outputname=$jobname-memb
         for NN in {5,2,1}
         do
@@ -367,86 +369,142 @@ if $cons; then
         done
         MM=-1
         previous=${outputname}-${NN}
+
+    else  
+
+        previous="heat"
+        ii=1
+        for force in 5 2 1
+        do
+
+            if [ $ii -eq 1 ]; then
+                inputname="output\/${previous}"
+                outputname="output\/${prefix}-${ii}"
+            else
+                jj=$((ii-1))
+                inputname="output\/${prefix}-${jj}"
+                outputname="output\/${prefix}-${ii}"
+            fi
+
+            sed -e 's/^set INPUTNAME.*$/set INPUTNAME '${inputname}'/g' \
+                -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME '${outputname}'/g' \
+                -e 's/^set CONSSCALE.*$/set CONSSCALE '${force}'/g' \
+                -e 's/^set CONSPDB.*$/set CONSPDB ..\/restraints\/cons_backbone/g' \
+                -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
+                -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
+                -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
+                -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
+                -e 's/^set TS.*$/set TS 100000/g' \
+                -e 's/^set CUDASOA.*$/set CUDASOA 1/g' \
+                template-namd > run/${prefix}-${ii}.namd
+
+            add_pbs ${prefix}-${ii} run/run.sh
+            ii=$((ii+1))
+        done
+
+        for force in 1 .5 .1
+        do
+
+            if [ $ii -eq 1 ]; then
+                inputname="output\/${previous}"
+                outputname="output\/${prefix}-${ii}"
+            else
+                jj=$((ii-1))
+                inputname="output\/${prefix}-${jj}"
+                outputname="output\/${prefix}-${ii}"
+            fi
+
+            sed -e 's/^set INPUTNAME.*$/set INPUTNAME '${inputname}'/g' \
+                -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME '${outputname}'/g' \
+                -e 's/^set CONSSCALE.*$/set CONSSCALE '${force}'/g' \
+                -e 's/^set CONSPDB.*$/set CONSPDB ..\/restraints\/cons_CA/g' \
+                -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
+                -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
+                -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
+                -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
+                -e 's/^set TS.*$/set TS 100000/g' \
+                -e 's/^set CUDASOA.*$/set CUDASOA 1/g' \
+                template-namd > run/${prefix}-${ii}.namd
+
+            add_pbs ${prefix}-${ii} run/run.sh
+            ii=$((ii+1))
+        done
+
     fi
-
-    outputname=$jobname
-    for NN in {50,20,10,5,2,1}
-    do
-        SS=`echo "$NN 0.1" | awk '{printf "%.1f", $1*$2}'`
-        sed   -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'-'$NN'/g' \
-              -e 's/^set CONSSCALE.*$/set CONSSCALE '$SS'/g' \
-              -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
-              -e 's/^set TS.*$/set TS 50000/g' \
-              template-namd > cons-$NN.namd
-
-        if [ $MM -eq -1 ] ; then
-            sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' ${outputname}-$NN.namd
-        else
-            sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/'${outputname}'-'$MM'/g' ${outputname}-$NN.namd
-        fi
-
-        if [ $NN -gt 5 ] ; then
-            sed -i 's/^set CONSPDB.*$/set CONSPDB restraints\/cons_bb/g' ${outputname}-$NN.namd
-        else
-            sed -i 's/^set CONSPDB.*$/set CONSPDB restraints\/cons_CA/g' ${outputname}-$NN.namd
-        fi
-
-        echo -e "$COMMAND ${outputname}-$NN.namd > log/${outputname}-$NN.log\nwait\ndate" >> job-$jobname.pbs
-        MM=$NN
-    done
 fi
-
+# /---------------------------/
+# /     Production Runs       /
+# /---------------------------/
 if $md; then
+    acceleration=true
     check_exist template-namd
-    jobname=md
+    prefix=md
+    frequency=50000
+
     if $run_on_cluster; then
         make_pbs $jobname
     fi
-    outputname=md
 
-    previous=cons-1
-    sed -e 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' \
-        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'-1/g' \
-        -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.restart.vel.old/g' \
-        -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.restart.coor.old/g' \
-        -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.restart.xsc.old/g' \
+#     cat > tcl <<'EOF'
+# mol new pdb2namd/vmd_solvate/ionized.pdb type pdb waitfor all
+# set all [atomselect top "all"]
+# $all set beta 0
+# set sel [atomselect top {resname LIG MG}]
+# $sel set beta 1
+# $all writepdb restraints/cons_CA.pdb
+# quit
+# EOF
+
+    inputname="output\/cons-6"
+    outputname="output\/${prefix}"
+
+    sed -e 's/^set INPUTNAME.*$/set INPUTNAME '${inputname}'/g' \
+        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME '${outputname}'/g' \
+        -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.restart.vel/g' \
+        -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.restart.coor/g' \
+        -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.restart.xsc/g' \
         -e 's/^COMmotion.*$/COMmotion no/g' \
-        -e 's/^set ITEMP.*$/set ITEMP 310/g' \
-        -e 's/^set FTEMP.*$/set FTEMP 310/g' \
+        -e 's/^set ITEMP.*$/set ITEMP 303/g' \
+        -e 's/^set FTEMP.*$/set FTEMP 303/g' \
         -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
-        -e 's/^restartfreq.*$/restartfreq 1000/g' \
-        -e 's/^dcdfreq.*$/dcdfreq 1000/g' \
-        -e 's/^xstfreq.*$/xstfreq 1000/g' \
+        -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
+        -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
+        -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
         -e 's/^set TS.*$/set TS 5000000/g' \
-        template-namd > run/${outputname}-1.namd
-    add_pbs $outputname
+        -e 's/^set CUDASOA.*$/set CUDASOA 1/g' \
+        template-namd > run/${prefix}.namd
+    add_pbs ${prefix} run/run.sh
 fi
 
 if $md_continue; then
+    acceleration=true
     check_exist template-namd
+    prefix=md
+    frequency=50000
     for ii in {2..3}
     do
-        jobname=npt$ii
-        make_pbs $jobname
-        outputname=NPT
 
-        jj=$(expr $ii - 1)
+        jj=$((ii-1))
+        inputname="output\/${prefix}-${jj}"
+        outputname="output\/${prefix}-${ii}"
+
         sed \
-            -e 's/^set INPUTNAME.*$/set INPUTNAME output\/'${outputname}'-'$jj'/g' \
-            -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'-'$ii'/g' \
-            -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.restart.vel.old/g' \
-            -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.restart.coor.old/g' \
-            -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.restart.xsc.old/g' \
+            -e 's/^set INPUTNAME.*$/set INPUTNAME '${inputname}'/g' \
+            -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME '${outputname}'/g' \
+            -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.restart.vel/g' \
+            -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.restart.coor/g' \
+            -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.restart.xsc/g' \
             -e 's/^COMmotion.*$/COMmotion yes/g' \
             -e 's/^set ITEMP.*$/set ITEMP 310/g' \
             -e 's/^set FTEMP.*$/set FTEMP 310/g' \
             -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
-            -e 's/^restartfreq.*$/restartfreq 1000/g' \
-            -e 's/^dcdfreq.*$/dcdfreq 1000/g' \
-            -e 's/^xstfreq.*$/xstfreq 1000/g' \
+            -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
+            -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
+            -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
             -e 's/^set TS.*$/set TS 25000000/g' \
-            template-namd > ${outputname}-$ii.namd
-        echo -e "$COMMAND ${outputname}-$ii.namd > log/${outputname}-$ii.log\nwait\ndate" >> job-$jobname.pbs
+            template-namd > ${prefix}-$ii.namd
+        add_pbs ${prefix}-${ii} run/run.sh
+
     done
 fi
 

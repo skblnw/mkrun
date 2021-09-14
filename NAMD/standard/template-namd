@@ -8,13 +8,14 @@
 
 set PSFFILE ../pdb2namd/vmd_solvate/ionized.psf
 set PDBFILE ../pdb2namd/vmd_solvate/ionized.pdb
-set ITEMP 310
-set FTEMP 310
+set ITEMP 303.15
+set FTEMP 303.15
 set PSWITCH 0
 set FIXPDB 0
 set CONSPDB 0
 set CONSSCALE 0
 set COLFILE 0
+set CUDASOA 0
  
 set INPUTNAME 0
 set OUTPUTNAME dummy
@@ -22,7 +23,7 @@ set OUTPUTNAME dummy
 set TS 500000;                         # 1ns for 2fs timestep
 set MS 0
 set SD 0
- 
+
 ####################################
  
 structure $PSFFILE
@@ -31,16 +32,20 @@ coordinates $PDBFILE
 # Output
 outputName         $OUTPUTNAME
 firsttimestep         0
-restartfreq        5000;               # every 1000 steps =  2ps
-dcdfreq            5000;               # every 5000 steps = 10ps
-xstfreq            5000;               # XSTFreq: control how often the extended systen configuration
-                                       # will be appended to the XST file
-outputEnergies     1000;               # 125 steps = every 0.25ps
-                                       # The number of timesteps between each energy output of NAMD
-outputPressure     1000
-outputTiming       5000;               # The number of timesteps between each timing output shows
-                                       # time per step and time to completion
- 
+restartfreq        5000;               
+                                        # every 1000 steps =  2ps
+dcdfreq            5000;               
+                                        # every 5000 steps = 10ps
+xstfreq            5000;               
+                                        # XSTFreq: control how often the extended systen configuration
+                                        # will be appended to the XST file
+outputEnergies     5000;               
+                                        # 125 steps = every 0.25ps
+                                        # The number of timesteps between each energy output of NAMD
+outputPressure     5000;
+outputTiming       5000;                # The number of timesteps between each timing output shows
+                                        # time per step and time to completion
+
 
 paraTypeCharmm on
 parameters ../toppar/par_all36_prot.prm
@@ -57,7 +62,7 @@ if { $INPUTNAME != 0 } {
     ExtendedSystem $INPUTNAME.restart.xsc
 } else {
     temperature $ITEMP
-    source cell_size.str
+    source ../pdb2namd/vmd_solvate/cell_size.str
 }
 
 
@@ -89,11 +94,6 @@ pairlistdist        16.0;              # 16.0 in CHARMM-GUI
                                        # 13.5 (Junfan)
                                        # stores the all the pairs with in the distance it should be larger
                                        # than cutoff( + 2.) 
-stepspercycle       20;                # 20 redo pairlists every ten steps
-pairlistsPerCycle    2;                # 2 is the default 
-                                       # cycle represents the number of steps between atom reassignments
-                                       # this means every 20/2=10 steps the pairlist will be updated
-margin              5.0;               # 5.0 is enough for most MPI cases. Not affecting the physics.
 
 # Integrator Parameters
 timestep            2.0;               # fs/step
@@ -121,11 +121,11 @@ if { $ITEMP == $FTEMP } {
     langevinTemp           $FTEMP;
     langevinHydrogen          off;         # don't couple langevin bath to hydrogens
 } else {
-    reassignFreq 2500;                     # use this to reassign velocity every 2500 steps
+    reassignFreq 5000;                     # use this to reassign velocity every 2500 steps
     if { $FTEMP > $ITEMP } {
-        reassignIncr 10
+        reassignIncr 30
     } else {
-        reassignIncr -10
+        reassignIncr -30
     }
     reassignTemp $ITEMP
     reassignHold $FTEMP
@@ -138,10 +138,10 @@ if { $PSWITCH != 0 } {
     useGroupPressure     yes;
                                            # use a hydrogen-group based pseudo-molecular viral to calcualte pressure and
                                            # has less fluctuation, is needed for rigid bonds (rigidBonds/SHAKE)
-    useFlexibleCell      yes;              
+#    useFlexibleCell      yes;              
                                            # Turn off if it is protein-only simulation
                                            # yes for anisotropic system like membrane 
-    useConstantArea     yes;
+#    useConstantArea      yes;
                                            # Turn on if the membrane is from CHARMM-GUI, otherwise "ConstantArea" (Kevin, 2017)
                                            # Turn off if it is protein-only simulation
                                            # No fluctuation in x-y
@@ -188,6 +188,17 @@ if { $CONSPDB != 0 } {
 if { $COLFILE != 0} {
     colvars on
     colvarsConfig $COLFILE
+}
+
+# CUDA Acceleration
+if { $CUDASOA != 0 } {
+    CUDASOAintegrate        on
+} else {
+    stepspercycle           20;                # 20 redo pairlists every ten steps
+    pairlistsPerCycle       2;                 # 2 is the default 
+                                               # cycle represents the number of steps between atom reassignments
+                                               # this means every 20/2=10 steps the pairlist will be updated
+    #margin                  5.0;               # 5.0 is enough for most MPI cases. Not affecting the physics.
 }
 
 
