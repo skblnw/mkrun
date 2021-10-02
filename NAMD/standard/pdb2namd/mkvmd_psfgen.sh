@@ -4,16 +4,16 @@ rm -rf chains prot*
 mkdir chains
 
 cat > tcl <<'EOF'
-mol new fsy.pdb
+mol new lig.pdb
 set sel [atomselect top "resname LIG"]
 $sel set resid 1
 $sel writepdb chains/LIG.pdb
-mol new 3qtc_modeller.pdb
+mol new mol.pdb
 foreach ii {A} {
     set sel [atomselect top "chain $ii and protein and not resname 0A1"]
     $sel writepdb chains/$ii.pdb
 }
-mol new 3qtc.pdb
+mol new ../../../raw/3qtc.pdb
 set sel [atomselect top "resname ANP"]
 $sel set resname ATP
 $sel set resid 1
@@ -28,7 +28,7 @@ resetpsf
 topology top_all36_prot.rtf
 topology top_all36_cgenff.rtf
 topology toppar_water_ions_namd.str
-topology fsy.rtf
+topology lig.rtf
 
 # Aliases borrowed from AutoPSF
   pdbalias residue G GUA
@@ -89,7 +89,6 @@ topology fsy.rtf
 
 segment PROA { pdb chains/A.pdb}
 coordpdb chains/A.pdb PROA
-# patch CTER PROA:454
 
 segment LIG { pdb chains/LIG.pdb }
 coordpdb chains/LIG.pdb LIG
