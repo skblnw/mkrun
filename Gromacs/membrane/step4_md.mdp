@@ -1,18 +1,17 @@
 ; LINES STARTING WITH ';' ARE COMMENTS
-title                   = Protein-membrane complex NPT equilibration
-define                  = -DPOSRES -DPOSRES_FC_LIPID=200.0
+title                   = Protein-ligand complex NPT equilibration
 ; Run parameters
 integrator              = md       ; leap-frog integrator
-dt                      = 0.001    ; 2 fs
-nsteps                  = 500000  ; 2 * 500000 = 1 ns
+dt                      = 0.002    ; 2 fs
+nsteps                  = 5000000 ; 2 * 5000000 = 10 ns
 ; Output control
 nstlog                  = 5000     ; update log file every 1.0 ps
-nstxout                 = 5000     ; save coordinates every 1.0 ps
-nstvout                 = 5000     ; save velocities every 1.0 ps
-nstfout                 = 5000     ; save forces every 1.0 ps
 nstenergy               = 5000     ; save energies every 1.0 ps
+;nstxout                 = 500     ; save coordinates every 1.0 ps
+;nstvout                 = 500     ; save velocities every 1.0 ps
+;nstfout                 = 500     ; save forces every 1.0 ps
+nstxout-compressed      = 5000    ; write 1000 frames xtc trajectory 
 ; Bond parameters
-continuation            = yes
 constraint_algorithm    = lincs       ; holonomic constraints
 constraints             = h-bonds     ; all bonds (even heavy atom-H bonds) constrained
 lincs_iter              = 1           ; accuracy of LINCS
@@ -39,21 +38,22 @@ rcoulomb                = 1.2            ; short-range electrostatic cutoff (in 
 ; Temperature coupling
 tcoupl                  = V-rescale
 tc_grps                 = Protein   membrane    Water_and_ions
-tau_t                   = 0.1   0.1   0.1
-ref_t                   = 310   310   310
+tau_t                   = 0.1    0.1    0.1
+ref_t                   = 310    310    310
+;
 
 ; Pressure coupling
 pcoupl                  = Parrinello-Rahman         ; pressure coupling is on for NPT
 pcoupltype              = semiisotropic             ; uniform scaling of box vectors
 tau_p                   = 2.0                       ; time constant, in ps
 ref_p                   = 1.0 1.0                   ; reference pressure, in bar
-compressibility         = 4.5e-5  4.5e-5            ; isothermal compressibility of water, bar^-1
+compressibility         = 4.5e-5 4.5e-5             ; isothermal compressibility of water, bar^-1
 refcoord_scaling        = com
-
 ; Periodic boundary conditions
 pbc                     = xyz       ; 3-D PBC
 ;
+continuation            = yes
 gen_vel                 = no
 ;
-disre                   = simple
-disre-fc                = 1000
+;disre                   = simple
+;disre-fc                = 1000
