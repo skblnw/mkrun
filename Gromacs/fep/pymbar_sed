@@ -1,0 +1,23 @@
+#!/bin/bash
+source ~/.zshrc
+
+DT=0.01
+PREFIX=.
+
+[ $# -ne 2 ] && { echo -e "Usage: pymbar_sed [BEGIN] [END]\n       Unit in ps\n       By default, dt = $DT ps"; exit; }
+
+mkdir -p res
+for ii in $(seq 0 0); do
+
+    XVG=${PREFIX}/md${ii}.xvg
+
+    grep "^#" ${XVG} > tmp
+    grep "^@" ${XVG} >> tmp
+    header=`wc -l < tmp`
+    integer begin=$(($1 / $DT + $header + 1))
+    integer end=$(($2 / $DT + $header + 1))
+    sed -n $begin','$end'p' ${XVG} >> tmp
+
+    mv tmp res/out${ii}.xvg
+
+done

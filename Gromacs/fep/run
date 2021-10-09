@@ -1,0 +1,12 @@
+#!/bin/bash
+source ~/.zshrc
+
+for ii in 100 200 300; do
+
+    zsh pymbar_sed 0 $ii
+
+    mkdir -p res_$ii
+    python alchemical_analysis.py -p res/out -t 298 -g -w
+    mv results.* *.pdf res_$ii
+    
+done

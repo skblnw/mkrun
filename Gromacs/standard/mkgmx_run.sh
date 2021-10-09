@@ -1,6 +1,7 @@
 #!/bin/bash
 GMX="gmx"
-MDRUN="gmx mdrun -ntmpi 1 -ntomp 16 -gpu_id 1"
+MDRUN="gmx mdrun -ntmpi 1 -ntomp 8 -gpu_id 0"
+MDRUN_GPU="gmx mdrun -ntmpi 1 -ntomp 8 -gpu_id 0 -pme gpu -nb gpu -bonded gpu -update gpu"
 
 mkdir -p output
 mini=true
@@ -54,16 +55,17 @@ fi
 
 if $md1; then
     prefix1=step4_eq_npt
-    prefix2=step5_md
-    TPR=output/$prefix2.tpr
+    prefix2=t1
+    TPR=output/md.tpr
     rm -f $TPR
-    $GMX grompp -f $prefix2.mdp -o $TPR -c output/$prefix1.gro -r $INITIAL_PDB -n $NDX -p $TOP
-    $MDRUN -v -deffnm output/$prefix2
+    $GMX grompp -f step5_md.mdp -o $TPR -c output/$prefix1.gro -n $NDX -p $TOP
+    $MDRUN -v -s $TPR -deffnm output/$prefix2
 fi
 
 if $md2; then
-    prefix=output/t1
-#    gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
-#    $MDRUN -v -noappend -s output/step5_md.tpr -cpi output/step5_md.cpt -deffnm $prefix -nsteps -1
-    $MDRUN -v -nb gpu -pme gpu -bonded gpu -update gpu -noappend -s output/step5_md.tpr -cpi output/step5_md.cpt -deffnm $prefix -nsteps -1
+    prefix=t1
+    TPR=output/md.tpr
+    # $GMX grompp -f step4_md.mdp -o output/step4_md.tpr -t output/$prefix1.cpt -n $NDX -p $TOP
+    # gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
+    $MDRUN_GPU -v -s $TPR -cpi output/$prefix.cpt -deffnm output/$prefix -nsteps -1
 fi
