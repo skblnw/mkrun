@@ -1,33 +1,25 @@
 #!/bin/bash
 
-cat > tcl <<'EOF'
-exec rm -r chains
-exec mkdir chains
-mol new ../mol.pdb
-foreach ii {A H L} {
-    set sel [atomselect top "chain $ii"]
-    $sel writepdb chains/$ii.pdb
-}
+rm -rf chains peptide.p* prot* 
+mkdir chains
+DIR="../../../7rtr_charmmgui/"
+
+cat > tcl <<EOF
+mol new $DIR/step1_pdbreader.psf
+mol addfile $DIR/step1_pdbreader.pdb
+set sel [atomselect top "segname PROC"]
+\$sel writepdb chains/peptide.pdb
 quit
 EOF
-vmd -dispdev text -e tcl
-# mv chains_separateXYZ/\'x\'.pdb chains_separateXYZ/x.pdb
-# mv chains_separateXYZ/\'y\'.pdb chains_separateXYZ/y.pdb
-
-# cd chains
-# cp ~/github/mkanalysis/build/modeller/step1.py .
-# for ii in A B C D E F G H I J K L M N O P Q r S T; do
-#     cp $ii.pdb prot.pdb
-#     python step1.py
-#     tail -n +2 prot.seq | grep -v "^structure" | sed 's/*//g' > tmp
-#     echo "\n>seq\n" >> tmp
-#     mv tmp $ii.seq
-# done
+vmd -dispdev text -e tcl 
 
 cat > tcl <<'EOF'
 package require psfgen
 resetpsf
+paratypeCharmm on 
+mergeCrossterms no
 topology top_all36_prot.rtf
+# topology toppar_water_ions_namd.str
 
 # Aliases borrowed from AutoPSF
   pdbalias residue G GUA
@@ -86,15 +78,41 @@ topology top_all36_prot.rtf
   pdbalias atom ASN 1HD2 HD21
   pdbalias atom ASN 2HD2 HD22
 
-foreach ii {A H L} {
-    segment PRO$ii { pdb chains/$ii.pdb }
-    coordpdb chains/$ii.pdb PRO$ii
-}
+segment ANTI { 
+  pdb chains/peptide.pdb
+  mutate 1 GLY
+  mutate 2 ILE
+  mutate 3 LEU
+  mutate 4 GLY
+  mutate 5 PHE
+  mutate 6 VAL
+  mutate 7 PHE
+  mutate 8 TRP
+  mutate 9 LEU
+  first GLYP
+  last CTER
+  }
+coordpdb chains/peptide.pdb ANTI
 
 guesscoord
-writepsf prot.psf
-writepdb prot.pdb
+writepsf peptide.psf
+writepdb peptide.pdb
 quit
 EOF
 vmd -dispdev text -e tcl 
-rm -f tcl
+
+cat > tcl <<EOF
+package require topotools
+mol new $DIR/step1_pdbreader.psf
+mol addfile $DIR/step1_pdbreader.pdb
+mol new peptide.psf
+mol addfile peptide.pdb
+set sel1 [atomselect 0 "segname PROA PROB"]
+set sel2 [atomselect 1 all]
+set mol [::TopoTools::selections2mol "\$sel1 \$sel2"]
+animate write psf prot.psf \$mol
+animate write pdb prot.pdb \$mol
+quit
+EOF
+vmd -dispdev text -e tcl 
+rm tcl

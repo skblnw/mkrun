@@ -38,6 +38,39 @@
 #   COMBO: $MPIRUN -mca btl self,openib -np \${NN} -npernode 1 $GMXBIN mdrun -v -ntomp 7 -pin on -s W50k.tpr -deffnm output/gpu-1node-NNomp
 ################################################
 
+
+
+
+# /-------------------------------/
+# /     RUN Command Switches      /
+# /-------------------------------/
+
+NORMRUN="namd3 +p8 +devices 1"
+CUDARUN="namd3 +p1 +devices 1"
+
+# /-------------------/
+# /     Switches      /
+# /-------------------/
+
+membrane_exist=false
+# MD Steps Choosing
+# true to turn on
+mini=true
+heat=true
+pre=false
+cons=true
+md=true
+md_posres=false
+MDPOSRES="segname PROA and resid 203"
+md_continue=false
+bmk=false
+smd=false
+us1=false
+us2=false
+
+
+
+
 # /--------------------------/
 # /     Useful Functions     /
 # /--------------------------/
@@ -168,33 +201,7 @@ else
     exit 0
 fi
 
-COMMAND="namd3 +p1 +devices 1"
-
-# /-------------------------------/
-# /     RUN Command Switches      /
-# /-------------------------------/
-
-NORMRUN="namd3 +p8 +devices 1"
-CUDARUN="namd3 +p1 +devices 1"
-
-# /-------------------/
-# /     Switches      /
-# /-------------------/
-
-membrane_exist=false
-# MD Steps Choosing
-# true to turn on
-mini=true
-heat=true
-pre=false
-cons=true
-md=true
-md_continue=false
-bmk=false
-smd=false
-us1=false
-us2=false
-
+COMMAND="namd3 +p1 +devices 0"
 
 # /-----------------------/
 # /     Minimization      /
@@ -445,35 +452,61 @@ if $md; then
         make_pbs $jobname
     fi
 
-#     cat > tcl <<'EOF'
-# mol new pdb2namd/vmd_solvate/ionized.pdb type pdb waitfor all
-# set all [atomselect top "all"]
-# $all set beta 0
-# set sel [atomselect top {resname LIG MG}]
-# $sel set beta 1
-# $all writepdb restraints/cons_CA.pdb
-# quit
-# EOF
-
     inputname="output\/cons-6"
     outputname="output\/${prefix}"
 
-    sed -e 's/^set INPUTNAME.*$/set INPUTNAME '${inputname}'/g' \
-        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME '${outputname}'/g' \
-        -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.restart.vel/g' \
-        -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.restart.coor/g' \
-        -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.restart.xsc/g' \
-        -e 's/^COMmotion.*$/COMmotion no/g' \
-        -e 's/^set ITEMP.*$/set ITEMP 303/g' \
-        -e 's/^set FTEMP.*$/set FTEMP 303/g' \
-        -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
-        -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
-        -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
-        -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
-        -e 's/^set TS.*$/set TS 5000000/g' \
-        -e 's/^set CUDASOA.*$/set CUDASOA 1/g' \
-        template-namd > run/${prefix}.namd
-    add_pbs ${prefix} run/run.sh
+    if $md_posres; then
+
+        cat > tcl <<EOF
+mol new pdb2namd/vmd_solvate/ionized.pdb type pdb waitfor all
+set all [atomselect top "all"]
+
+\$all set beta 0
+set sel [atomselect top "$MDPOSRES and name CA"]
+\$sel get resid
+\$sel get resname
+\$sel get name
+\$sel set beta 1
+\$all writepdb restraints/cons_posres.pdb
+quit
+EOF
+        vmd -dispdev text -e tcl >> LOG_vmd; rm tcl
+        sed -e 's/^set INPUTNAME.*$/set INPUTNAME '${inputname}'/g' \
+            -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME '${outputname}'/g' \
+            -e 's/^set CONSSCALE.*$/set CONSSCALE 10/g' \
+            -e 's/^set CONSPDB.*$/set CONSPDB ..\/restraints\/cons_posres/g' \
+            -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.restart.vel/g' \
+            -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.restart.coor/g' \
+            -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.restart.xsc/g' \
+            -e 's/^COMmotion.*$/COMmotion no/g' \
+            -e 's/^set ITEMP.*$/set ITEMP 303/g' \
+            -e 's/^set FTEMP.*$/set FTEMP 303/g' \
+            -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
+            -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
+            -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
+            -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
+            -e 's/^set TS.*$/set TS 5000000/g' \
+            -e 's/^set CUDASOA.*$/set CUDASOA 1/g' \
+            template-namd > run/${prefix}.namd
+        add_pbs ${prefix} run/run.sh
+    else
+        sed -e 's/^set INPUTNAME.*$/set INPUTNAME '${inputname}'/g' \
+            -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME '${outputname}'/g' \
+            -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.restart.vel/g' \
+            -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.restart.coor/g' \
+            -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.restart.xsc/g' \
+            -e 's/^COMmotion.*$/COMmotion no/g' \
+            -e 's/^set ITEMP.*$/set ITEMP 303/g' \
+            -e 's/^set FTEMP.*$/set FTEMP 303/g' \
+            -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
+            -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
+            -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
+            -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
+            -e 's/^set TS.*$/set TS 5000000/g' \
+            -e 's/^set CUDASOA.*$/set CUDASOA 1/g' \
+            template-namd > run/${prefix}.namd
+        add_pbs ${prefix} run/run.sh
+    fi
 fi
 
 if $md_continue; then

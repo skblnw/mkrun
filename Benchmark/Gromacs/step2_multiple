@@ -1,10 +1,11 @@
 #!/bin/bash
 
-nstep=50000
-ncore=20
+nstep=10000
+ncore=8
 nn=10
 for ii in $ncore; do 
   echo "> Using $ii CPU cores for 1 GPU card and run for $nstep steps"
+  if false; then
   echo -n "> Performing $nn trials of GPU simulations and the benchmark is... "
   total=0
   for jj in $(seq 1 $nn); do
@@ -13,6 +14,7 @@ for ii in $ncore; do
     total=`echo "${total} + ${res}" | bc`
   done
   echo "scale=1; $total / $nn" | bc
+  fi
   echo -n "> Performing $nn trials of GPU (fully offload) simulations and the benchmark is... "
   total=0
   for jj in $(seq 1 $nn); do

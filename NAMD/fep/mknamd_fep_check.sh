@@ -27,10 +27,10 @@ import matplotlib.pyplot as plt
 data = np.loadtxt('fepout', comments=['#','@'])
 plt.figure(1)
 ax = plt.gca()
-ax.bar(data[:,0], data[:,1])
+ax.bar(data[:,0], data[:,2])
 plt.figure(2)
 ax = plt.gca()
-ax.plot(data[:,0], data[:,2], linewidth=2, marker="o")
+ax.plot(data[:,0], data[:,-1], linewidth=2, marker="o")
 plt.show()
 EOF
 
