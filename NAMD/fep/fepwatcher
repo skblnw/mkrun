@@ -1,0 +1,23 @@
+#!/bin/bash
+
+for posi in `find . -maxdepth 1 -name 'posi[0-9-]*' | sort -V`; do
+  for prefix in free bound; do
+    for trial in `find $posi/$prefix -maxdepth 1 -name 'trial[0-9]*' | sort`; do
+      echo -n "[$trial] "
+      switch=`grep TIMING $trial/LOG_fep | tail -n 1 | awk '{print $11}'`
+      re='^[0]$'
+      if [[ $switch =~ $re ]]; then
+        grep "Running FEP window" $trial/LOG_fep | tail -n 1 | awk '{print "Finished "$5"FEP Windows:"}' | tr -d '\n'
+        grep TIMING $trial/LOG_fep | tail -n 1 | awk '{printf(" %.0f ns/days, ", $9)}' | tr -d '\n'
+        tail -n 1 $trial/alchemy.fepout | awk '{print $19}' | tr -d '\n'
+        echo " kcal/mol"
+        grep "^#Free energy change" $trial/alchemy.fepout | awk '{print NR" "$9" "$12" "$19}' > $trial/fepout
+      else
+        grep "Running FEP window" $trial/LOG_fep | tail -n 1 | awk '{print "Running FEP Window "$5}' | tr -d '\n'
+        grep TIMING $trial/LOG_fep | tail -n 1 | awk '{print " "$11" "$12" "$13" "$9" "$10}'
+      fi
+    done
+    echo "---"
+  done
+  echo ""
+done

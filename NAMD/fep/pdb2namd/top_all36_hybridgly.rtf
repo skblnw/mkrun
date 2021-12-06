@@ -1,0 +1,186 @@
+* *************************************
+*  Dual Topology for hybrid glycines
+*  based on CHARMM36 protein force field
+*  Kev Chan, 2021
+* *************************************
+*
+* standard one-letter code except for histidine:
+* A  Ala
+* C  Cys
+* D  Asp
+* E  Glu
+* F  Phe
+* G  Gly
+* H  HSD
+* I  Ile
+* K  Lys
+* L  Leu
+* M  Met
+* N  Asn
+* P  Pro
+* Q  Gln
+* R  Arg
+* S  Ser
+* T  Thr
+* V  Val
+* W  Trp
+* X  HSE
+* Y  Tyr
+* Z  HSP
+*
+36 1    
+
+DECL -CA
+DECL -C
+DECL -O
+DECL +N
+DECL +HN
+DECL +CA
+
+
+RESI G2D         -1.00
+GROUP
+ATOM N    NH1    -0.47    !             |   
+ATOM HN   H       0.31    !             N--HN
+ATOM CAA  CT2    -0.02    !           /   \
+ATOM HA1A HB2     0.09    !          /     \
+ATOM HA2A HB2     0.09    !   HA1A-CAA-HA2A |  
+GROUP                     !         |       |  
+ATOM CAB  CT1     0.07    !         |       |   HB1B   OD1B    
+ATOM HAB  HB1     0.09    !         |       |    |    // 
+GROUP                     !         |  HAB-CAB--CBB--CGB
+ATOM CBB  CT2A   -0.28    !          \     /     |    \   
+ATOM HB1B HA2     0.09    !           \   /     HB2B   OD2B(-)
+ATOM HB2B HA2     0.09    !             C==O   
+ATOM CGB  CC      0.62    !             |      
+ATOM OD1B OC     -0.76
+ATOM OD2B OC     -0.76
+GROUP
+ATOM C    C       0.51  
+ATOM O    O      -0.51  
+BOND N    HN  
+BOND C    +N  
+BOND O    C 
+BOND N    CAA 
+BOND C    CAA  
+BOND CAA  HA1A
+BOND CAA  HA2A
+BOND CBB  CAB 
+BOND CGB  CBB
+BOND OD2B CGB  
+BOND OD1B CGB  
+BOND N    CAB  
+BOND C    CAB 
+BOND CAB  HAB 
+BOND CBB  HB1B
+BOND CBB  HB2B  
+IMPR N   -C  CAA  HN  
+IMPR C   CAA +N   O   
+IMPR N   -C  CAB  HN  
+IMPR C   CAB +N   O   
+IMPR CGB CBB OD2B OD1B
+CMAP -C  N  CAA  C   N  CAA  C  +N
+CMAP -C  N  CAB  C   N  CAB  C  +N
+IC -C   CAA  *N   HN    1.3475 122.8200  180.0000 115.6200  0.9992
+IC -C   N    CAA  C     1.3475 122.8200  180.0000 108.9400  1.4971
+IC N    CAA  C    +N    1.4553 108.9400  180.0000 117.6000  1.3479
+IC +N   CAA  *C   O     1.3479 117.6000  180.0000 120.8500  1.2289
+IC CAA  C    +N   +CA   1.4971 117.6000  180.0000 124.0800  1.4560
+IC N    C    *CAA HA1A  1.4553 108.9400  117.8600 108.0300  1.0814
+IC N    C    *CAA HA2A  1.4553 108.9400 -118.1200 107.9500  1.0817
+IC -C   CAB  *N   HN    1.3465 125.3100  180.0000 112.9400  0.9966
+IC -C   N    CAB  C     1.3465 125.3100  180.0000 105.6300  1.5315
+IC N    CAB  C    +N    1.4490 105.6300  180.0000 117.0600  1.3478
+IC +N   CAB  *C   O     1.3478 117.0600  180.0000 120.7100  1.2330
+IC CAB  C    +N   +CA   1.5315 117.0600  180.0000 125.3900  1.4484
+IC N    C    *CAB CBB   1.4490 105.6300  122.3300 114.1000  1.5619
+IC N    C    *CAB HAB   1.4490 105.6300 -116.4000 106.7700  1.0841
+IC N    CAB  CBB  CGB   1.4490 111.1000  180.0000 112.6000  1.5218
+IC CGB  CAB  *CBB HB1B  1.5218 112.6000  119.2200 109.2300  1.1086
+IC CGB  CAB  *CBB HB2B  1.5218 112.6000 -121.6100 110.6400  1.1080
+IC CAB  CBB  CGB  OD1B  1.5619 112.6000  180.0000 117.9900  1.2565
+IC OD1B CBB  *CGB OD2B  1.2565 117.9900 -170.2300 117.7000  1.2541
+
+RESI G2P         0.00
+GROUP
+ATOM NA   NH1   -0.47    !         |       |   
+ATOM HNA  H      0.31    !         NA-HNA  |
+ATOM CAA  CT2   -0.02    !         |       | HD1B  HD2B  
+ATOM HA1A HB2    0.09    !         |       |    \  /     
+ATOM HA2A HB2    0.09    !   HA1A-CAA-HA2A NB---CDB  HG1B
+                         !         |       |      \  /   
+                         !         |       |      CGB      
+                         !         |       |      /  \    
+GROUP                    !         |  HAB-CAB---CBB  HG2B 
+ATOM NB   N     -0.29    !          \     /     /  \      
+ATOM CDB  CP3    0.00    !           \   /   HB1B  HB2B  
+ATOM HD1B HA2    0.09    !             C==O  
+ATOM HD2B HA2    0.09    !             |     
+ATOM CAB  CP1    0.02 
+ATOM HAB  HB1    0.09 
+GROUP                
+ATOM CBB  CP2   -0.18
+ATOM HB1B HA2    0.09
+ATOM HB2B HA2    0.09
+GROUP
+ATOM CGB  CP2   -0.18
+ATOM HG1B HA2    0.09
+ATOM HG2B HA2    0.09
+GROUP
+ATOM C    C      0.51
+ATOM O    O     -0.51
+BOND NA   HNA 
+BOND C    +N  
+BOND NA   -C
+BOND O    C 
+BOND NA   CAA 
+BOND C    CAA  
+BOND CAA  HA1A
+BOND CAA  HA2A
+BOND C    CAB
+BOND CAB  HAB
+BOND CAB  NB 
+BOND CAB  CBB
+BOND NB   -C 
+BOND CBB  HB1B 
+BOND CBB  HB2B 
+BOND CBB  CGB
+BOND CGB  HG1B 
+BOND CGB  HG2B 
+BOND CGB  CDB
+BOND CDB  HD1B 
+BOND CDB  HD2B 
+BOND CDB  NB
+IMPR NA   -C   CAA   HNA   
+IMPR C    CAA  +N    O   
+IMPR -C   -CA  NA    -O
+IMPR C    CAB  +N    O
+IMPR -C   -CA  NB    -O
+IMPR NB   -C   CAB   CDB 
+IC NA   -CA   *-C   -O    1.3558 116.8400  180.0000 122.5200  1.2297  
+IC -CA  -C    NA    CAA   1.5390 116.8400  180.0000 126.7700  1.4613  
+IC -C   CAA   *NA   HNA   1.3475 122.8200  180.0000 115.6200  0.9992
+IC -C   NA    CAA   C     1.3475 122.8200  180.0000 108.9400  1.4971
+IC NA   CAA   C     +N    1.4553 108.9400  180.0000 117.6000  1.3479
+IC +N   CAA   *C    O     1.3479 117.6000  180.0000 120.8500  1.2289
+IC CAA  C     +N    +CA   1.4971 117.6000  180.0000 124.0800  1.4560
+IC NA   C     *CAA  HA1A  1.4553 108.9400  117.8600 108.0300  1.0814
+IC NA   C     *CAA  HA2A  1.4553 108.9400 -118.1200 107.9500  1.0817
+IC NB   -CA   *-C   -O    1.3558 116.8400  180.0000 122.5200  1.2297  
+IC -CA  -C    NB    CAB   1.5390 116.8400  180.0000 126.7700  1.4613  
+IC NB   -CA   *-C   -O    1.3558 116.8400  180.0000 122.5200  1.2297  
+IC -CA  -C    NB    CAB   1.5390 116.8400  180.0000 126.7700  1.4613  
+IC -C   CAB   *NB   CDB   1.3366 122.9400  178.5100 112.7500  1.4624 
+IC -C   NB    CAB   C     1.3366 122.9400  -76.1200 110.8600  1.5399
+IC NB   CAB   C     +N    1.4585 110.8600  180.0000 114.7500  1.3569
+IC +N   CAB   *C    O     1.3569 114.7500  177.1500 120.4600  1.2316
+IC CAB  C     +N    +CA   1.5399 116.1200  180.0000 124.8900  1.4517
+IC NB   C     *CAB  CBB   1.4585 110.8600  113.7400 111.7400  1.5399
+IC NB   C     *CAB  HAB   1.4585 110.8600 -122.4000 109.0900  1.0837
+IC NB   CAB   CBB   CGB   1.4585 102.5600   31.6100 104.3900  1.5322
+IC CAB  CBB   CGB   CDB   1.5399 104.3900  -34.5900 103.2100  1.5317
+IC CAB  CGB   *CBB  HB1B  1.4585 102.5600  120.0000 109.0200  1.1131
+IC CAB  CGB   *CBB  HB2B  1.4585 102.5600 -120.0000 109.0200  1.1131
+IC CBB  CDB   *CGB  HG1B  1.5399 104.3900  120.0000 112.9500  1.1077
+IC CBB  CDB   *CGB  HG2B  1.5399 104.3900 -120.0000 109.2200  1.1143
+IC NB   CGB   *CDB  HD1B  1.5322 103.2100  120.0000 110.0300  1.1137

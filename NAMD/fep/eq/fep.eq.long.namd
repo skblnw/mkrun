@@ -1,5 +1,5 @@
 ###################################################
-# PRODUCTION
+# EQUILIBRATION
 ###################################################
 
 
@@ -27,24 +27,21 @@ structure               ../pdb2namd/vmd_solvate/ionized.psf
 # INITIAL CONDITIONS
 
 coordinates             ../pdb2namd/vmd_solvate/ionized.pdb
-binCoordinates     equilibrate.coor
-binvelocities      equilibrate.vel
-extendedSystem     equilibrate.xsc
+temperature             $temp
 
 # OUTPUT FREQUENCIES
 
-outputtiming              400
-outputenergies            400
-outputpressure            400
-restartfreq              2000
-xstfreq                  2000
-dcdfreq                  2000
+outputenergies          10000
+outputtiming            10000
+outputpressure          10000
+restartfreq             10000
+XSTFreq                 10000
 
 
 # OUTPUT AND RESTART
 
-outputname              alchemy
-restartname             alchemy
+outputname              equilibrate
+restartname             equilibrate
 
 binaryoutput            yes
 binaryrestart           yes
@@ -59,7 +56,12 @@ langevinDamping         1.0
 PME                     yes
 PMETolerance            10e-6
 PMEInterpOrder          4
+
 PMEGridSpacing          1.0
+
+# Periodic Boundary Conditions
+source ../pdb2namd/vmd_solvate/cell_size.str
+
 
 # WRAP WATER FOR OUTPUT
 
@@ -78,6 +80,11 @@ useGroupPressure        yes
 
 useFlexibleCell         no
 
+# SPACE PARTITIONING
+
+stepspercycle           20
+margin                  1.0
+
 # CUT-OFFS
 
 switching               on
@@ -88,9 +95,9 @@ pairlistdist            13.5
 
 # RESPA PROPAGATOR
 
-timestep                2.0
-fullElectFrequency      2
-nonbondedFreq           1
+timestep                1.0
+fullElectFrequency      4
+nonbondedFreq           2
 
 
 # SHAKE
@@ -102,17 +109,7 @@ rigiditerations         400
 
 # COM
 
-ComMotion                no
-
-
-# SPACE PARTITIONING
-#stepspercycle           400
-#pairlistsPerCycle        40
-#margin                  8.0
-
-# GPU ACCELERATION
-
-CUDASOAintegrate         on
+ComMotion               no
 
 
 # FEP PARAMETERS
@@ -123,18 +120,18 @@ alch                    on
 alchType                FEP
 alchFile                ../ionized.fep
 alchCol                 B
-alchOutFile             alchemy.fepout
-alchOutFreq             400
+alchOutFile             equilibrate.fepout
+alchOutFreq             10000
 
 alchVdwLambdaEnd        1.0
 alchElecLambdaStart     0.1
 alchVdWShiftCoeff       1.0
 alchDecouple            off
 
-alchEquilSteps          100000
-set numSteps            300000
+alchEquilSteps          10000
+set numSteps            100000
 
-# 24 Windows
-set all { 0 0.00001 0.0001 0.001 0.01 0.02 0.04 0.06 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.94 0.96 0.98 0.99 0.999 0.9999 0.99999 1.00 }
+set numMinSteps         5000
 
-runFEPlist $all $numSteps
+runFEPmin 0.0 0.0 0.0 $numSteps $numMinSteps $temp
+

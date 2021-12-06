@@ -1,7 +1,11 @@
 #!/bin/bash
 
 CUDARUN="namd3 +p1 +devices 0"
-md_posres=false
+md_posres=true
+previous="md"
+prefix="t1"
+frequency=50000
+acceleration=true
 
 check_exist () {
     if [ ! -s "$1" ]; then
@@ -24,9 +28,6 @@ add_pbs () {
     fi
 }
 
-previous="md"
-prefix="t1"
-
 check_exist template-namd
 check_exist run/output/${previous}.restart.coor
 check_exist run/output/${previous}.restart.vel
@@ -34,8 +35,7 @@ check_exist run/output/${previous}.restart.xsc
 if $md_posres; then
     check_exist restraints/cons_posres.pdb
 fi
-frequency=50000
-acceleration=true
+
 mkdir -p run/log
 [ -s "run/lrun.sh" ] && { rm run/lrun.sh; }
 for ii in $(seq 2 3)

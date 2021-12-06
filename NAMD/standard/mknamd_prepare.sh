@@ -47,6 +47,7 @@
 
 NORMRUN="namd3 +p8 +devices 1"
 CUDARUN="namd3 +p1 +devices 1"
+VMD="/opt/vmd/1.9.3/vmd"
 
 # /-------------------/
 # /     Switches      /
@@ -154,7 +155,7 @@ $sel set beta 1
 $all writepdb restraints/cons_CA.pdb
 quit
 EOF
-vmd -dispdev text -e tcl > LOG_vmd
+$VMD -dispdev text -e tcl > LOG_vmd
 rm tcl 
 
 
@@ -470,7 +471,7 @@ set sel [atomselect top "$MDPOSRES and name CA"]
 \$all writepdb restraints/cons_posres.pdb
 quit
 EOF
-        vmd -dispdev text -e tcl >> LOG_vmd; rm tcl
+        $VMD -dispdev text -e tcl >> LOG_vmd; rm tcl
         sed -e 's/^set INPUTNAME.*$/set INPUTNAME '${inputname}'/g' \
             -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME '${outputname}'/g' \
             -e 's/^set CONSSCALE.*$/set CONSSCALE 10/g' \

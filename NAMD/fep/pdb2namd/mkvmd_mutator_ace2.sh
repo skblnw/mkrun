@@ -1,26 +1,28 @@
 #!/bin/bash
 VMD="/opt/vmd/1.9.3/vmd"
 
-rm -rf chains peptide.p* prot* 
+rm -rf chains prot*
 mkdir chains
-DIR="../../../7rtr_charmmgui/"
-
-cat > tcl <<EOF
-mol new $DIR/step1_pdbreader.psf
-mol addfile $DIR/step1_pdbreader.pdb
-set sel [atomselect top "segname PROC"]
-\$sel writepdb chains/peptide.pdb
-quit
-EOF
-$VMD -dispdev text -e tcl 
 
 cat > tcl <<'EOF'
-package require psfgen
+package require psfgen 1.6
+
+mol new md.pdb
+foreach ii {A} {
+    set sel [atomselect top "chain $ii"]
+    $sel writepdb chains/$ii.pdb
+}
+set sel [atomselect top "name ZN"]
+$sel writepdb chains/Z.pdb
+set sel [atomselect top "chain B"]
+$sel writepdb chains/mutant.pdb
+
 resetpsf
-paratypeCharmm on 
-mergeCrossterms no
-topology top_all36_prot.rtf
-# topology toppar_water_ions_namd.str
+topology readcharmmtop1.2/top_all36_prot.rtf
+topology readcharmmtop1.2/top_all36_hybrid.inp
+topology readcharmmtop1.2/top_all27_prot_lipid_na.inp
+#topology readcharmmtop1.2/toppar_water_ions_namd.str
+topology top_all36_propatch.rtf
 
 # Aliases borrowed from AutoPSF
   pdbalias residue G GUA
@@ -79,41 +81,41 @@ topology top_all36_prot.rtf
   pdbalias atom ASN 1HD2 HD21
   pdbalias atom ASN 2HD2 HD22
 
-segment PEPT { 
-  pdb chains/peptide.pdb
-  mutate 1 GLY
-  mutate 2 ILE
-  mutate 3 LEU
-  mutate 4 GLY
-  mutate 5 PHE
-  mutate 6 VAL
-  mutate 7 PHE
-  mutate 8 TRP
-  mutate 9 LEU
-  first GLYP
+segment MUT {
+  pdb chains/mutant.pdb
+  mutate 339 G2D
+  mutate 371 S2L
+  mutate 373 S2P
+  mutate 375 S2F
+  mutate 417 K2N
+  mutate 440 N2K
+  mutate 446 G2S
+  mutate 477 S2N
+  mutate 478 T2K
+  mutate 484 E2A
+  mutate 493 Q2R
+  mutate 496 G2S
+  mutate 498 Q2R
+  mutate 501 N2Y
+  mutate 505 Y2H
+  first NTER
   last CTER
-  }
-coordpdb chains/peptide.pdb PEPT
+}
+patch DISU MUT:336 MUT:361
+patch DISU MUT:379 MUT:432
+patch DISU MUT:391 MUT:525
+patch DISU MUT:480 MUT:488
+patch AABP MUT:372
+patch AASP MUT:373
+coordpdb chains/mutant.pdb MUT
 
+foreach ii {A Z} {segment PRO$ii {pdb chains/$ii.pdb}; coordpdb chains/$ii.pdb PRO$ii}
+
+regenerate angles dihedrals
 guesscoord
-writepsf peptide.psf
-writepdb peptide.pdb
+writepsf prot.psf
+writepdb prot.pdb
 quit
 EOF
 $VMD -dispdev text -e tcl 
-
-cat > tcl <<EOF
-package require topotools
-mol new $DIR/step1_pdbreader.psf
-mol addfile $DIR/step1_pdbreader.pdb
-mol new peptide.psf
-mol addfile peptide.pdb
-set sel1 [atomselect 0 "segname PROA PROB"]
-set sel2 [atomselect 1 all]
-set mol [::TopoTools::selections2mol "\$sel1 \$sel2"]
-animate write psf prot.psf \$mol
-animate write pdb prot.pdb \$mol
-quit
-EOF
-$VMD -dispdev text -e tcl 
-rm tcl
+rm -f tcl tmp.p*

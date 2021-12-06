@@ -1,15 +1,15 @@
 #!/bin/bash
 VMD="/opt/vmd/1.9.3/vmd"
 
-rm -rf chains peptide.p* prot* 
+rm -rf chains mutant.p* prot* 
 mkdir chains
-DIR="../../../7rtr_charmmgui/"
+DIR="/data/kevin/sarscov2/raw/6m0j-charmm-gui-3798750918"
 
 cat > tcl <<EOF
 mol new $DIR/step1_pdbreader.psf
 mol addfile $DIR/step1_pdbreader.pdb
-set sel [atomselect top "segname PROC"]
-\$sel writepdb chains/peptide.pdb
+set sel [atomselect top "segname PROB"]
+\$sel writepdb chains/RBD.pdb
 quit
 EOF
 $VMD -dispdev text -e tcl 
@@ -79,37 +79,44 @@ topology top_all36_prot.rtf
   pdbalias atom ASN 1HD2 HD21
   pdbalias atom ASN 2HD2 HD22
 
-segment PEPT { 
-  pdb chains/peptide.pdb
-  mutate 1 GLY
-  mutate 2 ILE
-  mutate 3 LEU
-  mutate 4 GLY
-  mutate 5 PHE
-  mutate 6 VAL
-  mutate 7 PHE
-  mutate 8 TRP
-  mutate 9 LEU
-  first GLYP
+segment RBD {
+  pdb chains/RBD.pdb
+  mutate 371 LEU
+  mutate 373 PRO
+  mutate 375 PHE
+  mutate 417 ASN
+  mutate 440 LYS
+  mutate 477 ASN
+  mutate 478 LYS
+  mutate 484 ALA
+  mutate 493 LYS
+  mutate 498 ARG
+  mutate 501 TYR
+  mutate 505 HSD
+  first NTER
   last CTER
-  }
-coordpdb chains/peptide.pdb PEPT
+}
+patch DISU RBD:336 RBD:361
+patch DISU RBD:379 RBD:432
+patch DISU RBD:391 RBD:525
+patch DISU RBD:480 RBD:488
+coordpdb chains/RBD.pdb RBD
 
 guesscoord
-writepsf peptide.psf
-writepdb peptide.pdb
+writepsf mutant.psf
+writepdb mutant.pdb
 quit
 EOF
 $VMD -dispdev text -e tcl 
 
 cat > tcl <<EOF
 package require topotools
+mol new mutant.psf
+mol addfile mutant.pdb
 mol new $DIR/step1_pdbreader.psf
 mol addfile $DIR/step1_pdbreader.pdb
-mol new peptide.psf
-mol addfile peptide.pdb
-set sel1 [atomselect 0 "segname PROA PROB"]
-set sel2 [atomselect 1 all]
+set sel1 [atomselect 0 all]
+set sel2 [atomselect 1 "segname PROA HETA HETB WATA"]
 set mol [::TopoTools::selections2mol "\$sel1 \$sel2"]
 animate write psf prot.psf \$mol
 animate write pdb prot.pdb \$mol

@@ -1,0 +1,48 @@
+* *************************************
+*  Patches for P2A in
+*  Dual Topology for hybrid aminoacids
+*  based on CHARMM36 protein force field
+*  Kev Chan, 2021
+* *************************************
+*
+* standard one-letter code except for histidine:
+* A  Ala
+* C  Cys
+* D  Asp
+* E  Glu
+* F  Phe
+* G  Gly
+* H  HSD
+* I  Ile
+* K  Lys
+* L  Leu
+* M  Met
+* N  Asn
+* P  Pro
+* Q  Gln
+* R  Arg
+* S  Ser
+* T  Thr
+* V  Val
+* W  Trp
+* X  HSE
+* Y  Tyr
+* Z  HSP
+*
+36 1    
+
+DECL -CA
+DECL -C
+DECL -O
+DECL +N
+DECL +HN
+DECL +CA
+
+PRES AABP         0.00 ! Amino-acid before Proline
+!DELETE BOND C +O       ! Needed for VMD >= 1.9.4 (psfgen >= 2.0)
+CMAP -C  N  CA  C   N  CA  C  +NA
+CMAP -C  N  CA  C   N  CA  C  +NB
+
+PRES AASP         0.00 ! Amino-acid is Proline
+CMAP -C  NA  CAA  C   NA  CAA  C  +N
+CMAP -C  NB  CAB  C   NB  CAB  C  +N

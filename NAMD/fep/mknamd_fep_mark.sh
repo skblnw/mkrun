@@ -4,9 +4,9 @@ cat > tcl <<EOF
 mol new pdb2namd/vmd_solvate/ionized.pdb
 set sel [atomselect top all]
 \$sel set beta 0
-set sel [atomselect top "protein and not {backbone or name HA HB CB} and name \".*A\""]
+set sel [atomselect top "resname \".*2.*\" and not name CA CB HA HB and name \".*A\""]
 \$sel set beta -1
-set sel [atomselect top "protein and not {backbone or name HA HB CB} and name \".*B\""]
+set sel [atomselect top "resname \".*2.*\" and not name CA CB HA HB and name \".*B\""]
 \$sel set beta 1
 set sel [atomselect top all]
 \$sel writepdb ionized.fep

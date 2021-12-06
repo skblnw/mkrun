@@ -1,13 +1,11 @@
 #!/bin/bash
+VMD="/opt/vmd/1.9.3/vmd"
 
 rm -rf chains prot*
 mkdir chains
 
 cat > tcl <<'EOF'
-package require alchemify
-package require psfgen
-package require readcharmmtop
-package require mutator 1.5
+package require psfgen 1.6
 
 mol new md.pdb
 foreach ii {A B C} {
@@ -98,5 +96,5 @@ writepsf prot.psf
 writepdb prot.pdb
 quit
 EOF
-vmd -dispdev text -e tcl 
+$VMD -dispdev text -e tcl 
 rm -f tcl tmp.p*

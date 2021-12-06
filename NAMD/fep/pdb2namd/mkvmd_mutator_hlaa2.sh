@@ -1,26 +1,27 @@
 #!/bin/bash
-VMD="/opt/vmd/1.9.3/vmd"
 
-rm -rf chains peptide.p* prot* 
+rm -rf chains prot*
 mkdir chains
-DIR="../../../7rtr_charmmgui/"
-
-cat > tcl <<EOF
-mol new $DIR/step1_pdbreader.psf
-mol addfile $DIR/step1_pdbreader.pdb
-set sel [atomselect top "segname PROC"]
-\$sel writepdb chains/peptide.pdb
-quit
-EOF
-$VMD -dispdev text -e tcl 
 
 cat > tcl <<'EOF'
+package require alchemify
 package require psfgen
+package require readcharmmtop
+package require mutator 1.5
+
+mol new md.pdb
+foreach ii {A B} {
+    set sel [atomselect top "segname PRO$ii"]
+    $sel writepdb chains/$ii.pdb
+}
+set sel [atomselect top "segname PROC"]
+$sel writepdb chains/peptide.pdb
+
 resetpsf
-paratypeCharmm on 
-mergeCrossterms no
-topology top_all36_prot.rtf
-# topology toppar_water_ions_namd.str
+topology readcharmmtop1.2/top_all36_prot.rtf
+topology readcharmmtop1.2/top_all36_hybrid.inp
+topology readcharmmtop1.2/top_all27_prot_lipid_na.inp
+#topology readcharmmtop1.2/toppar_water_ions_namd.str
 
 # Aliases borrowed from AutoPSF
   pdbalias residue G GUA
@@ -79,41 +80,24 @@ topology top_all36_prot.rtf
   pdbalias atom ASN 1HD2 HD21
   pdbalias atom ASN 2HD2 HD22
 
-segment PEPT { 
+foreach ii {A B} {
+  segment PRO$ii {pdb chains/$ii.pdb}
+  coordpdb chains/$ii.pdb PRO$ii
+}
+
+segment MUT {
   pdb chains/peptide.pdb
-  mutate 1 GLY
-  mutate 2 ILE
-  mutate 3 LEU
-  mutate 4 GLY
-  mutate 5 PHE
-  mutate 6 VAL
-  mutate 7 PHE
-  mutate 8 TRP
-  mutate 9 LEU
-  first GLYP
+  mutate 1 Y2A
+  first none
   last CTER
-  }
-coordpdb chains/peptide.pdb PEPT
+}
+coordpdb chains/peptide.pdb MUT
 
+regenerate angles dihedrals
 guesscoord
-writepsf peptide.psf
-writepdb peptide.pdb
+writepsf prot.psf
+writepdb prot.pdb
 quit
 EOF
-$VMD -dispdev text -e tcl 
-
-cat > tcl <<EOF
-package require topotools
-mol new $DIR/step1_pdbreader.psf
-mol addfile $DIR/step1_pdbreader.pdb
-mol new peptide.psf
-mol addfile peptide.pdb
-set sel1 [atomselect 0 "segname PROA PROB"]
-set sel2 [atomselect 1 all]
-set mol [::TopoTools::selections2mol "\$sel1 \$sel2"]
-animate write psf prot.psf \$mol
-animate write pdb prot.pdb \$mol
-quit
-EOF
-$VMD -dispdev text -e tcl 
-rm tcl
+vmd -dispdev text -e tcl 
+rm -f tcl tmp.p*
