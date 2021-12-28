@@ -265,7 +265,7 @@ do
   mv ionized.fep posi$ii/bound
   mv ionized.p* cell_size.str posi$ii/bound/pdb2namd/vmd_solvate
   cd posi$ii/bound
-  rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.tcl eq/fep.tcl
+  rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.tcl eq/
   rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.eq.namd eq/fep.eq.namd
   rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.namd eq/fep.namd
   rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_check.sh mknamd_fep_check.sh
@@ -296,7 +296,7 @@ do
   mv ionized.fep posi$ii/free
   mv ionized.p* cell_size.str posi$ii/free/pdb2namd/vmd_solvate
   cd posi$ii/free
-  rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.tcl eq/fep.tcl
+  rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.tcl eq/
   rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.eq.namd eq/fep.eq.namd
   rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.namd eq/fep.namd
   rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_check.sh mknamd_fep_check.sh
