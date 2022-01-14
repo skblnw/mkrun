@@ -1,0 +1,15 @@
+#!/bin/bash
+
+[ $# -ne 2 ] && { echo -e "!!!Caution: Execute in directory containing t1, t2, t3...\nUsage: $0 <zju??> <remote pwd>"; exit 1; }
+
+rsync -rptD --progress -e "ssh -p22" . $1:$2  --include="*/" \
+                                                --include="*/ionized.*" \
+                                                --include="*/eq/equilibrate.coor" \
+                                                --include="*/eq/equilibrate.vel" \
+                                                --include="*/eq/equilibrate.xsc" \
+                                                --include="*/eq/fep.namd" \
+                                                --include="*/eq/fep.tcl" \
+                                                --include="*/mknamd_fep_run.sh" \
+                                                --include="*/mknamd_fep_check.sh" \
+                                                --include="mknamd_alascan_cluster.sh" \
+                                                --exclude="*"

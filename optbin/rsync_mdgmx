@@ -1,0 +1,14 @@
+#!/bin/bash
+
+[ $# -ne 2 ] && { echo -e "!!!Caution: Execute in directory containing t1, t2, t3...\nUsage: $0 <zju??> <remote pwd>"; exit 1; }
+
+rsync -rptD --progress -e "ssh -p22" . $1:$2  --include="*/" \
+                                            --include="pdb2gmx/ionized.pdb" \
+                                            --include="pdb2gmx/index.ndx" \
+                                            --include="pdb2gmx/topol.top" \
+                                            --include="pdb2gmx/topol_*.itp" \
+                                            --include="pdb2gmx/posre_*.itp" \
+                                            --include="output/md.tpr" \
+                                            --include="output/step4_eq_npt.cpt" \
+                                            --include="output/t1.cpt" \
+                                            --exclude="*"

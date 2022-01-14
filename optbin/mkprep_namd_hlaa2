@@ -1,0 +1,29 @@
+[ $# -ne 1 ] && { echo -e "Usage: md_prep_hlaa2 [def|longrun]"; exit 1; }
+if [ "$1" = "longrun" ]; then
+
+    rsync -rpt /home/kevin/github/mkrun/NAMD/standard/mknamd_longrun.sh .
+    rsync -rpt /home/kevin/github/mkrun/NAMD/standard/template-namd .
+    ln -s /home/kevin/forcefield/namd/charmm36/toppar_c36_jul20/ toppar
+    ln -s /home/kevin/forcefield/namd/charmm36/toppar_water_ions_namd.str .
+
+    echo "> Copy by yourself: pdb2namd"
+
+else 
+
+    if [ ! -d pdb2namd ]; then
+        mkdir pdb2namd
+        rsync -rpt /home/kevin/github/mkrun/NAMD/vmd_solvate pdb2namd/
+        rsync -rpt /home/kevin/github/mkrun/NAMD/standard/pdb2namd/mkvmd_psfgen_hlaa2.sh pdb2namd/mkvmd_psfgen.sh
+        ln -s /home/kevin/forcefield/namd/charmm36/toppar_c36_jul20/top*.rtf pdb2namd/
+        ln -s /home/kevin/forcefield/namd/charmm36/toppar_water_ions_namd.str pdb2namd/
+    else
+        echo "> pdb2namd exists!"
+    fi
+    rsync -rpt /home/kevin/github/mkrun/NAMD/standard/mknamd_prepare.sh .
+    rsync -rpt /home/kevin/github/mkrun/NAMD/standard/mknamd_longrun.sh .
+    rsync -rpt /home/kevin/github/mkrun/NAMD/standard/mkvmd_pepcheck.sh .
+    rsync -rpt /home/kevin/github/mkrun/NAMD/standard/template-namd .
+    ln -s /home/kevin/forcefield/namd/charmm36/toppar_c36_jul20/ toppar
+    ln -s /home/kevin/forcefield/namd/charmm36/toppar_water_ions_namd.str .
+
+fi

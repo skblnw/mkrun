@@ -1,0 +1,11 @@
+#!/bin/bash
+
+[ $# -ne 3 ] && { echo -e "!!!Caution: Execute in directory containing t1, t2, t3...\nUsage: $0 <zju??> <port> <remote pwd>"; exit 1; }
+
+rsync -rptD --progress -e "ssh -p$2" $1:$3/ . --include="*/" \
+                                            --include="*/alchemy.fepout" \
+                                            --include="*/alchemy.coor" \
+                                            --include="*/fep.namd" \
+                                            --include="*/stride*.dcd" \
+                                            --include="*/fepout" \
+                                            --exclude="*"

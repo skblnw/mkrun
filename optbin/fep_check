@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [[ "$#" -ne 2 ]]; then
+    echo ">Usage: fep_check [start] [end]"
+    exit 0
+fi
+
+for ii in $(seq $1 $2); do tail -n 1 t$ii/alchemy.fepout; done

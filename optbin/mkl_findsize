@@ -1,0 +1,7 @@
+#!/bin/bash
+
+[ $# -ne 2 ] && { echo -e "Usage: $0 <target dir> <size in G>"; exit 1; }
+
+find $1 -type f -size +$2G -exec du -bsh {} + | sort -rh -k1
+
+# find sarscov2/ -name "*.xtc" -not -wholename "*/output/*.xtc" -exec du -bsh {} + | sort -rh -k1

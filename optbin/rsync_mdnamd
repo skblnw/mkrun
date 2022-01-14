@@ -1,0 +1,11 @@
+#!/bin/bash
+
+[ $# -ne 3 ] && { echo -e "!!!Caution: Execute in directory containing t1, t2, t3...\nUsage: $0 <zju??> <port> <remote pwd>"; exit 1; }
+
+rsync -rptD --progress -e "ssh -p$2" . $1:$3  --include="*/" \
+                                            --include="*/ionized.p*" \
+                                            --include="restraints/cons_posres.pdb" \
+                                            --include="run/output/md.restart.*" \
+                                            --include="mknamd_longrun.sh" \
+                                            --include="template-namd" \
+                                            --exclude="*"

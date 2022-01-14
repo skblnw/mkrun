@@ -1,0 +1,15 @@
+mkdir -p pdb2namd
+rsync -rpt /home/kevin/github/mkrun/NAMD/vmd_solvate pdb2namd/
+rsync -rpt /home/kevin/github/mkrun/NAMD/fep/pdb2namd/mkvmd_mutator_ace2.sh pdb2namd/mkvmd_mutator.sh
+rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.tcl eq/
+rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.eq.namd eq/
+rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.namd eq/
+rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_check.sh .
+rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_mark.sh .
+rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_run.sh .
+ln -s /home/kevin/github/mkrun/NAMD/fep/pdb2namd/top_all36_propatch.rtf pdb2namd/ 
+ln -s /home/kevin/github/mkrun/NAMD/fep/pdb2namd/top_all36_hybridgly.rtf pdb2namd/ 
+ln -s /home/kevin/github/mkrun/Forcefield/namd/charmm36/readcharmmtop1.2 pdb2namd/ 
+ln -s /home/kevin/github/mkrun/Forcefield/namd/charmm36/toppar_water_ions_namd.str pdb2namd/ 
+ln -s /home/kevin/github/mkrun/Forcefield/namd/charmm36/toppar_c36_jul20 toppar
+ln -s /home/kevin/github/mkrun/Forcefield/namd/charmm36/toppar_water_ions_namd.str .

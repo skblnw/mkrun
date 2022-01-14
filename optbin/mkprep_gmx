@@ -1,0 +1,12 @@
+[ $# -ne 1 ] && { echo -e "Usage: mkprep_gmx [std]"; exit 1; }
+
+if [ ! -d pdb2gmx ]; then
+    mkdir pdb2gmx
+    rsync -rpt /home/kevin/github/mkrun/Gromacs/standard/pdb2gmx/mkgmx_ionized.sh pdb2gmx/
+    rsync -rpt /home/kevin/github/mkrun/Gromacs/standard/pdb2gmx/mkfix_forgmx pdb2gmx/
+    ln -s /home/kevin/forcefield/gromacs/charmm36-feb2021.ff pdb2gmx/
+else
+    echo "> pdb2gmx exists!"
+fi
+rsync -rpt /home/kevin/github/mkrun/Gromacs/standard/mkgmx_run.sh .
+rsync -rpt /home/kevin/github/mkrun/Gromacs/standard/step*.mdp .

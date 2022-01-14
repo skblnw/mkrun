@@ -1,0 +1,8 @@
+#!/bin/bash
+
+[ $# -ne 2 ] && { echo -e "Usage: $0 <backup dir> <outfile>"; exit 1; }
+
+EXCLUSION="--exclude=*.dcd --exclude=*.trr --exclude="*.xtc" --exclude=*.old --exclude=*.BAK"
+EXCLUSION="--exclude=*.old --exclude=*.BAK"
+
+tar $EXCLUSION -cf - $1 -P | pv -s $(du -sb $EXCLUSION $1 | awk '{print $1}') | gzip > $2

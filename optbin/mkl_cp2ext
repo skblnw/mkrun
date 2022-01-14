@@ -1,0 +1,8 @@
+#!/bin/bash
+
+[ $# -ne 2 ] && { echo -e "Usage: $0 <backup dir> <target dir>"; exit 1; }
+
+INCLUSION="--include=*.pf1000ps.xtc"
+EXCLUSION="--exclude=*.dcd --exclude=*.trr --exclude="*/output/*.xtc" --exclude=*.old --exclude=*.BAK"
+
+rsync -rptD --info=progress2 $EXCLUSION $1 $2
