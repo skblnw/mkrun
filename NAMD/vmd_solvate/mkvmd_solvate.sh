@@ -18,8 +18,9 @@ $sel moveby [vecinvert [measure center $sel]]
 $sel writepdb tmp.pdb
 
 package require solvate
-#solvate $filename.psf tmp.pdb -t 10 -o solvated
-solvate $filename.psf tmp.pdb -minmax {{-47 -47 -70} {47 47 70}} -o solvated
+solvate $filename.psf tmp.pdb -t 12 -o solvated
+# solvate $filename.psf tmp.pdb -minmax {{-48 -48 -70} {48 48 70}} -o solvated
+# solvate $filename.psf tmp.pdb -minmax {{-48 -48 -48} {48 48 48}} -o solvated
 package require autoionize
 autoionize -psf solvated.psf -pdb solvated.pdb -sc 0.15 -o ionized
 

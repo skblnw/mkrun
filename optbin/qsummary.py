@@ -65,7 +65,7 @@ for jobid, item in Jobs.items():
 fig, axs = plt.subplots(2, 2, gridspec_kw={'width_ratios': [1, 1]})
 df = pd.DataFrame(UserRTime)
 df.sum(axis=1).plot.barh(stacked=False, title='Run Time', ax=axs[0,0], cmap=cmap)
-idle=pd.Series({"idle":(dayback*24*108)-df.sum(axis=1)[['total']][0]})
+idle=pd.Series({"idle":(dayback*24*110)-df.sum(axis=1)[['total']][0]})
 df2=df.sum(axis=1)[['md','fep']].append(idle)
 explode = (0.1, 0.1, 0)
 df2.plot.pie(title='Run Time', autopct='%1.0f%%', explode=explode, shadow=True, ax=axs[0,1], cmap=cmap)

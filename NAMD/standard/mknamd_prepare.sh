@@ -45,8 +45,8 @@
 # /     RUN Command Switches      /
 # /-------------------------------/
 
-NORMRUN="namd3 +p8 +devices 1"
-CUDARUN="namd3 +p1 +devices 1"
+NORMRUN="namd3 +p4 +devices 0"
+CUDARUN="namd3 +p1 +devices 0"
 VMD="/opt/vmd/1.9.3/vmd"
 
 # /-------------------/
@@ -61,8 +61,8 @@ heat=true
 pre=false
 cons=true
 md=true
-md_posres=false
-MDPOSRES="segname PROA and resid 203"
+md_posres=true
+MDPOSRES="segname PROA and resid 203 101"
 md_continue=false
 bmk=false
 smd=false
@@ -486,7 +486,7 @@ EOF
             -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
             -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
             -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
-            -e 's/^set TS.*$/set TS 5000000/g' \
+            -e 's/^set TS.*$/set TS 50000000/g' \
             -e 's/^set CUDASOA.*$/set CUDASOA 1/g' \
             template-namd > run/${prefix}.namd
         add_pbs ${prefix} run/run.sh
@@ -503,7 +503,7 @@ EOF
             -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
             -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
             -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
-            -e 's/^set TS.*$/set TS 5000000/g' \
+            -e 's/^set TS.*$/set TS 50000000/g' \
             -e 's/^set CUDASOA.*$/set CUDASOA 1/g' \
             template-namd > run/${prefix}.namd
         add_pbs ${prefix} run/run.sh

@@ -81,15 +81,18 @@ topology top_all36_prot.rtf
 
 segment RBD {
   pdb chains/RBD.pdb
+  mutate 339 ASP
   mutate 371 LEU
   mutate 373 PRO
   mutate 375 PHE
   mutate 417 ASN
   mutate 440 LYS
+  mutate 446 SER
   mutate 477 ASN
   mutate 478 LYS
   mutate 484 ALA
-  mutate 493 LYS
+  mutate 493 ARG
+  mutate 496 SER
   mutate 498 ARG
   mutate 501 TYR
   mutate 505 HSD

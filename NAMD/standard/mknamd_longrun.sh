@@ -1,9 +1,11 @@
 #!/bin/bash
 
+[ $# -ne 1 ] && { echo "mknamd> Usage: $0 [prefix]"; exit 1; }
+
 CUDARUN="namd3 +p1 +devices 0"
 md_posres=true
 previous="md"
-prefix="t1"
+prefix="$1"
 frequency=50000
 acceleration=true
 
@@ -38,7 +40,7 @@ fi
 
 mkdir -p run/log
 [ -s "run/lrun.sh" ] && { rm run/lrun.sh; }
-for ii in $(seq 2 3)
+for ii in $(seq 2 2)
 do
 
     if [ $ii -eq 2 ]; then
@@ -65,7 +67,7 @@ do
             -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
             -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
             -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
-            -e 's/^set TS.*$/set TS 250000000/g' \
+            -e 's/^set TS.*$/set TS 500000000/g' \
             -e 's/^set CUDASOA.*$/set CUDASOA 1/g' \
             template-namd > run/${prefix}.part${ii}.namd
     else
@@ -81,7 +83,7 @@ do
             -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
             -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
             -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
-            -e 's/^set TS.*$/set TS 250000000/g' \
+            -e 's/^set TS.*$/set TS 500000000/g' \
             -e 's/^set CUDASOA.*$/set CUDASOA 1/g' \
             template-namd > run/${prefix}.part${ii}.namd
     fi

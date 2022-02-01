@@ -3,7 +3,7 @@ VMD="/opt/vmd/1.9.3/vmd"
 
 rm -rf chains peptide.p* prot* 
 mkdir chains
-DIR="../../../7rtr_charmmgui/"
+DIR="../raw/"
 
 cat > tcl <<EOF
 mol new $DIR/step1_pdbreader.psf
