@@ -5,10 +5,8 @@ SELECT_TEXT="segname RBD"
 
 [ $# -eq 0 ] && { echo "mknamd> Usage: $0 [-norun|-run]"; echo "mknamd> Default peptide selection is: $SELECT_TEXT"; echo "mknamd> If apply multiple RESIDs, use e.g. \"1 2 3\""; exit 1; }
 
-# length_of_peptide=`grep PROC pdb2namd/md.pdb | grep "CA" -c`
 resid=(339 371 373 375 417 440 446 477 478 484 493 496 498 501 505)
 sequence="GLY SER SER SER LYS ASN GLY SER THR GLU GLN GLY GLN ASN TYR"
-# sequence=`grep PROC pdb2namd/md.pdb | grep "CA" | awk '{print $4}'`
 
 declare -A mutation=(["ARG"]="R2A" \
                       ["ASN"]="N2A" \

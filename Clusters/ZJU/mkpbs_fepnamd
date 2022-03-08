@@ -1,0 +1,82 @@
+#!/bin/bash
+
+JOBNAME="GIL"
+REPLICA=5
+DEFAULT_START=2
+
+[ $# -eq 0 ] && { echo "mkpbs> Usage: $0 [NJOB] [-prepare|-submit]"; echo "mkpbs> NJOB: Number of jobs for each mutation (Default: 0). If 0, then $REPLICA runs will be executed inside each job."; exit 1; }
+OPT="$2"
+
+for prefix in free; do
+  cd $prefix
+  ln -sfn ~/toppar_c36_jul20/ toppar
+  ln -sfn ~/toppar_water_ions_namd.str .
+  if [ $1 -gt 0 ]; then
+    for ii in $(seq 2 $1); do
+      cat > pbs$ii <<EOF
+#PBS -N $JOBNAME-$prefix-$ii
+#PBS -q fep
+#PBS -l nodes=1:ppn=1:gpus=1
+#PBS -l walltime=24:00:00
+#PBS -S /bin/bash
+#PBS -j oe
+date
+echo "CUDA_VISIBLE_DEVICES: \$CUDA_VISIBLE_DEVICES"
+export LD_LIBRARY_PATH=/public/software/lib/:\$LD_LIBRARY_PATH
+source /public/software/compiler/intel/intel-compiler-2017.5.239/bin/compilervars.sh intel64
+cd \$PBS_O_WORKDIR
+echo \$PBS_O_WORKDIR
+NAMD="/public/software/apps/NAMD_3.0alpha9/namd3"
+rsync -avh eq/fep.namd eq/fep.tcl eq/equilibrate.coor eq/equilibrate.vel eq/equilibrate.xsc trial\$ii
+\$NAMD +p1 +devices 0 trial\$ii/fep.namd >& trial\$ii/LOG_fep
+date
+EOF
+      case $OPT in
+        -prepare)
+        echo "mkpbs> Created [$prefix] PBS#$ii"
+        ;;
+        -submit)
+        echo "mkpbs> Submitted [$prefix] PBS#$ii"
+        qsub pbs$ii
+        ;;
+        *)    # unknown option
+        echo -e "Unknown option $OPT, must be either -prepare or -submit"; exit 0
+        ;;
+      esac
+    done
+  else
+    cat > pbs <<EOF
+#PBS -N $JOBNAME-$prefix
+#PBS -q fep
+#PBS -l nodes=1:ppn=1:gpus=1
+#PBS -l walltime=48:00:00
+#PBS -S /bin/bash
+#PBS -j oe
+date
+echo "CUDA_VISIBLE_DEVICES: \$CUDA_VISIBLE_DEVICES"
+export LD_LIBRARY_PATH=/public/software/lib/:\$LD_LIBRARY_PATH
+source /public/software/compiler/intel/intel-compiler-2017.5.239/bin/compilervars.sh intel64
+cd \$PBS_O_WORKDIR
+echo \$PBS_O_WORKDIR
+NAMD="/public/software/apps/NAMD_3.0alpha9/namd3"
+for ii in \$(seq $DEFAULT_START $REPLICA); do
+    rsync -avh eq/fep.namd eq/fep.tcl eq/equilibrate.coor eq/equilibrate.vel eq/equilibrate.xsc trial\$ii
+    \$NAMD +p1 +devices 0 trial\$ii/fep.namd >& trial\$ii/LOG_fep
+done
+date
+EOF
+    case $OPT in
+      -prepare)
+      echo "mkpbs> Created [$prefix] PBS with iterations from $DEFAULT_START to $REPLICA"
+      ;;
+      -submit)
+      echo "mkpbs> Submitted [$prefix] PBS with iterations from $DEFAULT_START to $REPLICA"
+      qsub pbs
+      ;;
+      *)    # unknown option
+      echo -e "Unknown option $OPT, must be either -prepare or -submit"; exit 0
+      ;;
+    esac
+  fi
+  cd ..
+done

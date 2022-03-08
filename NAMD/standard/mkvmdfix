@@ -1,0 +1,28 @@
+#!/bin/bash
+
+PDB="$1"
+[ $# -eq 0 ] && { echo "mkvmd> Usage: $0 [PSF/PDB]"; exit 1; }
+
+if [ ! -f $PDB ]; then
+    echo -e "$PDB \nStructure not found!"
+    exit 0
+fi
+
+cat > tcl <<EOF
+set alphabets {0 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z}
+mol new $PDB waitfor all
+set selall [atomselect top all]
+puts [llength [lsort -unique [\$selall get segname]]]
+foreach ii [lsort -unique [\$selall get segname]] cc [lrange \$alphabets 1 [llength [lsort -unique [\$selall get segname]]]] {
+    set sel [atomselect top "segname \$ii"]
+    \$sel set chain \$cc
+}
+set sel [atomselect top "resname HSD HSE HSP"]; \$sel set resname HIS
+set sel [atomselect top "resname ILE and name CD"]; \$sel set name CD1
+set sel [atomselect top "noh"]
+\$sel writepdb fixed.pdb
+quit
+EOF
+vmd -dispdev text -e tcl
+
+rm -f tcl 

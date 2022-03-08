@@ -103,7 +103,7 @@ fullElectFrequency  2;                 # 1 in CHARMM-GUI
                                        # PME every 2 steps
                                        
 wrapWater           on;                # wrap water to central cell
-wrapAll             on;                # wrap other molecules too
+wrapAll            off;                # wrap other molecules too
                                        # !!!Disable this when using colvars for dihedral angles!!! (Kev, Jun 2015)
 wrapNearest        off;                # use for non-rectangular cells (wrap to the nearest image)
 

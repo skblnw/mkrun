@@ -1,0 +1,46 @@
+define                  = -Dlipidpr=10000 -DGRApr=10000
+integrator              = md
+dt                      = 0.0005
+nsteps                  = 200000
+nstlog                  = 10000
+nstxout                 = 200000
+nstvout                 = 200000
+nstfout                 = 200000
+nstxout-compressed  	= 1000
+nstcalcenergy           = 100
+nstenergy               = 1000
+;
+cutoff-scheme           = Verlet
+nstlist                 = 20
+rlist                   = 1.2
+coulombtype             = pme
+rcoulomb                = 1.2
+vdwtype                 = Cut-off
+vdw-modifier            = Force-switch
+rvdw_switch             = 1.0
+rvdw                    = 1.2
+;
+tcoupl                  = V-rescale
+tc_grps                 = MEMB SOL
+tau_t                   = 1.0 1.0
+ref_t                   = 310 310
+;
+pcoupl                  = berendsen
+pcoupltype              = semiisotropic
+tau_p                   = 5.0
+compressibility         = 4.5e-5  4.5e-5
+ref_p                   = 1.0  1.0
+;
+constraints             = h-bonds
+constraint_algorithm    = LINCS
+continuation            = no
+;
+gen-vel			= no
+gen-temp	  	= 310
+gen-seed		= -1
+;
+nstcomm                 = 100
+comm_mode               = linear
+comm_grps               = MEMB SOL
+;
+refcoord_scaling        = com

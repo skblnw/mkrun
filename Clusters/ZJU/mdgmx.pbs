@@ -1,0 +1,26 @@
+#PBS -N O-gmx-t2
+#PBS -q md
+#PBS -l nodes=1:ppn=11:gpus=1
+##PBS -l walltime=999:00:00
+#PBS -S /bin/bash
+#PBS -j oe
+
+date
+echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
+NP=`cat $PBS_NODEFILE | wc -l`
+NP_1=$((NP - 1))
+NP_2=$((NP / 2))
+echo "NP: $NP"
+echo "NP_1: $NP_1"
+echo "NP_2: $NP_2"
+cd $PBS_O_WORKDIR
+echo $PBS_O_WORKDIR
+source /public/software/apps/gmx-2020.6/bin/GMXRC.bash
+export LD_LIBRARY_PATH=/public/software/lib/:$LD_LIBRARY_PATH
+source /public/software/compiler/intel/intel-compiler-2017.5.239/bin/compilervars.sh intel64
+
+MDRUN="gmx mdrun -ntmpi 1 -ntomp ${NP_1} -nb gpu -pme gpu -bonded gpu -update gpu -gpu_id 0"
+
+prefix=output/t2
+$MDRUN -v -s output/md.tpr -deffnm output/t2 -nsteps -1
+#$MDRUN -v -noappend -s output/md.tpr -cpi output/t1.cpt -deffnm $prefix -nsteps -1

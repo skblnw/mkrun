@@ -9,11 +9,11 @@ params = {
     'font.family': 'sans-serif',
     'font.sans-serif': 'Arial',
     'font.size': 16,
-    'axes.labelsize': 24,
+    'axes.labelsize': 16,
     'axes.linewidth': 2,
     'axes.xmargin': 0,
     'lines.linewidth' : 1,
-    'legend.fontsize': 16,
+    'legend.fontsize': 12,
     'xtick.labelsize': 16,
     'xtick.major.size': 2,
     'xtick.major.width': 2,
@@ -34,7 +34,7 @@ UserCount={}
 UserRTime={}
 UserQTime={}
 Colors={}
-with open('last'+str(dayback)) as f:
+with open('log') as f:
     next(f)
     for line in f:
         (jobid, qname, qtime, rtime, user) = line.split()
@@ -42,7 +42,7 @@ with open('last'+str(dayback)) as f:
         UserCount[user] = {'total': 0, 'md': 0, 'fep': 0}
         UserRTime[user] = {'total': 0, 'md': 0, 'fep': 0}
         UserQTime[user] = {'total': 0, 'md': 0, 'fep': 0}
-        if user == "flei":
+        if user == "kevin":
             Colors[user] = 'grey'
         else:
             Colors[user] = 'grey'
@@ -81,21 +81,21 @@ dft = pd.DataFrame(UserRTime).transpose()
 colors = []
 for ii in dft.sort_values(by=['md']).index:
     colors.append(Colors[ii])
-dft.sort_values(by=['md'])[['md']].plot.barh(stacked=False, title='Run Time', ax=axs[0,0], color=[colors])
+dft.sort_values(by=['md'])[['md']].plot.barh(stacked=False, title='Run Time (MD)', ax=axs[0,0], color=[colors])
 colors = []
 for ii in dft.sort_values(by=['fep']).index:
     colors.append(Colors[ii])
-dft.sort_values(by=['fep'])[['fep']].plot(kind="barh", stacked=False, title='Run Time', ax=axs[0,1], color=[colors])
+dft.sort_values(by=['fep'])[['fep']].plot(kind="barh", stacked=False, title='Run Time (FEP)', ax=axs[0,1], color=[colors])
 
 dft = pd.DataFrame(UserQTime).transpose()
 colors = []
 for ii in dft.sort_values(by=['md']).index:
     colors.append(Colors[ii])
-dft[['md']].sort_values(by=['md']).plot(kind="barh", stacked=False, title='Queue Time', ax=axs[1,0], color=[colors])
+dft[['md']].sort_values(by=['md']).plot(kind="barh", stacked=False, title='Queue Time (MD)', ax=axs[1,0], color=[colors])
 colors = []
 for ii in dft.sort_values(by=['fep']).index:
     colors.append(Colors[ii])
-dft[['fep']].sort_values(by=['fep']).plot(kind="barh", stacked=False, title='Queue Time', ax=axs[1,1], color=[colors])
+dft[['fep']].sort_values(by=['fep']).plot(kind="barh", stacked=False, title='Queue Time (FEP)', ax=axs[1,1], color=[colors])
 
 plt.tight_layout()
 plt.show()

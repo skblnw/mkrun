@@ -4,18 +4,20 @@ rm -rf chains prot*
 mkdir chains
 
 cat > tcl <<'EOF'
-package require alchemify
 package require psfgen
-package require readcharmmtop
-package require mutator 1.5
 
 mol new md.pdb
 foreach ii {A B} {
     set sel [atomselect top "segname PRO$ii"]
-    $sel writepdb chains/$ii.pdb
+    $sel writepdb chains/PRO$ii.pdb
 }
-set sel [atomselect top "segname PROC"]
-$sel writepdb chains/peptide.pdb
+set sel [atomselect top "segname ANTI and resid 1 to 9 and not name C CA N O HN HA CB"]
+foreach name [$sel get name] {
+  set sel [atomselect top "segname ANTI and resid 1 to 9 and name $name"]
+  $sel set name ${name}A
+}
+set sel [atomselect top "segname ANTI"]
+$sel writepdb chains/mutant.pdb
 
 resetpsf
 topology readcharmmtop1.2/top_all36_prot.rtf
@@ -80,18 +82,27 @@ topology readcharmmtop1.2/top_all27_prot_lipid_na.inp
   pdbalias atom ASN 1HD2 HD21
   pdbalias atom ASN 2HD2 HD22
 
-foreach ii {A B} {
-  segment PRO$ii {pdb chains/$ii.pdb}
-  coordpdb chains/$ii.pdb PRO$ii
-}
-
 segment MUT {
-  pdb chains/peptide.pdb
-  mutate 1 Y2A
-  first none
-  last CTER
+  pdb chains/mutant.pdb
+  mutate 4 D2L
+  mutate 5 R2L
+  mutate 7 N2L
+  mutate 8 Q2L
 }
-coordpdb chains/peptide.pdb MUT
+coordpdb chains/mutant.pdb MUT
+
+segment PROA {
+  pdb chains/PROA.pdb
+}
+patch DISU PROA:101 PROA:164
+patch DISU PROA:203 PROA:259
+coordpdb chains/PROA.pdb PROA
+
+segment PROB {
+  pdb chains/PROB.pdb
+}
+patch DISU PROB:25 PROB:80
+coordpdb chains/PROB.pdb PROB
 
 regenerate angles dihedrals
 guesscoord

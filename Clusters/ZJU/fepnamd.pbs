@@ -1,0 +1,22 @@
+#PBS -N eq
+#PBS -q fep
+#PBS -l nodes=1:ppn=1:gpus=1
+#PBS -l walltime=12:00:00
+#PBS -S /bin/bash
+#PBS -j oe
+date
+hostname
+echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
+export LD_LIBRARY_PATH=/public/software/lib/:$LD_LIBRARY_PATH
+source /public/software/compiler/intel/intel-compiler-2017.5.239/bin/compilervars.sh intel64
+cd $PBS_O_WORKDIR
+echo $PBS_O_WORKDIR
+NAMD="/public/software/apps/NAMD_3.0alpha9/namd3"
+cd eq
+$NAMD +p4 +devices 0 fep.eq.namd >& LOG_eq
+cd ..
+for ii in $(seq 1 1); do
+    rsync -avh eq/fep.namd eq/fep.tcl eq/equilibrate.coor eq/equilibrate.vel eq/equilibrate.xsc trial$ii
+    $NAMD +p1 +devices 0 trial$ii/fep.namd >& trial$ii/LOG_fep
+done
+date

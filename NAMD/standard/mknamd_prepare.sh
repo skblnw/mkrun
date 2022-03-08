@@ -58,7 +58,6 @@ membrane_exist=false
 # true to turn on
 mini=true
 heat=true
-pre=false
 cons=true
 md=true
 md_posres=true
@@ -135,22 +134,22 @@ mol new pdb2namd/vmd_solvate/ionized.pdb type pdb waitfor all
 set all [atomselect top "all"]
 
 $all set beta 0
-set sel [atomselect top {not segname "WT.*" ION}]
+set sel [atomselect top {not segname "WT.*" TIP3 ION IONS}]
 $sel set beta 1
 $all writepdb restraints/cons_solute.pdb
 
 $all set beta 0
-set sel [atomselect top {noh and not segname "WT.*" ION}]
+set sel [atomselect top {noh and not segname "WT.*" TIP3 ION IONS}]
 $sel set beta 1
 $all writepdb restraints/cons_heavy.pdb
 
 $all set beta 0
-set sel [atomselect top {noh and backbone and not segname "WT.*" ION}]
+set sel [atomselect top {noh and backbone and not segname "WT.*" TIP3 ION IONS}]
 $sel set beta 1
 $all writepdb restraints/cons_backbone.pdb
 
 $all set beta 0
-set sel [atomselect top {name CA and not segname "WT.*" ION}]
+set sel [atomselect top {name CA and not segname "WT.*" TIP3 ION IONS}]
 $sel set beta 1
 $all writepdb restraints/cons_CA.pdb
 quit
@@ -250,6 +249,7 @@ if $mini; then
         ii=$((ii+1))
     done
 fi
+
 # /-----------------------/
 # /       Annealing       /
 # /-----------------------/
@@ -282,55 +282,6 @@ if $heat; then
     add_pbs ${prefix} run/run.sh
 fi
 
-if $pre; then
-    check_exist template-namd
-    jobname=pre
-    if $run_on_cluster; then
-        make_pbs $jobname
-    fi
-
-    outputname=$jobname-npt
-    previous=heat
-    sed -e 's/^set INPUTNAME.*$/set INPUTNAME output\/'$previous'/g' \
-        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/'${outputname}'/g' \
-        -e 's/^set CONSPDB.*$/set CONSPDB ..\/restraints\/cons_bb_and_P/g' \
-        -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
-        -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
-        -e 's/^margin.*$/margin 5.0/g' \
-        -e 's/^restartfreq.*$/restartfreq 50000/g' \
-        -e 's/^dcdfreq.*$/dcdfreq 50000/g' \
-        -e 's/^xstfreq.*$/xstfreq 50000/g' \
-        -e 's/^set TS.*$/set TS 500000/g' \
-        template-namd > run/${outputname}.namd
-    add_pbs $outputname
-
-#    for ii in {1..5}
-#    do
-#        jj=$(expr $ii - 1)
-#        sed -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/pre-npt-cont'$ii'/g' \
-#            -e 's/^set CONSPDB.*$/set CONSPDB cons_bb_and_P/g' \
-#            -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
-#            -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
-#            -e 's/^set TS.*$/set TS 50000/g' \
-#            template-namd > pre-npt-cont$ii.namd
-#        if [ $jj -eq 0 ] ; then
-#            sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/pre-npt/g' pre-npt-cont$ii.namd
-#        else
-#            sed -i 's/^set INPUTNAME.*$/set INPUTNAME output\/pre-npt-cont'$jj'/g' pre-npt-cont$ii.namd
-#        fi
-#        echo -e "$COMMAND pre-npt-cont$ii.namd > log/pre-npt-cont$ii.log\nwait\ndate" >> job-$jobname.pbs
-#    done
-
-#    sed -e 's/^set INPUTNAME.*$/set INPUTNAME output\/pre-npt-cont5/g' \
-#        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME output\/pre-nvt/g' \
-#        -e 's/^set CONSPDB.*$/set CONSPDB cons_bb_and_P/g' \
-#        -e 's/^set CONSSCALE.*$/set CONSSCALE 5.0/g' \
-#        -e 's/^set PSWITCH.*$/set PSWITCH 0/g' \
-#        -e 's/^set TS.*$/set TS 50000/g' \
-#        template-pre > pre-nvt.namd
-#    echo -e "$COMMAND pre-nvt.namd > log/pre-nvt.log\nwait\ndate" >> job-$jobname.pbs
-fi
-
 # /-----------------------------/
 # /     Constraining Runs       /
 # /-----------------------------/
@@ -345,6 +296,20 @@ if $cons; then
     fi
 
     if $membrane_exist; then
+
+        cat > tcl <<EOF
+mol new pdb2namd/vmd_solvate/ionized.pdb type pdb waitfor all
+set all [atomselect top "all"]
+
+\$all set beta 0
+set sel [atomselect top "segname MEMB and name P"]
+\$sel get resid
+\$sel get resname
+\$sel get name
+\$sel set beta 1
+\$all writepdb restraints/cons_posres.pdb
+quit
+EOF
 
         outputname=$jobname-memb
         for NN in {5,2,1}
@@ -440,6 +405,7 @@ if $cons; then
 
     fi
 fi
+
 # /---------------------------/
 # /     Production Runs       /
 # /---------------------------/

@@ -9,23 +9,24 @@ NAMD="namd3 +p8 +devices 0"
 # /     Functions     /
 # /-------------------/
 
-psfgen () {
+psfgen_header () {
   cat > tcl <<'EOF'
-package require psfgen 1.6
+package require psfgen
 
 mol new pdb2namd/md.pdb
-foreach ii {A} {
-    set sel [atomselect top "chain $ii"]
-    $sel writepdb chains/$ii.pdb
+foreach ii {A B} {
+    set sel [atomselect top "segname PRO$ii"]
+    $sel writepdb chains/PRO$ii.pdb
 }
-set sel [atomselect top "name ZN"]
-$sel writepdb chains/Z.pdb
-set sel [atomselect top "chain B"]
+set sel [atomselect top "segname ANTI and resid 1 2 4 5 6 7 8 and not name C CA N O HN HA CB"]
+foreach name [$sel get name] {
+  set sel [atomselect top "segname ANTI and resid 1 2 4 5 6 7 8 and name $name"]
+  $sel set name ${name}A
+}
+set sel [atomselect top "segname ANTI"]
 $sel writepdb chains/mutant.pdb
 
 resetpsf
-topology pdb2namd/top_all36_propatch.rtf
-topology pdb2namd/top_all36_hybridgly.rtf
 topology pdb2namd/readcharmmtop1.2/top_all36_prot.rtf
 topology pdb2namd/readcharmmtop1.2/top_all36_hybrid.inp
 topology pdb2namd/toppar_water_ions_namd.str
@@ -89,33 +90,45 @@ topology pdb2namd/toppar_water_ions_namd.str
 
 segment MUT {
   pdb chains/mutant.pdb
-  mutate 339 G2D
-  mutate 371 S2L
-  mutate 373 S2P
-  mutate 375 S2F
-  mutate 417 K2N
-  mutate 440 N2K
-  mutate 446 G2S
-  mutate 477 S2N
-  mutate 478 T2K
-  mutate 484 E2A
-  mutate 493 Q2R
-  mutate 496 G2S
-  mutate 498 Q2R
-  mutate 501 N2Y
-  mutate 505 Y2H
-  first NTER
-  last CTER
+  mutate 1 L2G
+  mutate 2 L2I
+  mutate 4 D2G
+  mutate 5 R2F
+  mutate 6 L2V
+  mutate 7 N2F
+  mutate 8 Q2T
+  first none
 }
-patch DISU MUT:336 MUT:361
-patch DISU MUT:379 MUT:432
-patch DISU MUT:391 MUT:525
-patch DISU MUT:480 MUT:488
-patch AABP MUT:372
-patch AASP MUT:373
 coordpdb chains/mutant.pdb MUT
 
-foreach ii {A Z} {segment PRO$ii {pdb chains/$ii.pdb}; coordpdb chains/$ii.pdb PRO$ii}
+EOF
+}
+
+psfgen_free () {
+  cat >> tcl <<'EOF'
+regenerate angles dihedrals
+guesscoord
+writepsf prot.psf
+writepdb prot.pdb
+quit
+EOF
+  $VMD -dispdev text -e tcl >& LOG_vmd
+}
+
+psfgen_bound () {
+  cat >> tcl <<'EOF'
+segment PROA {
+  pdb chains/PROA.pdb
+}
+patch DISU PROA:101 PROA:164
+patch DISU PROA:203 PROA:259
+coordpdb chains/PROA.pdb PROA
+
+segment PROB {
+  pdb chains/PROB.pdb
+}
+patch DISU PROB:25 PROB:80
+coordpdb chains/PROB.pdb PROB
 
 regenerate angles dihedrals
 guesscoord
@@ -123,7 +136,7 @@ writepsf prot.psf
 writepdb prot.pdb
 quit
 EOF
-  $VMD -e tcl >& LOG_vmd
+  $VMD -dispdev text -e tcl >& LOG_vmd
 }
 
 solvate () {
@@ -143,8 +156,7 @@ $sel moveby [vecinvert [measure center $sel]]
 $sel writepdb tmp.pdb
 
 package require solvate
-#solvate $filename.psf tmp.pdb -t 10 -o solvated
-solvate $filename.psf tmp.pdb -minmax {{-47 -47 -70} {47 47 70}} -o solvated
+solvate $filename.psf tmp.pdb -minmax {{-38 -40 -51} {38 40 51}} -o solvated
 package require autoionize
 autoionize -psf solvated.psf -pdb solvated.pdb -sc 0.15 -o ionized
 
@@ -162,7 +174,7 @@ puts $fout "cellOrigin $center"
 close $fout
 quit
 EOF
-  $VMD -e tcl2 >& /dev/null
+  $VMD -dispdev text -e tcl2 >& /dev/null
 }
 
 markfep () {
@@ -178,7 +190,7 @@ set sel [atomselect top all]
 \$sel writepdb ionized.fep
 quit
 EOF
-  $VMD -e tcl3 >& /dev/null
+  $VMD -dispdev text -e tcl3 >& /dev/null
 }
 
 
@@ -191,17 +203,18 @@ EOF
 # /     Main body     /
 # /-------------------/
 
+mkdir -p chains
 
 echo "mknamd> Preparing Bound State"
 [ -d bound ] && { cp -r bound bound.BAK; rm -r bound; }
-mkdir -p chains bound bound/pdb2namd bound/pdb2namd/vmd_solvate
+mkdir -p bound bound/pdb2namd bound/pdb2namd/vmd_solvate
 
 # /---------------------/
 # /     Bound State     /
 # /---------------------/
 
-psfgen
-cp tcl tcl.bak
+psfgen_header
+psfgen_bound
 solvate
 markfep
 
@@ -232,8 +245,8 @@ echo "mknamd> Preparing Free State"
 [ -d free ] && { cp -r free free.BAK; rm -r free; }
 mkdir -p free free/pdb2namd free/pdb2namd/vmd_solvate
 
-sed -i "s/.*} {segment PRO.*//g" tcl
-$VMD -e tcl >& /dev/null
+psfgen_header
+psfgen_free
 solvate
 markfep
 
@@ -256,4 +269,5 @@ if [[ "$1" == "-run" ]]; then
 fi
 cd ..
 
-rm -r chains tcl* tmp.pdb prot.p* solvated.*
+rm -r chains 
+rm tcl* tmp.pdb prot.p* solvated.*
