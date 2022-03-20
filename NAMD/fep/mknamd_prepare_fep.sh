@@ -18,12 +18,12 @@ foreach ii {A B} {
     set sel [atomselect top "segname PRO$ii"]
     $sel writepdb chains/PRO$ii.pdb
 }
-set sel [atomselect top "segname ANTI and resid 1 2 4 5 6 7 8 and not name C CA N O HN HA CB"]
+set sel [atomselect top "segname PROC and resid 1 2 3 4 5 6 7 8 9 and not name C CA N O HN HA CB"]
 foreach name [$sel get name] {
-  set sel [atomselect top "segname ANTI and resid 1 2 4 5 6 7 8 and name $name"]
+  set sel [atomselect top "segname PROC and resid 1 2 3 4 5 6 7 8 9 and name $name"]
   $sel set name ${name}A
 }
-set sel [atomselect top "segname ANTI"]
+set sel [atomselect top "segname PROC"]
 $sel writepdb chains/mutant.pdb
 
 resetpsf
@@ -90,13 +90,15 @@ topology pdb2namd/toppar_water_ions_namd.str
 
 segment MUT {
   pdb chains/mutant.pdb
-  mutate 1 L2G
+  mutate 1 A2G
   mutate 2 L2I
-  mutate 4 D2G
-  mutate 5 R2F
-  mutate 6 L2V
-  mutate 7 N2F
-  mutate 8 Q2T
+  mutate 3 W2L
+  mutate 4 E2G
+  mutate 5 I2F
+  mutate 6 Q2V
+  mutate 7 Q2F
+  mutate 8 V2T
+  mutate 9 V2L
   first none
 }
 coordpdb chains/mutant.pdb MUT
