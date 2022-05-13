@@ -13,22 +13,24 @@ psfgen_header () {
   cat > tcl <<'EOF'
 package require psfgen
 
+set selection "segname PROB"
 mol new pdb2namd/md.pdb
-foreach ii {A B} {
+foreach ii {A C D} {
     set sel [atomselect top "segname PRO$ii"]
     $sel writepdb chains/PRO$ii.pdb
 }
-set sel [atomselect top "segname PROC and resid 1 2 3 4 5 6 7 8 9 and not name C CA N O HN HA CB"]
+set sel [atomselect top "$selection and resid 96 and not name C CA N O HN HA CB"]
 foreach name [$sel get name] {
-  set sel [atomselect top "segname PROC and resid 1 2 3 4 5 6 7 8 9 and name $name"]
+  set sel [atomselect top "$selection and resid 96 and name $name"]
   $sel set name ${name}A
 }
-set sel [atomselect top "segname PROC"]
+set sel [atomselect top "$selection"]
 $sel writepdb chains/mutant.pdb
 
 resetpsf
 topology pdb2namd/readcharmmtop1.2/top_all36_prot.rtf
 topology pdb2namd/readcharmmtop1.2/top_all36_hybrid.inp
+topology pdb2namd/top_all36_propatch.rtf
 topology pdb2namd/toppar_water_ions_namd.str
 
 # Aliases borrowed from AutoPSF
@@ -90,18 +92,19 @@ topology pdb2namd/toppar_water_ions_namd.str
 
 segment MUT {
   pdb chains/mutant.pdb
-  mutate 1 A2G
-  mutate 2 L2I
-  mutate 3 W2L
-  mutate 4 E2G
-  mutate 5 I2F
-  mutate 6 Q2V
-  mutate 7 Q2F
-  mutate 8 V2T
-  mutate 9 V2L
-  first none
+  mutate 96 S2L
 }
+patch DISU MUT:23 MUT:91
+# patch AABP MUT:95
+# patch AASP MUT:96
 coordpdb chains/mutant.pdb MUT
+
+set sname PROA
+segment $sname {
+  pdb chains/$sname.pdb
+}
+patch DISU $sname:23 $sname:90
+coordpdb chains/$sname.pdb $sname
 
 EOF
 }
@@ -119,18 +122,19 @@ EOF
 
 psfgen_bound () {
   cat >> tcl <<'EOF'
-segment PROA {
-  pdb chains/PROA.pdb
+set sname PROC
+segment $sname {
+  pdb chains/$sname.pdb
 }
-patch DISU PROA:101 PROA:164
-patch DISU PROA:203 PROA:259
-coordpdb chains/PROA.pdb PROA
+patch DISU $sname:22 $sname:90
+coordpdb chains/$sname.pdb $sname
 
-segment PROB {
-  pdb chains/PROB.pdb
+set sname PROD
+segment $sname {
+  pdb chains/$sname.pdb
 }
-patch DISU PROB:25 PROB:80
-coordpdb chains/PROB.pdb PROB
+patch DISU $sname:22 $sname:96
+coordpdb chains/$sname.pdb $sname
 
 regenerate angles dihedrals
 guesscoord
@@ -158,7 +162,8 @@ $sel moveby [vecinvert [measure center $sel]]
 $sel writepdb tmp.pdb
 
 package require solvate
-solvate $filename.psf tmp.pdb -minmax {{-38 -40 -51} {38 40 51}} -o solvated
+# solvate $filename.psf tmp.pdb -t 12 -o solvated
+solvate $filename.psf tmp.pdb -minmax {{-40 -40 -55} {40 40 55}} -o solvated
 package require autoionize
 autoionize -psf solvated.psf -pdb solvated.pdb -sc 0.15 -o ionized
 
@@ -195,9 +200,31 @@ EOF
   $VMD -dispdev text -e tcl3 >& /dev/null
 }
 
+fixbb () {
+  cat > tcl4 <<EOF
+mol new pdb2namd/vmd_solvate/ionized.pdb type pdb waitfor all
+set all [atomselect top "all"]
+\$all set beta 0
+set sel [atomselect top "segname MUT and name C N O"]
+\$sel get resid
+\$sel get resname
+\$sel get name
+\$sel set beta 1
+\$all writepdb cons.fep
+quit
+EOF
+  $VMD -dispdev text -e tcl4 >& /dev/null
+}
 
-
-
+copyeverything () {
+  rsync -rpt ../eq/fep.tcl eq/
+  rsync -rpt ../eq/fep.eq.namd eq/fep.eq.namd
+  rsync -rpt ../eq/fep.namd eq/fep.namd
+  rsync -rpt ../mknamd_fep_check.sh mknamd_fep_check.sh
+  rsync -rpt ../mknamd_fep_run.sh mknamd_fep_run.sh
+  ln -s /home/kevin/forcefield/namd/charmm36/toppar_c36_jul20/ toppar
+  ln -s /home/kevin/forcefield/namd/charmm36/toppar_water_ions_namd.str .
+}
 
 
 
@@ -219,17 +246,12 @@ psfgen_header
 psfgen_bound
 solvate
 markfep
+fixbb
 
-mv ionized.fep bound
+mv *.fep bound
 mv ionized.p* cell_size.str bound/pdb2namd/vmd_solvate
 cd bound
-rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.tcl eq/
-rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.eq.namd eq/fep.eq.namd
-rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.namd eq/fep.namd
-rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_check.sh mknamd_fep_check.sh
-rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_run.sh mknamd_fep_run.sh
-ln -s /home/kevin/forcefield/namd/charmm36/toppar_c36_jul20/ toppar
-ln -s /home/kevin/forcefield/namd/charmm36/toppar_water_ions_namd.str .
+copyeverything
 
 if [[ "$1" == "-run" ]]; then 
   cd eq
@@ -251,17 +273,12 @@ psfgen_header
 psfgen_free
 solvate
 markfep
+fixbb
 
-mv ionized.fep free
+mv *.fep free
 mv ionized.p* cell_size.str free/pdb2namd/vmd_solvate
 cd free
-rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.tcl eq/
-rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.eq.namd eq/fep.eq.namd
-rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.namd eq/fep.namd
-rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_check.sh mknamd_fep_check.sh
-rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_run.sh mknamd_fep_run.sh
-ln -s /home/kevin/forcefield/namd/charmm36/toppar_c36_jul20/ toppar
-ln -s /home/kevin/forcefield/namd/charmm36/toppar_water_ions_namd.str .
+copyeverything
 
 if [[ "$1" == "-run" ]]; then 
   cd eq

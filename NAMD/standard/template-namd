@@ -1,7 +1,7 @@
-#to be rigorous do the following:
+#to be rigorous do the followings:
 #1 freeze all non-water and minimize water 5K steps
-# Now constrain the protein backbone and the nucleotide/ion
-# They will stay constrained until after heating and equilibration
+# Constrain the protein backbone and the nucleotide/ion
+# Stay constrained until after heating and equilibration
 #2 freeze all water and minimize non-water 5K steps
 #3 minimize all unfrozen 10K steps
 
@@ -14,13 +14,15 @@ set PSWITCH 0
 set FIXPDB 0
 set CONSPDB 0
 set CONSSCALE 0
+set EXTRAB 0
+set SMDFILE 0
 set COLFILE 0
 set CUDASOA 0
  
 set INPUTNAME 0
 set OUTPUTNAME dummy
  
-set TS 500000;                         # 1ns for 2fs timestep
+set TS 500000;                          # 1ns if 2fs timestep
 set MS 0
 set SD 0
 
@@ -183,9 +185,25 @@ if { $CONSPDB != 0 } {
     constraintScaling    $CONSSCALE
 }
 
+# extraBonds (for secondary structure restraints)
+if { $EXTRAB != 0 } {
+    extraBonds yes
+    foreach fil $EXTRAB {
+        extraBondsFile $fil
+    }
+}
+
+if { $SMDFILE != 0 } {
+    SMD     on
+    SMDFile $SMDFILE
+    SMDk    2.5                             # 4 * kBT
+    SMDVel  .00001                          # 20 A/ns
+    SMDDir  0 0 1
+    SMDOutputFreq 5000
+}
 
 # Planar Restraint of lipid heads. Referred to CHARMM-GUI
-if { $COLFILE != 0} {
+if { $COLFILE != 0 } {
     colvars on
     colvarsConfig $COLFILE
 }

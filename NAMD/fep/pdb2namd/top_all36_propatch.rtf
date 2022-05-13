@@ -40,9 +40,16 @@ DECL +CA
 
 PRES AABP         0.00 ! Amino-acid before Proline
 DELETE BOND C +O       ! Needed for VMD >= 1.9.4 (psfgen >= 2.0)
-DELETE CMAP -C  N  CA  C   N  CA  C  +N
+!DELETE IMPR C    CA  +O    O   ! Not working
 CMAP -C  N  CA  C   N  CA  C  +NA
 CMAP -C  N  CA  C   N  CA  C  +NB
+
+PRES AAPBP         0.00 ! Amino-acid is Proline
+DELETE BOND C +O       ! Needed for VMD >= 1.9.4 (psfgen >= 2.0)
+CMAP -C  NA  CAA  C   NA  CAA  C  +NA
+CMAP -C  NB  CAB  C   NB  CAB  C  +NA
+CMAP -C  NA  CAA  C   NA  CAA  C  +NB
+CMAP -C  NB  CAB  C   NB  CAB  C  +NB
 
 PRES AASP         0.00 ! Amino-acid is Proline
 CMAP -C  NA  CAA  C   NA  CAA  C  +N

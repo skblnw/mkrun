@@ -1,0 +1,27 @@
+colvarsTrajFrequency     1000
+colvarsRestartFrequency  1000
+
+colvar {
+   name Translocation
+
+   width 0.1
+
+   distanceZ { 
+      main {
+         atomnumbers { <list of ammonia atom(s)> } 
+      }
+      ref {
+         atomnumbers { <list of protein atoms> }
+      }
+      axis ( 0.0, 0.0, 1.0 )
+   }
+   outputValue on
+   outputAppliedForce on
+}
+
+harmonic {
+   name Spring
+   colvars Translocation
+   centers CENTER
+   forceConstant 0.025 ; 2.5 * 0.1^2 = 0.025
+}

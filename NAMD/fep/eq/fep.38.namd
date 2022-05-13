@@ -33,12 +33,12 @@ extendedSystem     equilibrate.xsc
 
 # OUTPUT FREQUENCIES
 
-outputtiming            10000
-outputenergies          10000
-outputpressure          10000
-restartfreq            100000
-xstfreq                100000
-dcdfreq                100000
+outputtiming              400
+outputenergies            400
+outputpressure            400
+restartfreq               400
+xstfreq                   400
+dcdfreq                   400
 
 
 # OUTPUT AND RESTART
@@ -124,14 +124,14 @@ alchType                FEP
 alchFile                ../ionized.fep
 alchCol                 B
 alchOutFile             alchemy.fepout
-alchOutFreq             10000
+alchOutFreq             400
 
 alchVdwLambdaEnd        1.0
 alchElecLambdaStart     0.1
 alchVdWShiftCoeff       1.0
 alchDecouple            off
 
-alchEquilSteps          300000
+alchEquilSteps          200000
 set numSteps            600000
 
 # 38 Windows

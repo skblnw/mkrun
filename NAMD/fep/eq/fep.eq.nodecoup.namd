@@ -1,10 +1,9 @@
 ###################################################
-# PRODUCTION
+# EQUILIBRATION
 ###################################################
 
 
 # INPUT
-
 set temp                310.0
 
 paraTypeCharmm on
@@ -21,31 +20,22 @@ exclude                 scaled1-4
 
 
 # TOPOLOGY
-
 structure               ../pdb2namd/vmd_solvate/ionized.psf
 
 # INITIAL CONDITIONS
-
 coordinates             ../pdb2namd/vmd_solvate/ionized.pdb
-binCoordinates     equilibrate.coor
-binvelocities      equilibrate.vel
-extendedSystem     equilibrate.xsc
+temperature             $temp
 
 # OUTPUT FREQUENCIES
-
-outputtiming              400
-outputenergies            400
-outputpressure            400
-restartfreq               400
-xstfreq                   400
-dcdfreq                   400
-
+outputenergies          10000
+outputtiming            10000
+outputpressure          10000
+restartfreq             10000
+XSTFreq                 10000
 
 # OUTPUT AND RESTART
-
-outputname              alchemy
-restartname             alchemy
-
+outputname              equilibrate
+restartname             equilibrate
 binaryoutput            yes
 binaryrestart           yes
 
@@ -55,86 +45,78 @@ langevinTemp            $temp
 langevinDamping         1.0
 
 # PME
-
 PME                     yes
 PMETolerance            10e-6
 PMEInterpOrder          4
 PMEGridSpacing          1.0
 
-# WRAP WATER FOR OUTPUT
+# Periodic Boundary Conditions
+source ../pdb2namd/vmd_solvate/cell_size.str
 
-wrapAll                 on
+# WRAP WATER FOR OUTPUT
+wrapAll                 off
 
 # CONSTANT-P
-
 LangevinPiston          on
 LangevinPistonTarget    1
 LangevinPistonPeriod    100
 LangevinPistonDecay     100
 LangevinPistonTemp      $temp
-
 StrainRate              0.0 0.0 0.0
 useGroupPressure        yes
-
 useFlexibleCell         no
 
 # CUT-OFFS
-
 switching               on
 switchdist              10.0
 cutoff                  12.0
 pairlistdist            13.5
 
-
-# RESPA PROPAGATOR
-
-timestep                1.0
-fullElectFrequency      2
-nonbondedFreq           1
-
-
 # SHAKE
-
 rigidbonds              all
 rigidtolerance          0.000001
 rigiditerations         400
 
+# RESPA PROPAGATOR
+timestep                1.0
+fullElectFrequency      4
+nonbondedFreq           2
 
 # COM
+ComMotion               no
 
-ComMotion                no
-
+# Position restraints
+if {0} {
+    Constraints             yes
+    ConsRef                 ../cons.fep
+    ConsKFile               ../cons.fep
+    ConskCol                B
+    constraintScaling       1
+}
 
 # SPACE PARTITIONING
-#stepspercycle           400
-#pairlistsPerCycle        40
-#margin                  8.0
-
-# GPU ACCELERATION
-
-CUDASOAintegrate         on
+stepspercycle           20
+margin                  1.0
 
 
 # FEP PARAMETERS
-
 source                  fep.tcl
 
 alch                    on
 alchType                FEP
 alchFile                ../ionized.fep
 alchCol                 B
-alchOutFile             alchemy.fepout
-alchOutFreq             400
+alchOutFile             equilibrate.fepout
+alchOutFreq             10000
 
 alchVdwLambdaEnd        1.0
 alchElecLambdaStart     0.1
 alchVdWShiftCoeff       1.0
 alchDecouple            off
 
-alchEquilSteps          200000
-set numSteps            600000
+alchEquilSteps          10000
+set numSteps            20000
 
-# 48 Windows
-set all { 0 0.000001 0.00001 0.0001 0.001 0.004 0.01 0.02 0.03 0.04 0.05 0.06 0.08 0.1 0.12 0.14 0.18 0.22 0.26 0.30 0.34 0.38 0.42 0.46 0.5 0.54 0.58 0.62 0.66 0.7 0.74 0.78 0.82 0.86 0.88 0.9 0.92 0.94 0.95 0.96 0.97 0.98 0.99 0.996 0.999 0.9999 0.99999 0.999999 1.00 }
+set numMinSteps         5000
 
-runFEPlist $all $numSteps
+runFEPmin 0.0 0.0 0.0 $numSteps $numMinSteps $temp

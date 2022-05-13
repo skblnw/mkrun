@@ -33,12 +33,12 @@ extendedSystem     equilibrate.xsc
 
 # OUTPUT FREQUENCIES
 
-outputtiming              400
-outputenergies            400
-outputpressure            400
-restartfreq               400
-xstfreq                   400
-dcdfreq                   400
+outputtiming             2000
+outputenergies           2000
+outputpressure           2000
+restartfreq             30000
+xstfreq                 30000
+dcdfreq                 30000
 
 
 # OUTPUT AND RESTART
@@ -88,7 +88,7 @@ pairlistdist            13.5
 
 # RESPA PROPAGATOR
 
-timestep                1.0
+timestep                2.0
 fullElectFrequency      2
 nonbondedFreq           1
 
@@ -124,17 +124,17 @@ alchType                FEP
 alchFile                ../ionized.fep
 alchCol                 B
 alchOutFile             alchemy.fepout
-alchOutFreq             400
+alchOutFreq             1
 
 alchVdwLambdaEnd        1.0
 alchElecLambdaStart     0.1
 alchVdWShiftCoeff       1.0
 alchDecouple            off
 
-alchEquilSteps          200000
-set numSteps            600000
+alchEquilSteps          100000
+set numSteps            300000
 
-# 48 Windows
-set all { 0 0.000001 0.00001 0.0001 0.001 0.004 0.01 0.02 0.03 0.04 0.05 0.06 0.08 0.1 0.12 0.14 0.18 0.22 0.26 0.30 0.34 0.38 0.42 0.46 0.5 0.54 0.58 0.62 0.66 0.7 0.74 0.78 0.82 0.86 0.88 0.9 0.92 0.94 0.95 0.96 0.97 0.98 0.99 0.996 0.999 0.9999 0.99999 0.999999 1.00 }
+# 24 Windows
+set all { 1.0 0.99999 0.9999 0.999 0.99 0.98 0.96 0.94 0.9 0.8 0.7 0.6 0.5 0.4 0.3 0.2 0.1 0.06 0.04 0.02 0.01 0.001 0.0001 0.00001 0}
 
 runFEPlist $all $numSteps

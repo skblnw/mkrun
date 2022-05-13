@@ -1,6 +1,6 @@
 #!/bin/bash
 
-for posi in `find . -maxdepth 1 -name 'posi[0-9-]*' | sort -V`; do
+for posi in `find . -maxdepth 1 -name 'posi[0-9]*' | sort -V`; do
   for prefix in free bound; do
     for trial in `find $posi/$prefix -maxdepth 1 -name 'trial[0-9]*' | sort`; do
       echo -n "[$trial] "

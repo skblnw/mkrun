@@ -1,0 +1,26 @@
+#!/bin/bash
+
+[ $# -eq 0 ] && { echo -e "Usage: rungmx [-run|-lrun] [README|step7_production.mdp] [gpu ID] [trial index]"; exit 1; }
+
+if [[ "$1" == "-run" ]]; then
+
+    sed -e "s/gmx mdrun -v/gmx mdrun -ntmpi 1 -ntomp 16 -gpu_id $3 -nb gpu -pme gpu -bonded gpu -v/g" \
+        -e "s/^gmx_d mdrun -v -deffnm \${mini_prefix}/gmx mdrun -ntmpi 1 -ntomp 16 -v -deffnm \${mini_prefix}/g" \
+        -e "s/^set cntmax = 10/set cntmax = 1/g" \
+        $2 > wrapper
+    csh wrapper
+
+elif [[ "$1" == "-lrun" ]]; then
+
+    sed -e "s/^tcoupl.*/tcoupl = v-rescale/g" \
+        -e "s/tau_t.*/tau_t = 0.1 0.1 0.1/g" \
+        $2 > step7_production_vrescale.mdp
+
+    MDRUN_GPU="gmx mdrun -ntmpi 1 -ntomp 16 -gpu_id $3 -pme gpu -nb gpu -bonded gpu -update gpu"
+    
+    prefix=t$4
+    gmx grompp -o md.tpr -f step7_production_vrescale.mdp -c step7_1.gro -t step7_1.cpt -n index.ndx -p topol.top
+    #gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
+    #$MDRUN_GPU -v -s md.tpr -deffnm $prefix -nsteps -1
+
+fi

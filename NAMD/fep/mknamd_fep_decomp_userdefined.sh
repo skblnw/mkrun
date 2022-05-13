@@ -1,14 +1,30 @@
 #!/bin/bash
 
 if [[ "$#" -eq 0 ]]; then
-    echo ">Usage: mknamd_fep_decomp alchemy.fepout [-multiple (Optional)]"
+    echo ">Usage: mknamd_fep_decomp alchemy.fepout fep.namd [-multiple (Optional)]"
     echo ">If you don't have fep.namd"
     echo ">Usage: mknamd_fep_decomp alchemy.fepout [alchEquilSteps] [numSteps] [alchOutFreq] [-multiple (Optional)]"
     exit 0
 fi
 
-if [[ $2 == "-multiple" ]]; then
-    tag_multiple=true
+if [ -f "$2" ]; then
+    tag_par_exist=true
+else
+    tag_par_exist=false
+fi
+
+if [[ $@ == *"-multiple" ]]; then
+    if [[ "$3" == "-multiple" ]]; then 
+        tag_multiple=true
+        tag_par_exist=true
+    elif [[ "$5" == "-multiple" ]]; then 
+        tag_multiple=true
+    else
+        echo ">Usage: mknamd_fep_decomp alchemy.fepout fep.namd [-multiple (Optional)]"
+        echo ">If you don't have fep.namd"
+        echo ">Usage: mknamd_fep_decomp alchemy.fepout [alchEquilSteps] [numSteps] [alchOutFreq] [-multiple (Optional)]"
+        exit 0
+    fi
 else
     tag_multiple=false
 fi
@@ -20,17 +36,27 @@ if $tag_multiple; then
         [ ! -f "$trial/$1" ] && { echo -e "$trial/$1 does not exist!"; exit 1; }
         echo "Computing for $trial"
         outdir=$trial/outdecomp
+        if $tag_par_exist; then
+            totalstep=`grep "^set numSteps" $trial/$2|awk '{print $3}'`
+            eqstep=`grep "^alchEquilSteps" $trial/$2|awk '{print $2}'`
+            freq=`grep "^alchOutFreq" $trial/$2|awk '{print $2}'`
+        else
+            totalstep=$3
+            eqstep=$2
+            freq=$4
+        fi
         rm -r $outdir
         mkdir $outdir
+        awk '/#STARTING/ {print NR}' $trial/$1 > $outdir/nlist
         grep "^#Free energy change" $trial/$1 | awk '{print NR, $9, $12, $19}' > $outdir/raw
-        grep -n "^#STARTING COLLECTION" $trial/$1 | awk -F: '{print $1+1}' > $outdir/l1
-        grep -n "^#Free energy change" $trial/$1 | awk -F: '{print $1}' > $outdir/l2
-        paste $outdir/l1 $outdir/l2 > $outdir/l3
-        awk '{print NR,$1,($2-$1)}' $outdir/l3 > $outdir/nlist
-        while read -r nn ntail nhead; do 
+        nn=0
+        for ii in `cat $outdir/nlist`; do
+            nn=$((nn+1))
+            ntail=$((ii+1))
+            nhead=$((($totalstep-$eqstep)/$freq+1))
             tail -n +$ntail $trial/$1 | head -$((nhead+1)) >> $outdir/raw$nn
-            tail -n +$ntail $trial/$1 | head -$((nhead)) | awk 'NR%1==0' | awk '{print ($4 - $3), ($6 - $5), $7, $9}' >> $outdir/data$nn
-        done < $outdir/nlist
+            tail -n +$ntail $trial/$1 | head -$((nhead-1)) | awk 'NR%1==0' | awk '{print ($4 - $3), ($6 - $5), $7, $9}' >> $outdir/data$nn
+        done
     done
 
 else
@@ -38,17 +64,27 @@ else
     triallist="1"
     [ ! -f "$1" ] && { echo -e "$1 does not exist!"; exit 1; }
     outdir=outdecomp
+    if $tag_par_exist; then
+        totalstep=`grep "^set numSteps" $2|awk '{print $3}'`
+        eqstep=`grep "^alchEquilSteps" $2|awk '{print $2}'`
+        freq=`grep "^alchOutFreq" $2|awk '{print $2}'`
+    else
+        totalstep=$3
+        eqstep=$2
+        freq=$4
+    fi
     rm -r $outdir
     mkdir $outdir
+    awk '/#STARTING/ {print NR}'< $1 > $outdir/nlist
     grep "^#Free energy change" $1 | awk '{print NR, $9, $12, $19}' > $outdir/raw
-    grep -n "^#STARTING COLLECTION" $1 | awk -F: '{print $1+1}' > $outdir/l1
-    grep -n "^#Free energy change" $1 | awk -F: '{print $1}' > $outdir/l2
-    paste $outdir/l1 $outdir/l2 > $outdir/l3
-    awk '{print NR,$1,($2-$1)}' $outdir/l3 > $outdir/nlist
-    while read -r nn ntail nhead; do 
+    nn=0
+    for ii in `cat $outdir/nlist`; do
+        nn=$((nn+1))
+        ntail=$((ii+1))
+        nhead=$((($totalstep-$eqstep)/$freq+1))
         tail -n +$ntail $1 | head -$((nhead+1)) >> $outdir/raw$nn
-        tail -n +$ntail $1 | head -$((nhead)) | awk 'NR%1==0' | awk '{print ($4 - $3), ($6 - $5), $7, $9}' >> $outdir/data$nn
-    done < $outdir/nlist
+        tail -n +$ntail $1 | head -$((nhead-1)) | awk 'NR%1==0' | awk '{print ($4 - $3), ($6 - $5), $7, $9}' >> $outdir/data$nn
+    done
 fi
 
 rm decompose_summary.dat
@@ -60,7 +96,9 @@ for trial in $triallist; do
         outdir=outdecomp
     fi
 
-    while read -r nn v1 v2; do 
+    nn=0
+    for ii in `cat $outdir/nlist`; do
+        nn=$((nn+1))
         awk '{sum_temp += $4; \
             esum_elec += (exp($1 / -0.001987 / $4)); \
             esum_vdw += (exp($2  / -0.001987 / $4)); \
@@ -100,7 +138,7 @@ for trial in $triallist; do
                 (sum1/n), \
                 (sum1*sum1/n/n), \
                 (sum2/n)}' < $outdir/data$nn >> $outdir/error
-    done < $outdir/nlist
+    done
 
     paste $outdir/raw $outdir/decomp | awk '{printf "%2d % 6.2f % 6.2f % 6.2f\n", NR, $3, $7, ($3 - $7)}' > $outdir/compare_dg
 

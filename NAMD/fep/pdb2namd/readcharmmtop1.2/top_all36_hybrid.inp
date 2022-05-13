@@ -14290,7 +14290,7 @@ BOND CAA  HA2A
 BOND CBB  CAB 
 BOND CGB  CBB 
 BOND CDB  CGB 
-BOND NE   CDB 
+BOND NEB  CDB 
 BOND CZB  NEB  
 BOND NH2B CZB 
 BOND N    CAB  
@@ -14451,12 +14451,12 @@ BOND CAA  HA2A
 BOND CBB  CAB 
 BOND CGB  CBB
 BOND OD2B CGB  
+BOND OD1B CGB  
 BOND N    CAB  
 BOND C    CAB 
 BOND CAB  HAB 
 BOND CBB  HB1B
 BOND CBB  HB2B  
-BOND CGB  OD1B
 IMPR N   -C  CAA  HN  
 IMPR C   CAA +N   O   
 IMPR N   -C  CAB  HN  
@@ -15447,9 +15447,9 @@ ATOM HNA  H      0.31    !         NA-HNA  |
 ATOM CAA  CT2   -0.02    !         |       | HD1B  HD2B  
 ATOM HA1A HB2    0.09    !         |       |    \  /     
 ATOM HA2A HB2    0.09    !   HA1A-CAA-HA2A NB---CDB  HG1B
-GROUP                    !         |       |      \  /   
-ATOM CAB  CT1    0.07    !         |       |      CGB      
-ATOM HAB  HB1    0.09    !         |       |      /  \    
+                         !         |       |      \  /   
+                         !         |       |      CGB      
+                         !         |       |      /  \    
 GROUP                    !         |  HAB-CAB---CBB  HG2B 
 ATOM NB   N     -0.29    !          \     /     /  \      
 ATOM CDB  CP3    0.00    !           \   /   HB1B  HB2B  
@@ -15491,11 +15491,11 @@ BOND CDB  HD1B
 BOND CDB  HD2B 
 BOND CDB  NB
 IMPR NA   -C   CAA   HNA   
+IMPR NB   -C   CAB   CDB 
 IMPR C    CAA  +N    O   
 IMPR -C   -CA  NA    -O
 IMPR C    CAB  +N    O
 IMPR -C   -CA  NB    -O
-IMPR NB   -C   CAB   CDB 
 IC NA   -CA   *-C   -O    1.3558 116.8400  180.0000 122.5200  1.2297  
 IC -CA  -C    NA    CAA   1.5390 116.8400  180.0000 126.7700  1.4613  
 IC -C   CAA   *NA   HNA   1.3475 122.8200  180.0000 115.6200  0.9992
@@ -40390,9 +40390,9 @@ BOND OG1A CBA
 BOND CG2A CBA   
 BOND CBA  HBA 
 BOND OG1A HG1A 
-BOND CG2A H1A  
-BOND CG2A H2A  
-BOND CG2A H3A
+BOND CG2A H21A  
+BOND CG2A H22A  
+BOND CG2A H23A
 BOND CBB  CA   
 BOND CGB  CBB  
 BOND CD2B CGB  
@@ -41924,7 +41924,7 @@ GROUP
 ATOM N     NH1    -0.47    !             HZ2A    HE1A                     
 ATOM HN    H       0.31    !              |       |                       
 ATOM CA    CT1     0.07    !             CZ2A    NE1A   HD1A        |     
-ATOM HA    HB      0.09    !            //   \  /    \  /           N--HN 
+ATOM HA    HB1     0.09    !            //   \  /    \  /           N--HN 
 GROUP                      !    HH2A--CH2A   CE2B    CD1A HB1A    /   \   
 ATOM CBA    CT2   -0.18    !           |      ||      ||   |     /     \  
 ATOM HB1A   HA2    0.09    !    HZ3A--CZ3A   CD2A----CGA--CBA--CA--HA   |     H11B  H12B

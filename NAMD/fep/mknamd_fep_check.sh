@@ -9,7 +9,7 @@ if [[ "$2" == "-range" ]]; then
 
     for ii in $(seq $3 $4); do 
         [ ! -f "trial$ii/$1" ] && { echo -e "trial$ii/$1 does not exist!"; exit; }
-        grep "^#Free energy change" trial$ii/$1 | awk '{print NR" "$9" "$12" "$19}' > $ii
+        grep "^#Free energy change" trial$ii/$1 | awk '{print NR" "$9" "$12" "$19}' > trial$ii/fepout
     done
 
 else
