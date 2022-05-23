@@ -2,10 +2,8 @@
 
 SEL1="segname PROA PROB"
 SEL2="segname PROC PROD"
-START=36
-END=48
 
-[ $# -ne 2 ] && { echo "mknamd> Usage: $0 [PSF/PDB] [TRJ]"; exit 1; }
+[ $# -ne 5 ] && { echo "mknamd> Usage: $0 [PSF/PDB] [TRJ] [OUTPUT_DIR] [START] [END]"; exit 1; }
 
 if [ ! -f $PDB ]; then
     echo -e "$PDB \nStructure not found!"
@@ -19,22 +17,25 @@ fi
 
 PDB="$1"
 TRJ="$2"
+OUTPUT_DIR="$3"
+rm -r $OUTPUT_DIR
+mkdir $OUTPUT_DIR
+START="$4"
+END="$5"
 
-cat > tcl <<'EOF'
+cat > tcl <<EOF
 proc writeXSC { jj fr } {
-  set outXSC [open "win${jj}.restart.xsc" w]
-  animate goto $fr
-  puts $outXSC "\# NAMD extended system configuration output file"
-  puts $outXSC "\#\$LABELS step a_x a_y a_z b_x b_y b_z c_x c_y c_z o_x o_y o_z s_x s_y s_z s_u s_v s_w"
-  puts $outXSC "0 [molinfo top get a] 0 0 0 [molinfo top get b] 0 0 0 [molinfo top get c] [lindex [molinfo top get center] 0 0] [lindex [molinfo top get center] 0 1] [lindex [molinfo top get center] 0 2] 0 0 0 0 0 0"
-  close $outXSC
+  set outXSC [open "$OUTPUT_DIR/win\${jj}.restart.xsc" w]
+  animate goto \$fr
+  puts \$outXSC "\# NAMD extended system configuration output file"
+  puts \$outXSC "\#\\\$LABELS step a_x a_y a_z b_x b_y b_z c_x c_y c_z o_x o_y o_z s_x s_y s_z s_u s_v s_w"
+  puts \$outXSC "0 [molinfo top get a] 0 0 0 [molinfo top get b] 0 0 0 [molinfo top get c] [lindex [molinfo top get center] 0 0] [lindex [molinfo top get center] 0 1] [lindex [molinfo top get center] 0 2] 0 0 0 0 0 0"
+  close \$outXSC
 }
-EOF
 
-cat >> tcl <<EOF
 ## load files here
-mol new pdb2namd/vmd_solvate/ionized.psf
-mol addfile smd-4.dcd waitfor all
+mol new $PDB waitfor all
+mol addfile $TRJ waitfor all
 
 set sel1 [atomselect top "$SEL1"]
 set sel2 [atomselect top "$SEL2"]
@@ -54,7 +55,7 @@ for {set ii 0} {\$ii < [molinfo top get numframes]} {incr ii 1} {
    for {set jj $START} {\$jj <= $END} {incr jj} {
       ## note that this tolerance may need to be changed to capture all windows
       if {[expr abs(\$distZ - \$jj)] < 1} {
-         \$all writenamdbin win\${jj}.restart.coor
+         \$all writenamdbin $OUTPUT_DIR/win\${jj}.restart.coor
 	      writeXSC \$jj \$ii
          continue
       }

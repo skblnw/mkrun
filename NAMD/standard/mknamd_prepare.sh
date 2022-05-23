@@ -62,11 +62,11 @@ membrane_exist=false
 mini=true
 heat=true
 cons=true
-md=true
+md=false
 md_posres=true
 MDPOSRES="segname PROA PROB"
-smd=false
-SMDGROUP="segname PROC PROD"
+smd=true
+SMDGROUP="segname PROC PROD and name CA"
 
 
 # /--------------------------/
@@ -212,7 +212,7 @@ fi
 # /     Constraining Runs       /
 # /-----------------------------/
 if $cons; then
-    acceleration=false
+    acceleration=true
     check_exist template-namd
     prefix=cons
     frequency=10000
@@ -387,6 +387,7 @@ fi
 if $smd; then
     acceleration=false
     check_exist template-namd
+    check_exist smd.col
     prefix=smd
     frequency=10000
 
@@ -405,11 +406,11 @@ if $smd; then
         -e 's/^set ITEMP.*$/set ITEMP 303/g' \
         -e 's/^set FTEMP.*$/set FTEMP 303/g' \
         -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
-        -e 's/^set TS.*$/set TS 500000/g' \
+        -e 's/^set TS.*$/set TS 300000/g' \
         -e 's/^set CONSSCALE.*$/set CONSSCALE 10/g' \
         -e 's/^set CONSPDB.*$/set CONSPDB ..\/restraints\/cons_posres/g' \
         -e 's/^set SMDFILE.*$/set SMDFILE ..\/restraints\/ionized.smd/g' \
-        -e 's/^set COLFILE.*$/set COLFILE ..\/restraints\/ionized.col/g' \
+        -e 's/^set COLFILE.*$/set COLFILE ..\/smd.col/g' \
         template-namd > $RUN_DIR/${prefix}.namd
 
     cat > tcl <<EOF
@@ -418,18 +419,12 @@ set all [atomselect top "all"]
 
 \$all set beta 0
 set sel [atomselect top "$MDPOSRES and name CA"]
-\$sel get resid
-\$sel get resname
-\$sel get name
 \$sel set beta 1
 \$all writepdb restraints/cons_posres.pdb
 
-\$all set beta 0
+\$all set occupancy 0
 set sel [atomselect top "$SMDGROUP"]
-\$sel get resid
-\$sel get resname
-\$sel get name
-\$sel set beta 1
+\$sel set occupancy 1
 \$all writepdb restraints/ionized.smd
 quit
 EOF

@@ -45,22 +45,9 @@
 
 START=$1
 END=$2
+PRIMARY_DIR=run
+[ -d "${PRIMARY_DIR}" ] && { echo -e "mknamd> Directory ${PRIMARY_DIR} exists!"; exit 1; }
 
-mkdir -p run
-for ii in $(seq $START $END); do
-    mkdir run/win$ii run/win$ii/pdb2namd run/win$ii/pdb2namd/vmd_solvate
-    sed -e 's/CENTER/'$ii'/g' umbrella.col > run/win$ii/umbrella.col
-    cd run/win$ii
-    ln -s ~/toppar_c36_jul20/ toppar
-    ln -s ~/toppar_water_ions_namd.str .
-    ln -s ../../template-namd .
-    ln -s ../../windows/win$ii.restart.coor smd.restart.coor
-    ln -s ../../windows/win$ii.restart.xsc smd.restart.xsc
-    cd pdb2namd/vmd_solvate
-    ln -s ../../../../ionized.psf .
-    ln -s ../../../../ionized.pdb .
-    cd ../../../..
-done
 
 # /-------------------------------/
 # /     Some Global Variables     /
@@ -69,7 +56,6 @@ done
 NORMRUN="namd3 +p2 +devices 0"
 CUDARUN="namd3 +p1 +devices 0"
 VMD="/opt/vmd/1.9.3/vmd"
-RUN_DIR=run
 
 # /-------------------/
 # /     Switches      /
@@ -115,12 +101,30 @@ add_pbs () {
 # /     Prepare restraint files     /
 # /---------------------------------/
 
+check_exist umbrella.col
+mkdir -p ${PRIMARY_DIR}
+for windex in $(seq $START $END); do
+    mkdir ${PRIMARY_DIR}/win${windex} ${PRIMARY_DIR}/win${windex}/pdb2namd ${PRIMARY_DIR}/win${windex}/pdb2namd/vmd_solvate
+    sed -e 's/CENTER/'${windex}'/g' umbrella.col > ${PRIMARY_DIR}/win${windex}/umbrella.col
+    cd ${PRIMARY_DIR}/win${windex}
+    ln -s ~/toppar_c36_jul20/ toppar
+    ln -s ~/toppar_water_ions_namd.str .
+    ln -s ../../template-namd .
+    ln -s ../../windows/win${windex}.restart.coor smd.restart.coor
+    ln -s ../../windows/win${windex}.restart.xsc smd.restart.xsc
+    cd pdb2namd/vmd_solvate
+    ln -s ../../../../pdb2namd/vmd_solvate/ionized.psf .
+    ln -s ../../../../pdb2namd/vmd_solvate/ionized.pdb .
+    cd ../../../..
+done
 
+RUN_DIR=run
 for windex in $(seq $START $END); do 
-    cd run/win${windex}
 
-[ -d "$RUN_DIR" ] && { echo "mknamd> Directory run exists! Backing up to run.BAK"; rm -rf $RUN_DIR.BAK; mv $RUN_DIR $RUN_DIR.BAK; }
-[ -d "restraints" ] && { echo "mknamd> Directory restraints exists! Backing up to restraints.BAK"; rm -rf restraints.BAK; mv restraints restraints.BAK; }
+    cd ${PRIMARY_DIR}/win${windex}
+
+[ -d "$RUN_DIR" ] && { echo -e "mknamd> Directory ${RUN_DIR} exists! Backing up to ${RUN_DIR}.BAK"; rm -rf $RUN_DIR.BAK; mv $RUN_DIR $RUN_DIR.BAK; }
+[ -d "restraints" ] && { echo -e "mknamd> Directory restraints exists! Backing up to restraints.BAK"; rm -rf restraints.BAK; mv restraints restraints.BAK; }
 mkdir $RUN_DIR $RUN_DIR/output $RUN_DIR/log restraints
 
 cat > tcl <<'EOF'
@@ -151,7 +155,6 @@ quit
 EOF
 $VMD -dispdev text -e tcl > LOG_vmd
 rm tcl 
-
 
 # /-------------------/
 # /     Main body     /
@@ -242,8 +245,7 @@ if $cons; then
 
     previous="heat"
     ii=1
-    for force in 2 1 .1
-    do
+    for force in 2 1 .1; do
         if [ $ii -eq 1 ]; then
             inputname="output\/${previous}"
             outputname="output\/${prefix}-${ii}"
@@ -276,30 +278,40 @@ fi
 if $md; then
     acceleration=false
     check_exist template-namd
-    prefix=md
-    frequency=10000
+    for ii in $(seq 1 3); do
+        prefix=md
+        frequency=1000
 
-    inputname="output\/cons-3"
-    outputname="output\/${prefix}"
+        if [ $ii -eq 1 ]; then
+            inputname="output\/cons-3"
+            outputname="output\/${prefix}.${ii}"
+        else
+            jj=$((ii-1))
+            inputname="output\/${prefix}.${jj}"
+            outputname="output\/${prefix}.${ii}"
+        fi
 
-    sed -e 's/^set INPUTNAME.*$/set INPUTNAME '${inputname}'/g' \
-        -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME '${outputname}'/g' \
-        -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.restart.vel/g' \
-        -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.restart.coor/g' \
-        -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.restart.xsc/g' \
-        -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
-        -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
-        -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
-        -e 's/^COMmotion.*$/COMmotion no/g' \
-        -e 's/^set ITEMP.*$/set ITEMP 303/g' \
-        -e 's/^set FTEMP.*$/set FTEMP 303/g' \
-        -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
-        -e 's/^set TS.*$/set TS 1000000/g' \
-        -e 's/^set CUDASOA.*$/set CUDASOA 0/g' \
-        -e 's/^set CONSSCALE.*$/set CONSSCALE 10/g' \
-        -e 's/^set CONSPDB.*$/set CONSPDB ..\/restraints\/cons_posres/g' \
-        -e 's/^set COLFILE.*$/set COLFILE ..\/umbrella.col/g' \
-        template-namd > $RUN_DIR/${prefix}.namd
+        sed -e 's/^set INPUTNAME.*$/set INPUTNAME '${inputname}'/g' \
+            -e 's/^set OUTPUTNAME.*$/set OUTPUTNAME '${outputname}'/g' \
+            -e 's/BinVelocities.*$/BinVelocities $INPUTNAME.restart.vel/g' \
+            -e 's/BinCoordinates.*$/BinCoordinates $INPUTNAME.restart.coor/g' \
+            -e 's/ExtendedSystem.*$/ExtendedSystem $INPUTNAME.restart.xsc/g' \
+            -e 's/^restartfreq.*$/restartfreq '${frequency}'/g' \
+            -e 's/^dcdfreq.*$/dcdfreq '${frequency}'/g' \
+            -e 's/^xstfreq.*$/xstfreq '${frequency}'/g' \
+            -e 's/^COMmotion.*$/COMmotion no/g' \
+            -e 's/^set ITEMP.*$/set ITEMP 303/g' \
+            -e 's/^set FTEMP.*$/set FTEMP 303/g' \
+            -e 's/^set PSWITCH.*$/set PSWITCH 1/g' \
+            -e 's/^set TS.*$/set TS 500000/g' \
+            -e 's/^set CUDASOA.*$/set CUDASOA 0/g' \
+            -e 's/^set CONSSCALE.*$/set CONSSCALE 10/g' \
+            -e 's/^set CONSPDB.*$/set CONSPDB ..\/restraints\/cons_posres/g' \
+            -e 's/^set COLFILE.*$/set COLFILE ..\/umbrella.col/g' \
+            template-namd > $RUN_DIR/${prefix}.${ii}.namd
+
+        add_pbs ${prefix}.${ii} $RUN_DIR/run.sh
+    done
 
     cat > tcl <<EOF
 mol new pdb2namd/vmd_solvate/ionized.psf waitfor all
@@ -313,7 +325,6 @@ quit
 EOF
     $VMD -dispdev text -e tcl >> LOG_vmd; rm tcl
 
-    add_pbs ${prefix} $RUN_DIR/run.sh
 fi
 
 cd ../..

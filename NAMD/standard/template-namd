@@ -196,8 +196,8 @@ if { $EXTRAB != 0 } {
 if { $SMDFILE != 0 } {
     SMD     on
     SMDFile $SMDFILE
-    SMDk    2.5                             # 4 * kBT
-    SMDVel  .00001                          # 20 A/ns
+    SMDk    25                             # 2.5 = 4 * kBT
+    SMDVel  .0001                          # .00001 = 20 A/ns
     SMDDir  0 0 1
     SMDOutputFreq 5000
 }
