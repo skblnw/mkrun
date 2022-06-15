@@ -3,7 +3,7 @@ VMD="/opt/vmd/1.9.3/vmd"
 
 rm -rf chains peptide.p* prot* 
 mkdir chains
-DIR="../raw/"
+DIR="/Users/ukevi/Downloads/localplayground/cross/md/1oga/raw/1oga.hlaonly.charmm-gui-4304310431"
 
 cat > tcl <<EOF
 mol new $DIR/step1_pdbreader.psf
@@ -79,7 +79,7 @@ topology top_all36_prot.rtf
   pdbalias atom ASN 1HD2 HD21
   pdbalias atom ASN 2HD2 HD22
 
-segment PEPT { 
+segment PROC { 
   pdb chains/peptide.pdb
   mutate 1 GLY
   mutate 2 ILE
@@ -93,7 +93,7 @@ segment PEPT {
   first GLYP
   last CTER
   }
-coordpdb chains/peptide.pdb PEPT
+coordpdb chains/peptide.pdb PROC
 
 guesscoord
 writepsf peptide.psf

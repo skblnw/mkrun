@@ -62,10 +62,10 @@ membrane_exist=false
 mini=true
 heat=true
 cons=true
-md=false
+md=true
 md_posres=true
 MDPOSRES="segname PROA PROB"
-smd=true
+smd=false
 SMDGROUP="segname PROC PROD and name CA"
 
 
