@@ -1,7 +1,7 @@
 #!/bin/bash
 VMD="/opt/vmd/1.9.3/vmd"
 
-SEGNAME="ANTI"
+SEGNAME="PEPT"
 SELECT_TEXT="segname $SEGNAME"
 
 [ $# -lt 1 ] && { echo "mknamd> Usage: $0 [all|RESID] [-run]"; echo "mknamd> Default peptide selection is: $SELECT_TEXT"; echo "mknamd> If apply multiple RESIDs, use e.g. \"1 2 3\""; exit 1; }
@@ -50,7 +50,7 @@ declare -A mutation=(["ARG"]="R2A" \
 
 psfgen () {
   cat > tcl <<EOF
-package require psfgen 1.6
+package require psfgen
 
 mol new pdb2namd/md.pdb
 set sel [atomselect top "$SELECT_TEXT and resid $1 and not name C CA N O HN HA CB"]
@@ -63,10 +63,10 @@ set sel [atomselect top "$SELECT_TEXT"]
 EOF
   cat >> tcl <<'EOF'
 resetpsf
-topology pdb2namd/top_all36_propatch.rtf
 topology pdb2namd/readcharmmtop1.2/top_all36_prot.rtf
 topology pdb2namd/readcharmmtop1.2/top_all36_hybrid.inp
-#topology pdb2namd/readcharmmtop1.2/toppar_water_ions_namd.str
+# topology pdb2namd/top_all36_propatch.rtf
+topology pdb2namd/toppar_water_ions_namd.str
 
 # Aliases borrowed from AutoPSF
   pdbalias residue G GUA
@@ -295,11 +295,11 @@ do
     mv ionized.fep posi$ii/bound
     mv ionized.p* cell_size.str posi$ii/bound/pdb2namd/vmd_solvate
     cd posi$ii/bound
-    rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.tcl eq/
-    rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.eq.namd eq/
-    rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.namd eq/
-    rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_check.sh mknamd_fep_check.sh
-    rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_run.sh mknamd_fep_run.sh
+    rsync -rpt ../../eq/fep.tcl eq/
+    rsync -rpt ../../eq/fep.eq.namd eq/fep.eq.namd
+    rsync -rpt ../../eq/fep.namd eq/fep.namd
+    rsync -rpt ../../mknamd_fep_check.sh mknamd_fep_check.sh
+    rsync -rpt ../../mknamd_fep_run.sh mknamd_fep_run.sh
     ln -s /home/kevin/forcefield/namd/charmm36/toppar_c36_jul20/ toppar
     ln -s /home/kevin/forcefield/namd/charmm36/toppar_water_ions_namd.str .
 
@@ -326,11 +326,11 @@ do
     mv ionized.fep posi$ii/free
     mv ionized.p* cell_size.str posi$ii/free/pdb2namd/vmd_solvate
     cd posi$ii/free
-    rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.tcl eq/
-    rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.eq.namd eq/
-    rsync -rpt /home/kevin/github/mkrun/NAMD/fep/eq/fep.namd eq/
-    rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_check.sh mknamd_fep_check.sh
-    rsync -rpt /home/kevin/github/mkrun/NAMD/fep/mknamd_fep_run.sh mknamd_fep_run.sh
+    rsync -rpt ../../eq/fep.tcl eq/
+    rsync -rpt ../../eq/fep.eq.namd eq/fep.eq.namd
+    rsync -rpt ../../eq/fep.namd eq/fep.namd
+    rsync -rpt ../../mknamd_fep_check.sh mknamd_fep_check.sh
+    rsync -rpt ../../mknamd_fep_run.sh mknamd_fep_run.sh
     ln -s /home/kevin/forcefield/namd/charmm36/toppar_c36_jul20/ toppar
     ln -s /home/kevin/forcefield/namd/charmm36/toppar_water_ions_namd.str .
 

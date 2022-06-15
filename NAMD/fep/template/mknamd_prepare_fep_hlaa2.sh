@@ -91,15 +91,15 @@ topology pdb2namd/toppar_water_ions_namd.str
 
 segment MUT {
   pdb chains/mutant.pdb
-  mutate 1 G2
-  mutate 2 I2
-  mutate 3 L2
-  mutate 4 G2
-  mutate 5 F2
-  mutate 6 V2
-  mutate 7 F2
-  mutate 8 T2
-  mutate 9 L2
+  mutate 1 2G
+  mutate 2 2I
+  mutate 3 2L
+  mutate 4 2G
+  mutate 5 2F
+  mutate 6 2V
+  mutate 7 2F
+  mutate 8 2T
+  mutate 9 2L
   first none
 }
 # patch AABP MUT:5
