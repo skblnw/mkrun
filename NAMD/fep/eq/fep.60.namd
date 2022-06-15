@@ -85,7 +85,7 @@ rigiditerations         400
 ComMotion                no
 
 # Position restraints
-if {1} {
+if {0} {
     Constraints             yes
     ConsRef                 ../cons.fep
     ConsKFile               ../cons.fep
