@@ -18,9 +18,10 @@ foreach ii {A B} {
     set sel [atomselect top "segname PRO$ii"]
     $sel writepdb chains/PRO$ii.pdb
 }
-set sel [atomselect top "segname PROC and resid 1 2 3 4 5 6 7 8 9 and not name C CA N O HN HA CB"]
-foreach name [$sel get name] {
-  set sel [atomselect top "segname PROC and resid 1 2 3 4 5 6 7 8 9 and name $name"]
+set selsc [atomselect top "segname PROC and resid 1 2 3 4 5 6 7 8 9 and not name C CA N O HN HA CB"]
+foreach idx [$selsc get index] {
+  set sel [atomselect top "index $idx"]
+  set name [$sel get name]
   $sel set name ${name}A
 }
 set sel [atomselect top "segname PROC"]
@@ -30,7 +31,7 @@ resetpsf
 topology pdb2namd/readcharmmtop1.2/top_all36_prot.rtf
 topology pdb2namd/readcharmmtop1.2/top_all36_hybrid.inp
 # topology pdb2namd/top_all36_propatch.rtf
-topology pdb2namd/toppar_water_ions_namd.str
+# topology pdb2namd/toppar_water_ions_namd.str
 
 # Aliases borrowed from AutoPSF
   pdbalias residue G GUA

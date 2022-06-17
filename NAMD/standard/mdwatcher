@@ -1,0 +1,17 @@
+#!/bin/bash
+
+for logfile in `find run/log -maxdepth 1 -name 'md.log' | sort -V`; do
+  echo "[$logfile]" | tr -d '\n'
+  grep TIMING $logfile | tail -n 1 | awk '{printf(" Running %.1f ns, ", $2/500000)}'
+  grep TIMING $logfile | tail -n 1 | awk '{printf(" %.0f ns/days, ", $9)}'
+  grep TIMING $logfile | tail -n 1 | awk '{printf(" Finishing in %.1f days, ", $11/24)}'
+  echo ""
+done
+
+for logfile in `find run/log -maxdepth 1 -name 't*.log' | sort -V`; do
+  echo "[$logfile]" | tr -d '\n'
+  grep TIMING $logfile | tail -n 1 | awk '{printf(" Running %.1f ns, ", $2/500000)}'
+  grep TIMING $logfile | tail -n 1 | awk '{printf(" %.0f ns/days, ", $9)}'
+  grep TIMING $logfile | tail -n 1 | awk '{printf(" Finishing in %.1f days, ", $11/24)}'
+  echo ""
+done
