@@ -71,18 +71,18 @@ switchdist              10.0
 cutoff                  12.0
 pairlistdist            13.5
 
-# RESPA PROPAGATOR
-timestep                2.0
-fullElectFrequency      2
-nonbondedFreq           1
-
 # SHAKE
 rigidbonds              all
 rigidtolerance          0.000001
 rigiditerations         400
 
+# RESPA PROPAGATOR
+timestep                2.0
+fullElectFrequency      2
+nonbondedFreq           1
+
 # COM
-ComMotion                no
+ComMotion               no
 
 # Position restraints
 if {0} {
@@ -99,7 +99,7 @@ if {0} {
 #margin                  8.0
 
 # GPU ACCELERATION
-CUDASOAintegrate         on
+CUDASOAintegrate        on
 
 
 # FEP PARAMETERS
