@@ -1,16 +1,14 @@
 #!/bin/bash
 VMD="/opt/vmd/1.9.3/vmd"
 
-SEGNAME="PEPT"
+SEGNAME="PROC"
 SELECT_TEXT="segname $SEGNAME"
 
 [ $# -lt 1 ] && { echo "mknamd> Usage: $0 [all|RESID] [-run]"; echo "mknamd> Default peptide selection is: $SELECT_TEXT"; echo "mknamd> If apply multiple RESIDs, use e.g. \"1 2 3\""; exit 1; }
 
 [ ! -f pdb2namd/md.pdb ] && { echo "md.pdb does not exist!"; exit 1; }
-[ ! -f pdb2namd/md.psf ] && { echo "md.psf does not exist!"; exit 1; }
 
 length_of_peptide=`grep $SEGNAME pdb2namd/md.pdb | grep "CA" -c`
-# sequence="GLY SER SER SER LYS ASN GLY SER THR GLU GLN GLY GLN ASN TYR"
 sequence=`grep $SEGNAME pdb2namd/md.pdb | grep "CA" | awk '{print $4}'`
 
 if [[ "$1" == "all" ]]; then
@@ -53,9 +51,14 @@ psfgen () {
 package require psfgen
 
 mol new pdb2namd/md.pdb
-set sel [atomselect top "$SELECT_TEXT and resid $1 and not name C CA N O HN HA CB"]
-foreach name [\$sel get name] {
-  set sel [atomselect top "$SELECT_TEXT and resid $1 and name \$name"]
+foreach ii {A B} {
+    set sel [atomselect top "segname PRO\$ii"]
+    \$sel writepdb chains/PRO\$ii.pdb
+}
+set selsc [atomselect top "$SELECT_TEXT and resid $1 and not name C CA N O HN HA CB"]
+foreach idx [\$selsc get index] {
+  set sel [atomselect top "index \$idx"]
+  set name [\$sel get name]
   \$sel set name \${name}A
 }
 set sel [atomselect top "$SELECT_TEXT"]
@@ -65,8 +68,8 @@ EOF
 resetpsf
 topology pdb2namd/readcharmmtop1.2/top_all36_prot.rtf
 topology pdb2namd/readcharmmtop1.2/top_all36_hybrid.inp
-# topology pdb2namd/top_all36_propatch.rtf
-topology pdb2namd/toppar_water_ions_namd.str
+topology pdb2namd/top_all36_propatch.rtf
+# topology pdb2namd/toppar_water_ions_namd.str
 
 # Aliases borrowed from AutoPSF
   pdbalias residue G GUA
@@ -132,7 +135,7 @@ EOF
 # /       If yes, apply terminal patches        /
 # /---------------------------------------------/
 
-  if [[ $ii -eq 1 ]]; then
+  if [[ $ii -eq 1 ]] && [[ $resname == "GLY" ]]; then
     cat >> tcl <<EOF
 segment MUT {
   pdb chains/mutant.pdb
@@ -141,7 +144,7 @@ segment MUT {
   last CTER
 }
 EOF
-  elif [[ $ii -eq $length_of_peptide ]]; then
+  elif [[ $ii -eq $length_of_peptide ]] && [[ $resname == "GLY" ]]; then
     cat >> tcl <<EOF
 segment MUT {
   pdb chains/mutant.pdb
@@ -155,8 +158,6 @@ EOF
 segment MUT {
   pdb chains/mutant.pdb
   mutate $ii ${mutation[$resname]}
-  first NTER
-  last CTER
 }
 EOF
   fi
@@ -166,7 +167,7 @@ EOF
 # /     If yes, apply patches      /
 # /--------------------------------/
 
-  if [[ $resname == "PRO" ]]; then
+  if [[ $ii -ne 1 ]] && [[ $resname == "PRO" ]]; then
     jj=$((ii-1))
     cat >> tcl <<EOF
 patch AABP MUT:$jj
@@ -182,11 +183,46 @@ EOF
   cat >> tcl <<'EOF'
 regenerate angles dihedrals
 guesscoord
-writepsf mutant.psf
-writepdb mutant.pdb
+writepsf prot.psf
+writepdb prot.pdb
 quit
 EOF
-  $VMD -dispdev text -e tcl >& /dev/null
+  $VMD -dispdev text -e tcl >& LOG_vmd
+}
+
+psfgen_free () {
+  cat >> tcl <<'EOF'
+regenerate angles dihedrals
+guesscoord
+writepsf prot.psf
+writepdb prot.pdb
+quit
+EOF
+  $VMD -dispdev text -e tcl >> LOG_vmd
+}
+
+psfgen_bound () {
+  cat >> tcl <<'EOF'
+segment PROA {
+  pdb chains/PROA.pdb
+}
+patch DISU PROA:101 PROA:164
+patch DISU PROA:203 PROA:259
+coordpdb chains/PROA.pdb PROA
+
+segment PROB {
+  pdb chains/PROB.pdb
+}
+patch DISU PROB:25 PROB:80
+coordpdb chains/PROB.pdb PROB
+
+regenerate angles dihedrals
+guesscoord
+writepsf prot.psf
+writepdb prot.pdb
+quit
+EOF
+  $VMD -dispdev text -e tcl >> LOG_vmd
 }
 
 psfmerge () {
@@ -203,7 +239,7 @@ animate write psf prot.psf \$mol
 animate write pdb prot.pdb \$mol
 quit
 EOF
-  $VMD -dispdev text -e tcl2 >& /dev/null
+  $VMD -dispdev text -e tcl2 >& LOG_vmd
 }
 
 solvate () {
@@ -221,8 +257,7 @@ $sel moveby [vecinvert [measure center $sel]]
 $sel writepdb tmp.pdb
 
 package require solvate
-#solvate prot.psf tmp.pdb -t 10 -o solvated
-solvate prot.psf tmp.pdb -minmax {{-40 -40 -50} {40 40 50}} -o solvated
+solvate prot.psf tmp.pdb -minmax {{-38 -40 -51} {38 40 51}} -o solvated
 package require autoionize
 autoionize -psf solvated.psf -pdb solvated.pdb -sc 0.15 -o ionized
 
@@ -240,7 +275,7 @@ puts $fout "cellOrigin $center"
 close $fout
 quit
 EOF
-  $VMD -dispdev text -e tcl3 >& /dev/null
+  $VMD -dispdev text -e tcl3 >> LOG_vmd
 }
 
 markfep () {
@@ -256,10 +291,8 @@ set sel [atomselect top all]
 \$sel writepdb ionized.fep
 quit
 EOF
-  $VMD -dispdev text -e tcl4 >& /dev/null
+  $VMD -dispdev text -e tcl4 >> LOG_vmd
 }
-
-
 
 
 
@@ -275,23 +308,27 @@ do
   ii=$((ii+1))
   echo "mknamd> $ii $resname"
 
+  if [[ "$resname" == "ALA" ]]; then
+    echo "mknamd> Do nothing"; continue
+  fi
+
   if [[ ! $list =~ $ii ]]; then
     echo "mknamd> Do nothing"; continue
   else
 
     [ -d posi$ii ] && { cp -r posi$ii posi$ii.BAK; rm -r posi$ii; }
     mkdir -p chains posi$ii 
+    mkdir -p posi$ii/bound posi$ii/bound/pdb2namd posi$ii/bound/pdb2namd/vmd_solvate
 
-  # /---------------------/
-  # /     Bound State     /
-  # /---------------------/
+    # /---------------------/
+    # /     Bound State     /
+    # /---------------------/
 
     psfgen $ii
-    psfmerge
+    psfgen_bound
     solvate
     markfep
 
-    mkdir -p posi$ii/bound posi$ii/bound/pdb2namd posi$ii/bound/pdb2namd/vmd_solvate
     mv ionized.fep posi$ii/bound
     mv ionized.p* cell_size.str posi$ii/bound/pdb2namd/vmd_solvate
     cd posi$ii/bound
@@ -312,17 +349,17 @@ do
 
     cd ../..
 
-  # /--------------------/
-  # /     Free State     /
-  # /--------------------/
+    # /--------------------/
+    # /     Free State     /
+    # /--------------------/
+
+    mkdir -p posi$ii/free posi$ii/free/pdb2namd posi$ii/free/pdb2namd/vmd_solvate
 
     psfgen $ii
-    cp mutant.psf prot.psf
-    cp mutant.pdb prot.pdb
+    psfgen_free
     solvate
     markfep
 
-    mkdir -p posi$ii/free posi$ii/free/pdb2namd posi$ii/free/pdb2namd/vmd_solvate
     mv ionized.fep posi$ii/free
     mv ionized.p* cell_size.str posi$ii/free/pdb2namd/vmd_solvate
     cd posi$ii/free
@@ -342,7 +379,7 @@ do
     fi
 
     cd ../..
-    rm -rf chains tcl* tmp.pdb prot.p* solvated.* mutant.p*
+    rm -rf chains tcl* tmp.pdb prot.p* solvated.*
 
   fi
 

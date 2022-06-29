@@ -3,13 +3,17 @@ VMD="/opt/vmd/1.9.3/vmd"
 
 rm -rf chains mutant.p* prot* 
 mkdir chains
-DIR="/data/kevin/sarscov2/raw/6m0j-charmm-gui-3798750918"
+DIR="/Users/ukevi/Downloads/localplayground/sarscov2/7wbp/raw/7wbp.charmm-gui-4375723393"
 
 cat > tcl <<EOF
 mol new $DIR/step1_pdbreader.psf
 mol addfile $DIR/step1_pdbreader.pdb
-set sel [atomselect top "segname PROB"]
-\$sel writepdb chains/RBD.pdb
+foreach ii {A B} {
+  set sel [atomselect top "segname PRO\$ii"]
+  \$sel writepdb chains/PRO\$ii.pdb
+}
+set sel [atomselect top "name ZN"]
+\$sel writepdb chains/ZN.pdb
 quit
 EOF
 $VMD -dispdev text -e tcl 
@@ -80,30 +84,14 @@ topology top_all36_prot.rtf
   pdbalias atom ASN 2HD2 HD22
 
 segment RBD {
-  pdb chains/RBD.pdb
-  mutate 339 ASP
-  mutate 371 LEU
-  mutate 373 PRO
-  mutate 375 PHE
-  mutate 417 ASN
-  mutate 440 LYS
-  mutate 446 SER
-  mutate 477 ASN
-  mutate 478 LYS
-  mutate 484 ALA
-  mutate 493 ARG
-  mutate 496 SER
-  mutate 498 ARG
-  mutate 501 TYR
-  mutate 505 HSD
-  first NTER
-  last CTER
+  pdb chains/PROA.pdb
+  # mutate 339 ASP
 }
 patch DISU RBD:336 RBD:361
 patch DISU RBD:379 RBD:432
 patch DISU RBD:391 RBD:525
 patch DISU RBD:480 RBD:488
-coordpdb chains/RBD.pdb RBD
+coordpdb chains/PROA.pdb RBD
 
 guesscoord
 writepsf mutant.psf
@@ -119,7 +107,7 @@ mol addfile mutant.pdb
 mol new $DIR/step1_pdbreader.psf
 mol addfile $DIR/step1_pdbreader.pdb
 set sel1 [atomselect 0 all]
-set sel2 [atomselect 1 "segname PROA HETA HETB WATA"]
+set sel2 [atomselect 1 "segname PROB HETA"]
 set mol [::TopoTools::selections2mol "\$sel1 \$sel2"]
 animate write psf prot.psf \$mol
 animate write pdb prot.pdb \$mol

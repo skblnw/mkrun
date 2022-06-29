@@ -148,7 +148,6 @@ EOF
 solvate () {
   cat > tcl2 <<'EOF'
 set filename prot
-
 package require Orient
 mol new $filename.pdb
 set sel [atomselect top "all"]
@@ -237,7 +236,7 @@ psfgen_header
 psfgen_bound
 solvate
 markfep
-fixbb
+# fixbb
 
 mv *.fep bound
 mv ionized.p* cell_size.str bound/pdb2namd/vmd_solvate
@@ -270,7 +269,7 @@ psfgen_header
 psfgen_free
 solvate
 markfep
-fixbb
+# fixbb
 
 mv *.fep free
 mv ionized.p* cell_size.str free/pdb2namd/vmd_solvate
