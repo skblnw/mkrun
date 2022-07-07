@@ -1,13 +1,13 @@
 #!/bin/bash
 
-SEL_REF="segname PROA"
-SEL_RMSD="segname PROC"
+SELREF="segname PROA"
+SELRMSD="segname PROC"
 
 PDB="$1"; shift
 [ $# -eq 0 ] && { echo "mkvmd> Usage: $0 [PSF/PDB] [TRJ]"; \
                   echo "mkvmd> [TRJ] could be multiple files."; \
                   echo "mkvmd> Note that XST files must exist in the same directory as the DCD files"; \
-                  echo "mkvmd> By default, the REF is '$SEL_REF', the peptide is '$SEL_RMSD'"; exit 1; }
+                  echo "mkvmd> By default, the REF is '$SELREF', the peptide is '$SELRMSD'"; exit 1; }
 
 if [ ! -f $PDB ]; then
     echo -e "$PDB \nStructure not found!"
@@ -26,12 +26,12 @@ for ii in $@; do
 done
 
 cat >> tcl <<EOF
-pbc wrap -centersel "${SEL_REF}" -center com -compound segid -all
+pbc wrap -centersel "${SELREF}" -center com -compound segid -all
 set sel_all [atomselect top all]
-set sel_ref0 [atomselect top "${SEL_REF}" frame 0]
-set sel_ref [atomselect top "${SEL_REF}"]
-set sel_rmsd0 [atomselect top "${SEL_RMSD}" frame 0]
-set sel_rmsd [atomselect top "${SEL_RMSD}"]
+set sel_ref0 [atomselect top "${SELREF}" frame 0]
+set sel_ref [atomselect top "${SELREF}"]
+set sel_rmsd0 [atomselect top "${SELRMSD}" frame 0]
+set sel_rmsd [atomselect top "${SELRMSD}"]
 set num_frames [molinfo top get numframes]
 set outfile [open "rmsd" "w"]
 for {set ii 0} {\$ii<\$num_frames} {incr ii} {
@@ -42,6 +42,7 @@ for {set ii 0} {\$ii<\$num_frames} {incr ii} {
     set rmsd [measure rmsd \$sel_rmsd \$sel_rmsd0]
     puts \$outfile "\$ii \t \$rmsd"
 }
+close \$outfile
 animate write dcd wrapped.dcd
 quit
 EOF

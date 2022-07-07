@@ -1,5 +1,5 @@
 ; LINES STARTING WITH ';' ARE COMMENTS
-title                   = Membrane-containing MD simulation
+title                   = Standard MD simulation
 ;define                  = -DPOSRES_NOMOVE
 ; Run parameters
 integrator              = md                        ; leap-frog integrator
@@ -11,7 +11,7 @@ nstxout                 = 0                         ; suppress .trr output
 nstvout                 = 0                         ; suppress .trr output
 nstfout                 = 0                         ; suppress .trr output
 nstenergy               = 1000                      ; save energies every 2.0 ps
-nstxout-compressed      = 5000                      ; write 1000 frames xtc trajectory 
+nstxout-compressed      = 50000                     ; write 1000 frames xtc trajectory 
 
 ; Bond parameters
 constraint_algorithm    = lincs                     ; holonomic constraints

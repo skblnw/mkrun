@@ -179,15 +179,6 @@ EOF
 coordpdb chains/mutant.pdb MUT
 EOF
   fi
-
-  cat >> tcl <<'EOF'
-regenerate angles dihedrals
-guesscoord
-writepsf prot.psf
-writepdb prot.pdb
-quit
-EOF
-  $VMD -dispdev text -e tcl >& LOG_vmd
 }
 
 psfgen_free () {
@@ -318,11 +309,12 @@ do
 
     [ -d posi$ii ] && { cp -r posi$ii posi$ii.BAK; rm -r posi$ii; }
     mkdir -p chains posi$ii 
-    mkdir -p posi$ii/bound posi$ii/bound/pdb2namd posi$ii/bound/pdb2namd/vmd_solvate
 
     # /---------------------/
     # /     Bound State     /
     # /---------------------/
+
+    mkdir -p posi$ii/bound posi$ii/bound/pdb2namd posi$ii/bound/pdb2namd/vmd_solvate
 
     psfgen $ii
     psfgen_bound
@@ -337,8 +329,6 @@ do
     rsync -rpt ../../eq/fep.namd eq/fep.namd
     rsync -rpt ../../mknamd_fep_check.sh mknamd_fep_check.sh
     rsync -rpt ../../mknamd_fep_run.sh mknamd_fep_run.sh
-    ln -s /home/kevin/forcefield/namd/charmm36/toppar_c36_jul20/ toppar
-    ln -s /home/kevin/forcefield/namd/charmm36/toppar_water_ions_namd.str .
 
     if [[ "$2" == "-run" ]]; then 
       cd eq
@@ -368,8 +358,6 @@ do
     rsync -rpt ../../eq/fep.namd eq/fep.namd
     rsync -rpt ../../mknamd_fep_check.sh mknamd_fep_check.sh
     rsync -rpt ../../mknamd_fep_run.sh mknamd_fep_run.sh
-    ln -s /home/kevin/forcefield/namd/charmm36/toppar_c36_jul20/ toppar
-    ln -s /home/kevin/forcefield/namd/charmm36/toppar_water_ions_namd.str .
 
     if [[ "$2" == "-run" ]]; then 
       cd eq
