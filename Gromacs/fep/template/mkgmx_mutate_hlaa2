@@ -1,0 +1,19 @@
+#!/bin/bash
+conda activate pmx
+export GMXLIB=/opt/anaconda3/envs/pmx/lib/python2.7/site-packages/pmx-2.0+41.g7725833-py2.7-macosx-10.7-x86_64.egg/pmx/data/mutff45
+
+cat > tcl <<'EOF'
+mol new md.pdb
+foreach ii {C} {
+    set sel [atomselect top "segname PRO$ii"]
+    $sel writepdb peptide.pdb
+}
+quit
+EOF
+vmd -dispdev text -e tcl
+
+gmx pdb2gmx -f peptide.pdb
+
+pmx mutate -f conf.gro -ff charmm36mut.ff -o peptide_mutate.pdb
+
+rm \#* tcl

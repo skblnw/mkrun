@@ -31,3 +31,5 @@ THR    THR   NTHR  CTHR  -
 TRP    TRP   NTRP  CTRP  -
 TYR    TYR   NTYR  CTYR  -
 VAL    VAL   NVAL  CVAL  -
+
+L2G    L2G   NL2G  CL2G  - ; Added by Kevin, 2022.7.18

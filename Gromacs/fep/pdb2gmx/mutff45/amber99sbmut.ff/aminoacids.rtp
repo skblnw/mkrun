@@ -183,7 +183,6 @@
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ GLY ]
  [ atoms ]
@@ -234,185 +233,7 @@
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
-
-
-;charge -1
-[ SEP ]
- [ atoms ]
-       N N            -0.516301     1
-       H H            0.293600     2
-      CA CT           0.021706     3
-      HA H1           0.122918     4
-      CB CT           0.025023     5
-     HB1 H1           0.105184     6
-     HB2 H1           0.105184     7
-      OG OS           -0.465690     8
-       P P            1.322977     9
-     O1P OH           -0.752782    10
-     O2P O2           -0.821811    11
-     O3P O2           -0.821811    12
-     H1P HO           0.427101    13
-       C C            0.536601    14
-       O O            -0.581901    15
- [ bonds ]
-       N        H       0.1010 363170.0
-       N       CA       0.1449 282000.0
-      CA       HA       0.1090 284510.0
-      CA       CB       0.1526 259410.0
-      CA        C       0.1522 265270.0
-      CB      HB1       0.1090 284510.0
-      CB      HB2       0.1090 284510.0
-      CB       OG       0.1410 267780.0
-      OG        P       0.1610 439320.0
-       P      O1P       0.1610 439320.0
-       P      O2P       0.1480 439320.0
-       P      O3P       0.1480 439320.0
-     O1P      H1P       0.0960 462750.0
-       C        O       0.1229 476980.0
-      -C	N
- [ angles ]
-       N       CA       HA       109.50   418.40
-       N       CA       CB       109.70   669.44
-       N       CA        C       110.10   527.18
-       H        N       CA       118.04   418.40
-      CA       CB      HB1       109.50   418.40
-      CA       CB      HB2       109.50   418.40
-      CA       CB       OG       109.50   418.40
-      CA        C        O       120.40   669.44
-      HA       CA       CB       109.50   418.40
-      HA       CA        C       109.50   418.40
-      CB       CA        C       111.10   527.18
-      CB       OG        P       120.50   836.80
-     HB1       CB      HB2       109.50   292.88
-     HB1       CB       OG       109.50   418.40
-     HB2       CB       OG       109.50   418.40
-      OG        P      O1P       102.60   376.56
-      OG        P      O2P       108.23   836.80
-      OG        P      O3P       108.23   836.80
-       P      O1P      H1P       108.50  1171.50
-     O1P        P      O2P       108.23  1171.50
-     O1P        P      O3P       108.23  1171.50
-     O2P        P      O3P       119.90  1171.50
- [ dihedrals ]
-       N       CA       CB HB1       0.0000   0.6508   3.0000 
-       N       CA       CB HB2       0.0000   0.6508   3.0000 
-       N       CA       CB OG       0.0000   0.6508   3.0000 
-       N       CA        C O       0.0000   0.0000   0.0000 
-       H        N       CA HA       0.0000   0.0000   0.0000 
-       H        N       CA CB       0.0000   0.0000   0.0000 
-       H        N       CA C       0.0000   0.0000   0.0000 
-      CA       CB       OG P       0.0000   1.6039   3.0000 
-      HA       CA       CB HB1       0.0000   0.6508   3.0000 
-      HA       CA       CB HB2       0.0000   0.6508   3.0000 
-      HA       CA       CB OG       0.0000   0.0000   0.0000 
-      HA       CA       CB OG       0.0000   1.0460   1.0000 
-      HA       CA        C O       0.0000   3.3472   1.0000 
-      HA       CA        C O     180.0000   0.3347   3.0000 
-      CB       CA        C O       0.0000   0.0000   0.0000 
-      CB       OG        P O1P       0.0000   1.0460   3.0000 
-      CB       OG        P O1P       0.0000   5.0208   2.0000 
-      CB       OG        P O2P       0.0000   1.0460   3.0000 
-      CB       OG        P O3P       0.0000   1.0460   3.0000 
-     HB1       CB       CA C       0.0000   0.6508   3.0000 
-     HB1       CB       OG P       0.0000   1.6039   3.0000 
-     HB2       CB       CA C       0.0000   0.6508   3.0000 
-     HB2       CB       OG P       0.0000   1.6039   3.0000 
-      OG       CB       CA C       0.0000   0.6508   3.0000 
-      OG        P      O1P H1P       0.0000   1.0460   3.0000 
-     O2P        P      O1P H1P       0.0000   1.0460   3.0000 
-     O3P        P      O1P H1P       0.0000   1.0460   3.0000 
- [ impropers ]
-    -C    CA     N     H
-    CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
-
-
-;charge -2
-[ SEQ ]
- [ atoms ]
-       N N            -0.516301     1
-       H H            0.293600     2
-      CA CT           -0.278702     3
-      HA H1           0.198553     4
-      CB CT           0.253803     5
-     HB1 H1           0.043230     6
-     HB2 H1           0.043230     7
-      OG OS           -0.430343     8
-       P P            1.387091     9
-     O1P O2           -0.982954    10
-     O2P O2           -0.982954    11
-     O3P O2           -0.982954    12
-       C C            0.536601    13
-       O O            -0.581901    14
- [ bonds ]
-       N        H     0.1010 363170.0
-       N       CA     0.1449 282000.0
-      CA       HA       0.1090 284510.0
-      CA       CB       0.1526 259410.0
-      CA        C       0.1522 265270.0
-      CB      HB1       0.1090 284510.0
-      CB      HB2       0.1090 284510.0
-      CB       OG       0.1410 267780.0
-      OG        P       0.1610 439320.0
-       P      O1P       0.1480 439320.0
-       P      O2P       0.1480 439320.0
-       P      O3P       0.1480 439320.0
-       C        O       0.1229 476980.0
-      -C	N
- [ angles ]
-       N       CA       HA       109.50   418.40
-       N       CA       CB       109.70   669.44
-       N       CA        C       110.10   527.18
-       H        N       CA       118.04   418.40
-      CA       CB      HB1       109.50   418.40
-      CA       CB      HB2       109.50   418.40
-      CA       CB       OG       109.50   418.40
-      CA        C        O       120.40   669.44
-      HA       CA       CB       109.50   418.40
-      HA       CA        C       109.50   418.40
-      CB       CA        C       111.10   527.18
-      CB       OG        P       120.50   836.80
-     HB1       CB      HB2       109.50   292.88
-     HB1       CB       OG       109.50   418.40
-     HB2       CB       OG       109.50   418.40
-      OG        P      O1P       108.23   836.80
-      OG        P      O2P       108.23   836.80
-      OG        P      O3P       108.23   836.80
-     O1P        P      O2P       119.90  1171.50
-     O1P        P      O3P       119.90  1171.50
-     O2P        P      O3P       119.90  1171.50
- [ dihedrals ]
-       N       CA       CB HB1       0.0000   0.6508   3.0000 
-       N       CA       CB HB2       0.0000   0.6508   3.0000 
-       N       CA       CB OG       0.0000   0.6508   3.0000 
-       N       CA        C O       0.0000   0.0000   0.0000 
-       H        N       CA HA       0.0000   0.0000   0.0000 
-       H        N       CA CB       0.0000   0.0000   0.0000 
-       H        N       CA C       0.0000   0.0000   0.0000 
-      CA       CB       OG P       0.0000   1.6039   3.0000 
-      HA       CA       CB HB1       0.0000   0.6508   3.0000 
-      HA       CA       CB HB2       0.0000   0.6508   3.0000 
-      HA       CA       CB OG       0.0000   0.0000   0.0000 
-      HA       CA       CB OG       0.0000   1.0460   1.0000 
-      HA       CA        C O       0.0000   3.3472   1.0000 
-      HA       CA        C O     180.0000   0.3347   3.0000 
-      CB       CA        C O       0.0000   0.0000   0.0000 
-      CB       OG        P O1P       0.0000   1.0460   3.0000 
-      CB       OG        P O2P       0.0000   1.0460   3.0000 
-      CB       OG        P O3P       0.0000   1.0460   3.0000 
-     HB1       CB       CA C       0.0000   0.6508   3.0000 
-     HB1       CB       OG P       0.0000   1.6039   3.0000 
-     HB2       CB       CA C       0.0000   0.6508   3.0000 
-     HB2       CB       OG P       0.0000   1.6039   3.0000 
-      OG       CB       CA C       0.0000   0.6508   3.0000 
- [ impropers ]
-    -C    CA     N     H
-    CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
-
-
- 
+                        
 [ THR ]
  [ atoms ]
      N    N           -0.41570     1
@@ -447,120 +268,6 @@
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
-
-; VG: phosphothreonine q=-2 
-[ TPO ]
- [ atoms ]
-       N N            -0.516301     1
-       H H            0.293600     2
-      CA CT           -0.313510     3
-      HA H1           0.215772     4
-      CB CT           0.623862     5
-      HB H1           0.009989     6
-     CG2 CT           -0.406805     7
-    HG21 HC           0.071662     8
-    HG22 HC           0.071662     9
-    HG23 HC           0.071662    10
-      OG OS           -0.545231    11
-       P P            1.366058    12
-     O1P O2           -0.965707    13
-     O2P O2           -0.965707    14
-     O3P O2           -0.965707    15
-       C C            0.536601    16
-       O O            -0.581901    17
-
- [ bonds ]
-       N        H   0.1010 363170.0000 
-       N       CA   0.1449 282000.0000 
-      CA       HA   0.1090 284510.0000 
-      CA       CB   0.1526 259410.0000 
-      CA        C   0.1522 265270.0000 
-      CB       HB   0.1090 284510.0000 
-      CB      CG2   0.1526 259410.0000 
-      CB       OG   0.1410 267780.0000 
-     CG2     HG21   0.1090 284510.0000 
-     CG2     HG22   0.1090 284510.0000 
-     CG2     HG23   0.1090 284510.0000 
-      OG        P   0.1610 439320.0000 
-       P      O1P   0.1480 439320.0000 
-       P      O2P   0.1480 439320.0000 
-       P      O3P   0.1480 439320.0000 
-       C        O   0.1229 476980.0000 
-      -C     N
-
- [ angles ]
-       N       CA       HA 109.5000 418.4000 
-       N       CA       CB 109.7000 669.4400 
-       N       CA        C 110.1000 527.1800 
-       H        N       CA 118.0400 418.4000 
-      CA       CB       HB 109.5000 418.4000 
-      CA       CB      CG2 109.5000 334.7200 
-      CA       CB       OG 109.5000 418.4000 
-      CA        C        O 120.4000 669.4400 
-      HA       CA       CB 109.5000 418.4000 
-      HA       CA        C 109.5000 418.4000 
-      CB       CA        C 111.1000 527.1800 
-      CB      CG2     HG21 109.5000 418.4000 
-      CB      CG2     HG22 109.5000 418.4000 
-      CB      CG2     HG23 109.5000 418.4000 
-      CB       OG        P 120.5000 836.8000 
-      HB       CB      CG2 109.5000 418.4000 
-      HB       CB       OG 109.5000 418.4000 
-     CG2       CB       OG 109.5000 418.4000 
-    HG21      CG2     HG22 109.5000 292.8800 
-    HG21      CG2     HG23 109.5000 292.8800 
-    HG22      CG2     HG23 109.5000 292.8800 
-      OG        P      O1P 108.2300 836.8000 
-      OG        P      O2P 108.2300 836.8000 
-      OG        P      O3P 108.2300 836.8000 
-     O1P        P      O2P 119.9000 1171.5000 
-     O1P        P      O3P 119.9000 1171.5000 
-     O2P        P      O3P 119.9000 1171.5000 
-
- [ dihedrals ]
-       N       CA       CB HB   0.0000   0.6508   3.0000 
-       N       CA       CB CG2   0.0000   0.6508   3.0000 
-       N       CA       CB OG   0.0000   0.6508   3.0000 
-       N       CA        C O   0.0000   0.0000   0.0000 
-       H        N       CA HA   0.0000   0.0000   0.0000 
-       H        N       CA CB   0.0000   0.0000   0.0000 
-       H        N       CA C   0.0000   0.0000   0.0000 
-      CA       CB      CG2 HG21   0.0000   0.6694   3.0000 
-      CA       CB      CG2 HG22   0.0000   0.6694   3.0000 
-      CA       CB      CG2 HG23   0.0000   0.6694   3.0000 
-      CA       CB       OG P   0.0000   1.6039   3.0000 
-      HA       CA       CB HB   0.0000   0.6508   3.0000 
-      HA       CA       CB CG2   0.0000   0.6508   3.0000 
-      HA       CA       CB OG   0.0000   0.0000   0.0000 
-      HA       CA       CB OG   0.0000   1.0460   1.0000 
-      HA       CA        C O   0.0000   0.0000   0.0000 
-      HA       CA        C O   0.0000   3.3472   1.0000 
-      HA       CA        C O 180.0000   0.3347   3.0000 
-      CB       CA        C O   0.0000   0.0000   0.0000 
-      CB       OG        P O1P   0.0000   1.0460   3.0000 
-      CB       OG        P O2P   0.0000   1.0460   3.0000 
-      CB       OG        P O3P   0.0000   1.0460   3.0000 
-      HB       CB       CA C   0.0000   0.6508   3.0000 
-      HB       CB      CG2 HG21   0.0000   0.6508   3.0000 
-      HB       CB      CG2 HG22   0.0000   0.6508   3.0000 
-      HB       CB      CG2 HG23   0.0000   0.6508   3.0000 
-      HB       CB       OG P   0.0000   1.6039   3.0000 
-     CG2       CB       CA C   0.0000   0.6508   3.0000 
-     CG2       CB       OG P   0.0000   1.6039   3.0000 
-    HG21      CG2       CB OG   0.0000   0.0000   0.0000 
-    HG21      CG2       CB OG   0.0000   1.0460   1.0000 
-    HG22      CG2       CB OG   0.0000   0.0000   0.0000 
-    HG22      CG2       CB OG   0.0000   1.0460   1.0000 
-    HG23      CG2       CB OG   0.0000   0.0000   0.0000 
-    HG23      CG2       CB OG   0.0000   1.0460   1.0000 
-      OG       CB       CA C   0.0000   0.6508   3.0000 
-
- [ impropers ]
-    -C    CA     N     H
-    CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
-                        
                         
 [ LEU ]
  [ atoms ]
@@ -603,14 +310,9 @@
    CD2  HD23
      C     O
     -C     N
- [ dihedrals ]
-     C    CA    CB    CG        torsion_LEU_C_CA_CB_CG_mult1
-     C    CA    CB    CG        torsion_LEU_C_CA_CB_CG_mult2
-     C    CA    CB    CG        torsion_LEU_C_CA_CB_CG_mult3
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ ILE ]
  [ atoms ]
@@ -653,13 +355,9 @@
     CD   HD3
      C     O
     -C     N
- [ dihedrals ]
-     N    CA    CB   CG2        torsion_ILE_N_CA_CB_CG2_mult1
-     N    CA    CB   CG2        torsion_ILE_N_CA_CB_CG2_mult2
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ VAL ]
  [ atoms ]
@@ -699,7 +397,6 @@
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ ASN ]
  [ atoms ]
@@ -732,25 +429,11 @@
    ND2  HD22
      C     O
     -C     N
- [ dihedrals ]
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult1
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult2
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult3
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult4
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult5
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult6
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult1
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult2
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult3
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult4
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult5
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult6
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
     CB   ND2    CG   OD1
     CG  HD21   ND2  HD22
-    N     CA     C    +N    105.4       0.75       1
                         
 [ GLN ]
  [ atoms ]
@@ -794,7 +477,6 @@
     CA    +N     C     O
     CG   NE2    CD   OE1
     CD  HE21   NE2  HE22
-    N     CA     C    +N    105.4       0.75       1
                         
 [ ARG ]
  [ atoms ]
@@ -854,7 +536,6 @@
     CD    CZ    NE    HE
     CZ  HH11   NH1  HH12
     CZ  HH21   NH2  HH22
-    N     CA     C    +N    105.4       0.75       1
                
 [ HID ]
  [ atoms ]
@@ -901,7 +582,6 @@
     CG   NE2   CD2   HD2
    ND1   NE2   CE1   HE1
    ND1   CD2    CG    CB
-    N     CA     C    +N    105.4       0.75       1
                         
 [ HIE ]
  [ atoms ]
@@ -948,7 +628,6 @@
     CG   NE2   CD2   HD2
    ND1   NE2   CE1   HE1
    ND1   CD2    CG    CB
-    N     CA     C    +N    105.4       0.75       1
                         
 [ HIP ]
  [ atoms ]
@@ -998,7 +677,6 @@
     CG   NE2   CD2   HD2
    ND1   NE2   CE1   HE1
    ND1   CD2    CG    CB
-    N     CA     C    +N    105.4       0.75       1
                         
 [ TRP ]
  [ atoms ]
@@ -1062,8 +740,7 @@
    CH2   CE3   CZ3   HZ3
    CZ3   CD2   CE3   HE3
     CG   NE1   CD1   HD1
-   CD1    CG    CB   CD2
-    N     CA     C    +N    105.4       0.75       1
+   CD1   CD2    CG    CB
                         
 [ PHE ]
  [ atoms ]
@@ -1118,7 +795,6 @@
    CD1    CZ   CE1   HE1
     CG   CE1   CD1   HD1
    CD1   CD2    CG    CB
-    N     CA     C    +N    105.4       0.75       1
                        
 [ TYR ]
  [ atoms ]
@@ -1175,7 +851,6 @@
     CG   CE1   CD1   HD1
    CD1   CD2    CG    CB
    CE1   CE2    CZ    OH
-    N     CA     C    +N    105.4       0.75       1
                         
 [ GLU ]
  [ atoms ]
@@ -1214,7 +889,6 @@
     -C    CA     N     H
     CA    +N     C     O
     CG   OE1    CD   OE2
-    N     CA     C    +N    105.4       0.75       1
                         
 [ ASP ]
  [ atoms ]
@@ -1243,30 +917,10 @@
     CG   OD2
      C     O
     -C     N
- [ dihedrals ]
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult1
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult2
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult3
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult4
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult5
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult6
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult1
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult2
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult3
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult4
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult5
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult6
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult1
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult2
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult3
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult4
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult5
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult6
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
     CB   OD1    CG   OD2
-    N     CA     C    +N    105.4       0.75       1
                         
 [ LYS ]
  [ atoms ]
@@ -1318,7 +972,6 @@
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
 
 [ ORN ] ; charges taken from amber99.prm of tinker 4.0
  [ atoms ]
@@ -1364,7 +1017,6 @@
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
 
 [ DAB ] ; sidechain charges fit to maintain heavy atom charge group trend LYS -> ORN -> DAB
  [ atoms ]
@@ -1404,7 +1056,6 @@
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
 
 [ LYN ]
  [ atoms ]
@@ -1454,7 +1105,6 @@
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ PRO ]
  [ atoms ]
@@ -1558,7 +1208,6 @@
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ CYM ]
  [ atoms ]
@@ -1586,7 +1235,6 @@
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ CYX ]
  [ atoms ]
@@ -1614,44 +1262,7 @@
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
 
-[ CME ]
- [ atoms ]
-     N    N           -0.41570     1
-     H    H            0.27190     2
-    CA    CT           0.02130     3
-    HA    H1           0.11240     4
-    CB    CT          -0.12310     5
-   HB1    H1           0.11120     6
-   HB2    H1           0.11120     7
-    SG    S           -0.31190     8
-    CD    CT          -0.07670     9
-   HD1    H1           0.09000    10
-   HD2    H1           0.09000    11
-   HD3    H1           0.09000    12
-     C    C            0.59730    13
-     O    O           -0.56790    14
- [ bonds ]
-     N     H
-     N    CA
-    CA    HA
-    CA    CB
-    CA     C
-    CB   HB1
-    CB   HB2
-    CB    SG
-    SG    CD
-    CD   HD1
-    CD   HD2
-    CD   HD3
-     C     O
-    -C     N
- [ impropers ]
-    -C    CA     N     H
-    CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
-                        
 [ MET ]
  [ atoms ]
      N    N           -0.41570     1
@@ -1692,7 +1303,6 @@
  [ impropers ]
     -C    CA     N     H
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 ; non-terminal acidic AA's
        
@@ -1729,7 +1339,6 @@
     -C    CA     N     H
     CA    +N     C     O
     CB   OD1    CG   OD2
-    N     CA     C    +N    105.4       0.75       1
                    
 
 [ GLH ]
@@ -1771,7 +1380,6 @@
     -C    CA     N     H
     CA    +N     C     O
     CG   OE1    CD   OE2
-    N     CA     C    +N    105.4       0.75       1
 
 ; C-terminal AA's
                         
@@ -1938,10 +1546,6 @@
      C   OC1
      C   OC2
     -C     N
- [ dihedrals ]
-     C    CA    CB    CG        torsion_LEU_C_CA_CB_CG_mult1
-     C    CA    CB    CG        torsion_LEU_C_CA_CB_CG_mult2
-     C    CA    CB    CG        torsion_LEU_C_CA_CB_CG_mult3
  [ impropers ]
     -C    CA     N     H    
     CA   OC1     C   OC2    
@@ -1989,9 +1593,6 @@
      C   OC1
      C   OC2
     -C     N
- [ dihedrals ]
-     N    CA    CB   CG2        torsion_ILE_N_CA_CB_CG2_mult1
-     B    CA    CB   CG2        torsion_ILE_N_CA_CB_CG2_mult2
  [ impropers ]
     -C    CA     N     H    
     CA   OC1     C   OC2    
@@ -2037,114 +1638,6 @@
     -C    CA     N     H    
     CA   OC1     C   OC2    
                         
-[ ASF ]
- [ atoms ]
-     N    N           -0.38210     1
-     H    H            0.26810     2
-    CA    CT          -0.20800     3
-    HA    H1           0.13580     4
-    CB    CT          -0.22990     5
-   HB1    HC           0.10230     6
-   HB2    HC           0.10230     7
-    CG    C            0.71530     8
-   OD1    O           -0.60100     9
-   ND2    N           -0.90840    10
-  HD21    H            0.41500    11
-  HD22    H            0.41500    12
-     C    C            0.81325    13
-   OF1    O           -0.51730    14
-   OF2    OH          -0.61730    15
-   HF2    HO           0.49695    16
- [ bonds ]
-     N     H
-     N    CA
-    CA    HA
-    CA    CB
-    CA     C
-    CB   HB1
-    CB   HB2
-    CB    CG
-    CG   OD1
-    CG   ND2
-   ND2  HD21
-   ND2  HD22
-     C   OF1
-     C   OF2
-   OF2   HF2
-    -C     N
- [ dihedrals ]
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult1
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult2
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult3
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult4
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult5
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult6
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult1
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult2
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult3
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult4
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult5
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult6
- [ impropers ]
-    -C    CA     N     H    
-    CA   OF1     C   OF2    
-    CB   ND2    CG   OD1    
-    CG  HD21   ND2  HD22    
-                        
-[ CASF ]
- [ atoms ]
-     N    N           -0.38210     1
-     H    H            0.26810     2
-    CA    CT          -0.20800     3
-    HA    H1           0.13580     4
-    CB    CT          -0.22990     5
-   HB1    HC           0.10230     6
-   HB2    HC           0.10230     7
-    CG    C            0.71530     8
-   OD1    O           -0.60100     9
-   ND2    N           -0.90840    10
-  HD21    H            0.41500    11
-  HD22    H            0.41500    12
-     C    C            0.81325    13
-   OC1    O           -0.51730    14
-   OC2    OH          -0.61730    15
-   HC2    HO           0.49695    16
- [ bonds ]
-     N     H
-     N    CA
-    CA    HA
-    CA    CB
-    CA     C
-    CB   HB1
-    CB   HB2
-    CB    CG
-    CG   OD1
-    CG   ND2
-   ND2  HD21
-   ND2  HD22
-     C   OC1
-     C   OC2
-   OC2   HC2
-    -C     N
- [ dihedrals ]
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult1
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult2
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult3
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult4
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult5
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult6
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult1
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult2
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult3
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult4
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult5
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult6
- [ impropers ]
-    -C    CA     N     H    
-    CA   OC1     C   OC2    
-    CB   ND2    CG   OD1    
-    CG  HD21   ND2  HD22    
-                        
 [ CASN ]
  [ atoms ]
      N    N           -0.38210     1
@@ -2178,19 +1671,6 @@
      C   OC1
      C   OC2
     -C     N
- [ dihedrals ]
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult1
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult2
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult3
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult4
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult5
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult6
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult1
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult2
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult3
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult4
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult5
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult6
  [ impropers ]
     -C    CA     N     H    
     CA   OC1     C   OC2    
@@ -2514,7 +1994,7 @@
    CH2   CE3   CZ3   HZ3    
    CZ3   CD2   CE3   HE3    
     CG   NE1   CD1   HD1    
-   CD1    CG    CB   CD2
+   CD1   CD2    CG    CB    
                         
 [ CPHE ]
  [ atoms ]
@@ -2699,25 +2179,6 @@
      C   OC1
      C   OC2
     -C     N
- [ dihedrals ]
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult1
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult2
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult3
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult4
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult5
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult6
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult1
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult2
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult3
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult4
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult5
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult6
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult1
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult2
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult3
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult4
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult5
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult6
  [ impropers ]
     -C    CA     N     H    
     CA   OC1     C   OC2    
@@ -2844,7 +2305,6 @@
  [ impropers ]
     -C    CA     N     H    
     CA   OC1     C   OC2    
-    N     CA     C    +N    105.4       0.75       1
                         
 [ CCYX ]
  [ atoms ]
@@ -2949,7 +2409,6 @@
      C    +N
  [ impropers ]
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NGLY ]
  [ atoms ]
@@ -3006,7 +2465,6 @@
      C    +N
  [ impropers ]
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NTHR ]
  [ atoms ]
@@ -3045,7 +2503,6 @@
      C    +N
  [ impropers ]
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NLEU ]
  [ atoms ]
@@ -3092,13 +2549,8 @@
    CD2  HD23
      C     O
      C    +N
- [ dihedrals ]
-     C    CA    CB    CG        torsion_LEU_C_CA_CB_CG_mult1
-     C    CA    CB    CG        torsion_LEU_C_CA_CB_CG_mult2
-     C    CA    CB    CG        torsion_LEU_C_CA_CB_CG_mult3
  [ impropers ]
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NILE ]
  [ atoms ]
@@ -3145,12 +2597,8 @@
     CD   HD3
      C     O
      C    +N
- [ dihedrals ]
-     N    CA    CB   CG2        torsion_ILE_N_CA_CB_CG2_mult1
-     B    CA    CB   CG2        torsion_ILE_N_CA_CB_CG2_mult2
  [ impropers ]
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NVAL ]
  [ atoms ]
@@ -3193,7 +2641,6 @@
      C    +N
  [ impropers ]
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NASN ]
  [ atoms ]
@@ -3230,24 +2677,10 @@
    ND2  HD22
      C     O
      C    +N
- [ dihedrals ]
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult1
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult2
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult3
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult4
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult5
-     C    CA    CB    CG        torsion_ASN_C_CA_CB_CG_mult6
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult1
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult2
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult3
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult4
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult5
-    CA    CB    CG   ND2        torsion_ASN_CA_CB_CG_ND2_mult6
  [ impropers ]
     CA    +N     C     O
     CB   ND2    CG   OD1
     CG  HD21   ND2  HD22
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NGLN ]
  [ atoms ]
@@ -3294,7 +2727,6 @@
     CA    +N     C     O
     CG   NE2    CD   OE1
     CD  HE21   NE2  HE22
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NARG ]
  [ atoms ]
@@ -3357,7 +2789,6 @@
     CD    CZ    NE    HE
     CZ  HH11   NH1  HH12
     CZ  HH21   NH2  HH22
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NHID ]
  [ atoms ]
@@ -3407,7 +2838,6 @@
     CG   NE2   CD2   HD2
    ND1   NE2   CE1   HE1
    ND1   CD2    CG    CB
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NHIE ]
  [ atoms ]
@@ -3457,7 +2887,6 @@
     CG   NE2   CD2   HD2
    ND1   NE2   CE1   HE1
    ND1   CD2    CG    CB
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NHIP ]
  [ atoms ]
@@ -3510,7 +2939,6 @@
     CG   NE2   CD2   HD2
    ND1   NE2   CE1   HE1
    ND1   CD2    CG    CB
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NTRP ]
  [ atoms ]
@@ -3577,8 +3005,7 @@
    CH2   CE3   CZ3   HZ3
    CZ3   CD2   CE3   HE3
     CG   NE1   CD1   HD1
-   CD1    CG    CB   CD2
-    N     CA     C    +N    105.4       0.75       1
+   CD1   CD2    CG    CB
                         
 [ NPHE ]
  [ atoms ]
@@ -3636,7 +3063,6 @@
    CD1    CZ   CE1   HE1
     CG   CE1   CD1   HD1
    CD1   CD2    CG    CB
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NTYR ]
  [ atoms ]
@@ -3696,7 +3122,6 @@
     CG   CE1   CD1   HD1
    CD1   CD2    CG    CB
    CE1   CE2    CZ    OH
-    N     CA     C    +N    105.4       0.75       1
                         
                         
 [ NGLU ]
@@ -3739,7 +3164,6 @@
  [ impropers ]
     CA    +N     C     O
     CG   OE1    CD   OE2
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NASP ]
  [ atoms ]
@@ -3772,29 +3196,9 @@
     CG   OD2
      C     O
      C    +N
- [ dihedrals ]
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult1
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult2
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult3
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult4
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult5
-     N    CA    CB    CG        torsion_ASP_N_CA_CB_CG_mult6
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult1
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult2
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult3
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult4
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult5
-    CA    CB    CG   OD1        torsion_ASP_CA_CB_CG_OD_mult6
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult1
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult2
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult3
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult4
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult5
-    CA    CB    CG   OD2        torsion_ASP_CA_CB_CG_OD_mult6
  [ impropers ]
     CA    +N     C     O
     CB   OD1    CG   OD2
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NLYS ]
  [ atoms ]
@@ -3849,7 +3253,6 @@
      C    +N
  [ impropers ]
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NPRO ]
  [ atoms ]
@@ -3921,7 +3324,6 @@
      C    +N
  [ impropers ]
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NCYX ]
  [ atoms ]
@@ -3952,7 +3354,6 @@
      C    +N
  [ impropers ]
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
                         
 [ NMET ]
  [ atoms ]
@@ -3997,8 +3398,6 @@
      C    +N
  [ impropers ]
     CA    +N     C     O
-    N     CA     C    +N    105.4       0.75       1
-
 
 [ NaS ]
  [ atoms ]
@@ -4015,4 +3414,5 @@
 [ KJ ]
  [ atoms ]
    KJ     amber99_337   1.000      1
+
 
