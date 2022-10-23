@@ -1,0 +1,11 @@
+#!/bin/bash
+
+mkdir -p xvg
+cd xvg
+
+for ii in $(seq 0 23); do
+  ln -s ../dir$ii/md.xvg dhdl.$ii.xvg
+done
+
+cd ..
+alchemical_analysis -d xvg -u kcal -g -w -s 1000
