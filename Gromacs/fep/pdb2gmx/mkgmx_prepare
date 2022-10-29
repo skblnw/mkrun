@@ -69,7 +69,6 @@ vmd -dispdev text -e tcl
 rm tcl
 
 ## Merge fragments into complex
-rm mol.pdb
 grep "^ATOM" chains/X.pdb > mol.pdb
 gmx pdb2gmx -f mol.pdb -ff charmm36mut -water tip3p -o free
 for ii in A B; do
@@ -88,7 +87,7 @@ pmx gentop -itp topol_Protein_chain_X.itp -o topol_Protein_chain_X.itp -ff charm
 cat topol.top | sed 's/^Protein_chain_A.*//g' | sed 's/^Protein_chain_B.*//g' > free.top
 
 ## Fix the hybrid itp
-echo "\n;Include Position restraint file" >> topol_Protein_chain_X.itp
+echo -e "\n;Include Position restraint file" >> topol_Protein_chain_X.itp
 sed '1,/Include Position restraint file/D' topol_Protein_chain_X.itp.BAK >> topol_Protein_chain_X.itp
 
 rm \#*
@@ -133,7 +132,7 @@ gmx solvate -cp editconf.gro -o solvate.gro -p free.top
 gmx grompp -f ions.mdp -c solvate.gro -o ions.tpr -p free.top -maxwarn 1 > LOG_grompp 2>&1
 echo 13 | gmx genion -s ions.tpr -o ionized.gro -conc 0.15 -neutral -p free.top
 echo q | gmx make_ndx -f ionized.gro
-cp ionized.gro index.ndx posre_Protein_chain_X.itp topol_Protein_chain_X.itp free/pdb2gmx
+cp ionized.gro index.ndx posre_* topol_* free/pdb2gmx
 cp free.top free/pdb2gmx/topol.top
 
 rm \#* editconf.gro solvate.gro ions.mdp ions.tpr mdout.mdp LOG_grompp 
