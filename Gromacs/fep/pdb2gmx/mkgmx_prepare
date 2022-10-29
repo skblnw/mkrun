@@ -1,0 +1,142 @@
+#!/bin/bash
+#########################################
+## Description: Give you a peptide_mutate.pdb in which 1. mutated residues were renamed 2. missing atoms were added (if neccessary). 
+##              This runs before gentop.
+## Authors: 
+##         Kevin C. Chan (work@skblnw.com) 2022.10.25
+## Usage: sh 
+#########################################
+
+conda activate pmx
+ln -s /Users/ukevi/github/mkrun/Gromacs/fep/pdb2gmx/mutff45 .
+export GMXLIB=mutff45
+
+## Manually prepare a PDB in which chain/segname were properly named
+cat > tcl <<'EOF'
+mol new label.pdb
+set sel [atomselect top "index 0 to 4342"]; $sel set chain A; $sel set segname PROA
+set sel [atomselect top "index 4343 to 5983"]; $sel set chain B; $sel set segname PROB
+set sel [atomselect top "index 5984 to 6125"]; $sel set chain C; $sel set segname PROC
+set sel [atomselect top "index 6126 to 7803"]; $sel set chain D; $sel set segname PROD
+set sel [atomselect top "index 7804 to 9541"]; $sel set chain E; $sel set segname PROE
+set sel [atomselect top all]; $sel writepdb label_new.pdb
+quit
+EOF
+vmd -dispdev text -e tcl
+rm tcl
+
+## Get the peptide using segname
+cat > tcl <<'EOF'
+mol new label_new.pdb
+mol addfile md.gro
+set sel [atomselect top "segname PROC"]; $sel writepdb peptide.pdb
+quit
+EOF
+vmd -dispdev text -e tcl
+rm tcl
+
+## gmx to get conf.gro
+gmx pdb2gmx -f peptide.pdb -ff charmm36-feb2021 -water tip3p
+
+## mutate conf.gro using pmx
+pmx mutate -f conf.gro -ff charmm36mut.ff -o peptide_mutate.pdb
+
+## Divide (and fix the names of) complex PDB into multiple fragments using segname
+mkdir chains
+cat > tcl <<'EOF'
+mol new label_new.pdb
+mol addfile md.gro
+set sel [atomselect top "resname HSD HSE HSP"]; $sel set resname HIS
+set sel [atomselect top "resname ILE and name CD"]; $sel set name CD1
+set sel [atomselect top "name OT1"]; $sel set name O
+set sel [atomselect top "name OT2"]; $sel set name OXT
+set sel [atomselect top "segname PROA"]; $sel writepdb chains/A.pdb
+set sel [atomselect top "segname PROB"]; $sel writepdb chains/B.pdb
+set sel [atomselect top "segname PROC"]; $sel writepdb chains/C.pdb
+set sel [atomselect top "segname PROD"]; $sel writepdb chains/D.pdb
+set sel [atomselect top "segname PROE"]; $sel writepdb chains/E.pdb
+mol new peptide_mutate.pdb
+set sel [atomselect top "resname HSD HSE HSP"]; $sel set resname HIS
+set sel [atomselect top "resname ILE and name CD"]; $sel set name CD1
+set sel [atomselect top "name OT1"]; $sel set name O
+set sel [atomselect top "name OT2"]; $sel set name OXT
+set sel [atomselect top "all"]
+$sel set chain X
+$sel writepdb chains/X.pdb
+quit
+EOF
+vmd -dispdev text -e tcl
+rm tcl
+
+## Merge fragments into complex
+rm mol.pdb
+grep "^ATOM" chains/X.pdb > mol.pdb
+gmx pdb2gmx -f mol.pdb -ff charmm36mut -water tip3p -o free
+for ii in A B; do
+    grep "^ATOM" chains/$ii.pdb >> mol.pdb
+done
+
+## Get basic topology using gmx
+gmx pdb2gmx -f mol.pdb -ff charmm36mut -water tip3p
+
+## Just in case
+cp topol_Protein_chain_X.itp topol_Protein_chain_X.itp.BAK
+cp posre_Protein_chain_X.itp posre_Protein_chain_X.itp.BAK
+
+## Generate hybrid topology using pmx
+pmx gentop -itp topol_Protein_chain_X.itp -o topol_Protein_chain_X.itp -ff charmm36mut.ff 
+cat topol.top | sed 's/^Protein_chain_A.*//g' | sed 's/^Protein_chain_B.*//g' > free.top
+
+## Fix the hybrid itp
+echo "\n;Include Position restraint file" >> topol_Protein_chain_X.itp
+sed '1,/Include Position restraint file/D' topol_Protein_chain_X.itp.BAK >> topol_Protein_chain_X.itp
+
+rm \#*
+
+rm editconf.gro solvate.gro ions.tpr ionized.pdb
+cat > ions.mdp << EOF
+integrator  = md
+dt          = 0.001
+nsteps      = 50000
+nstlist         = 1
+cutoff-scheme   = Verlet
+ns_type         = grid
+coulombtype     = PME
+rcoulomb        = 1.0
+rvdw            = 1.0
+pbc             = xyz
+EOF
+
+mkdir free complex
+mkdir free/pdb2gmx complex/pdb2gmx
+
+# Complex
+# Create the box
+echo 0 | gmx editconf -f conf.gro -o editconf.gro -princ -d 1.0 -bt cubic
+# Solvate the box
+gmx solvate -cp editconf.gro -o solvate.gro -p topol.top
+# Add ions to make it neutral and of 0.15 M NaCl
+# If you want KCl, add -pname K
+gmx grompp -f ions.mdp -c solvate.gro -o ions.tpr -p topol.top -maxwarn 1 > LOG_grompp 2>&1
+echo 13 | gmx genion -s ions.tpr -o ionized.gro -conc 0.15 -neutral -p topol.top
+echo q | gmx make_ndx -f ionized.gro
+cp ionized.gro topol.top index.ndx posre_* topol_* complex/pdb2gmx
+
+# Free
+# Create the box
+bs=`tail -1 ionized.gro`
+echo 0 | gmx editconf -f free.gro -o editconf.gro -box $bs
+# Solvate the box
+gmx solvate -cp editconf.gro -o solvate.gro -p free.top
+# Add ions to make it neutral and of 0.15 M NaCl
+# If you want KCl, add -pname K
+gmx grompp -f ions.mdp -c solvate.gro -o ions.tpr -p free.top -maxwarn 1 > LOG_grompp 2>&1
+echo 13 | gmx genion -s ions.tpr -o ionized.gro -conc 0.15 -neutral -p free.top
+echo q | gmx make_ndx -f ionized.gro
+cp ionized.gro index.ndx posre_Protein_chain_X.itp topol_Protein_chain_X.itp free/pdb2gmx
+cp free.top free/pdb2gmx/topol.top
+
+rm \#* editconf.gro solvate.gro ions.mdp ions.tpr mdout.mdp LOG_grompp 
+rm conf.gro free.gro free.top ionized.gro mol.pdb peptide.pdb peptide_mutate.pdb
+
+mv free complex ..
