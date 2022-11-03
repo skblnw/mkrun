@@ -14,7 +14,7 @@ md2=false
 [ ! -d pdb2gmx ] && echo -e "mkgmx> Directory pdb2gmx not found!" && exit 1 
 [ ! -f $NDX ] && echo -e "mkgmx> Index file not found!" && exit 1 
 
-INITIAL_PDB=pdb2gmx/ionized.pdb
+INITIAL_PDB=pdb2gmx/ionized.gro
 NDX=pdb2gmx/index.ndx
 TOP=pdb2gmx/topol.top
 
