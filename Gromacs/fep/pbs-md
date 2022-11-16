@@ -1,0 +1,26 @@
+#PBS -N md
+#PBS -q amd
+#PBS -l nodes=1:ppn=240:gpus=8
+#PBS -l walltime=999:00:00
+#PBS -S /bin/bash
+#PBS -j oe
+
+date
+echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
+NP=`cat $PBS_NODEFILE | wc -l`
+echo "NP: $NP"
+cd $PBS_O_WORKDIR
+echo $PBS_O_WORKDIR
+source /public/software/apps/gromacs/2022.2-openmpi/bin/GMXRC.bash
+export LD_LIBRARY_PATH=/public/software/lib/:$LD_LIBRARY_PATH
+source /public/software/compiler/intel/intel-compiler-2017.5.239/bin/compilervars.sh intel64
+source /public/software/profile.d/mpi_openmpi-intel-2.1.2.sh
+
+NWINDOWS=24
+start=0
+end=$(($NWINDOWS - 1))
+
+TPR=output/md
+prefix=output/t1
+
+mpirun -np $NP -hostfile $PBS_NODEFILE --mca orte_rsh_agent ssh --mca btl self,openib,sm gmx_mpi mdrun -v -s ${TPR} -deffnm ${prefix} -cpi ${prefix} -nb gpu -bonded gpu
