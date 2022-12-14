@@ -1,0 +1,36 @@
+#!/bin/bash
+
+BASE=/home/kevin/data/gp100/fep/wt/single
+exec_mbar=false
+
+for ii in 2 3 4 5 7; do 
+  for jj in ALA ARG  ASN  ASP  CYS  GLN  GLU  HIS  ILE  LEU  LYS  MET  PHE  SER  THR TRP  TYR  VAL; do 
+    echo -ne "\n$ii $jj: " | tee -a ${BASE}/res$ii
+    if [[ ! -d ${BASE}/pos$ii/$jj/win24.t1/free ]]; then
+      echo "Free state not exist; "; continue
+    elif [[ ! -d ${BASE}/pos$ii/$jj/win24.t1/complex ]]; then
+      echo "Bound state not exist; "; continue
+    else
+      if $exec_mbar; then
+        cd ${BASE}/pos$ii/$jj/win24.t1/free
+        bash ${BASE}/mkgmx_pymbar >& LOG_analysis
+        cd ${BASE}/pos$ii/$jj/win24.t1/complex
+        bash ${BASE}/mkgmx_pymbar >& LOG_analysis
+      fi
+
+      if [[ ! -f ${BASE}/pos$ii/$jj/win24.t1/free/xvg/results.txt ]]; then
+        echo "Free state broken; "; continue
+      elif [[ ! -f ${BASE}/pos$ii/$jj/win24.t1/complex/xvg/results.txt ]]; then
+        echo "Bound state broken; "; continue
+      else
+        b=`grep "TOTAL:" ${BASE}/pos$ii/$jj/win24.t1/complex/xvg/results.txt | awk '{print $17}'`
+        f=`grep "TOTAL:" ${BASE}/pos$ii/$jj/win24.t1/free/xvg/results.txt | awk '{print $17}'`
+        bd=`grep "TOTAL:" ${BASE}/pos$ii/$jj/win24.t1/complex/xvg/results.txt | awk '{print $19}'`
+        fd=`grep "TOTAL:" ${BASE}/pos$ii/$jj/win24.t1/free/xvg/results.txt | awk '{print $19}'`
+        res=`echo "$b - $f" | bc`
+        err=`echo "sqrt($bd*$bd+$fd*$fd)" | bc`
+        echo -ne "$res +- $err" | tee -a ${BASE}/res$ii
+      fi
+    fi
+  done
+done

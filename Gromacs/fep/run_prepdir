@@ -1,0 +1,10 @@
+#!/bin/bash
+
+for ii in 2 3 4 5 6 7 8; do 
+  mkdir -p pos$ii 
+  for jj in ALA CYS ASP GLU PHE HIS ILE LYS LEU MET ASN GLN ARG SER THR VAL TRP TYR; do 
+    mkdir -p pos$ii/$jj
+    mkdir -p pos$ii/$jj/pdb2gmx
+    echo "$ii $jj" > pos$ii/$jj/pdb2gmx/mut
+  done
+done

@@ -58,7 +58,7 @@ if $md1; then
     prefix=md
     TPR=${prefix}.tpr
     rm -f $TPR
-    $GMX grompp -f step5_md.mdp -o $TPR -c output/${previous}.gro -n $NDX -p $TOP
+    $GMX grompp -f step5_md.mdp -o $TPR -c output/${previous}.gro -r $INITIAL_PDB -n $NDX -p $TOP
     $MDRUN_GPU -v -s $TPR -deffnm output/${prefix}
 fi
 
@@ -66,7 +66,8 @@ if $md2; then
     previous=md
     prefix=t1
     TPR=md.tpr
-    # $GMX grompp -f step4_md.mdp -o output/step4_md.tpr -t output/${previous}.cpt -n $NDX -p $TOP
+    $GMX grompp -f step5_md.mdp -o $TPR -t output/${previous}.cpt -c $INITIAL_PDB -r $INITIAL_PDB -n $NDX -p $TOP
     # gmx convert-tpr -s ${previous}.tpr -o $prefix.tpr -extend 10000
-    $MDRUN_GPU -v -s $TPR -cpi output/${prefix}.cpt -deffnm output/${prefix} -nsteps -1
+    # $MDRUN_GPU -v -s $TPR -cpi output/${prefix}.cpt -deffnm output/${prefix} -nsteps -1
+    # $MDRUN_GPU -v -s $TPR -deffnm output/${prefix} -nsteps -1
 fi

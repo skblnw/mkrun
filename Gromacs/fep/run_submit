@@ -1,0 +1,33 @@
+#!/bin/bash
+
+RPATH=/public/home/kevin/data/gp100/fep/t2m/single/3complex
+free=false
+complex=true
+
+for ii in 2 3 4 5 7 8; do
+  for jj in ALA
+    do
+    cd ${RPATH}/pos$ii/$jj/pdb2gmx/free/pdb2gmx; ln -fs ~/mutff/charmm36m-mut.ff .
+    cd ${RPATH}/pos$ii/$jj/pdb2gmx/complex/pdb2gmx; ln -fs ~/mutff/charmm36m-mut.ff .
+    cd ${RPATH}/pos$ii/$jj
+    mkdir -p win24.t1
+    mkdir -p win24.t1/free
+    mkdir -p win24.t1/complex
+    if $free; then
+      cd ${RPATH}/pos$ii/$jj/win24.t1/free; ln -fs ../../pdb2gmx/free/pdb2gmx .
+      cp ${RPATH}/mdp/*.mdp .
+      sh ${RPATH}/mkgmx_duplicate.sh 24
+      sed -e 's/^#PBS -N.*/#PBS -N p'$ii'-'$jj'-f/g' ${RPATH}/pbs > pbs
+      qsub pbs
+    fi
+    if $complex; then
+      cd ${RPATH}/pos$ii/$jj/win24.t1/complex; ln -fs ../../pdb2gmx/complex/pdb2gmx .
+      cp ${RPATH}/mdp/*.mdp .
+      sh ${RPATH}/mkgmx_duplicate.sh 24
+      sed -e 's/^#PBS -N.*/#PBS -N p'$ii'-'$jj'-b/g' ${RPATH}/pbs > pbs
+      qsub pbs
+    fi
+    cd ${RPATH}/pos$ii
+  done
+  cd ${RPATH}
+done

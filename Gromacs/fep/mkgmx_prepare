@@ -1,0 +1,100 @@
+#!/bin/bash
+#########################################
+## Description: Give you a peptide_mutate.pdb in which 1. mutated residues were renamed 2. missing atoms were added (if neccessary). 
+##              This runs before gentop.
+## Authors: 
+##         Kevin C. Chan (work@skblnw.com) 2022.10.25
+## Usage: sh 
+#########################################
+
+# conda activate pmx
+ln -s /data/kevin/gad/fep/wt/single/pdb2gmx/chains .
+ln -s /home/kevin/.local/lib/python3.9/site-packages/pmx/data/mutff .
+export GMXLIB=mutff
+
+rm topol.top
+## gmx to get conf.gro
+gmx pdb2gmx -f chains/C.pdb -ff charmm36-feb2021 -water tip3p
+
+## mutate conf.gro using pmx
+pmx mutate -f conf.gro -ff charmm36m-mut -o peptide_mutate.pdb --script mut
+
+## Divide (and fix the names of) complex PDB into multiple fragments using segname
+cat > tcl <<'EOF'
+mol new peptide_mutate.pdb
+set sel [atomselect top "all"]
+$sel set chain X
+$sel writepdb X.pdb
+quit
+EOF
+vmd -dispdev text -e tcl
+rm tcl
+
+## Get free.pdb
+rm mol.pdb
+grep "^ATOM" X.pdb > mol.pdb
+gmx pdb2gmx -f mol.pdb -ff charmm36m-mut -water tip3p -o free.pdb
+## Get conf.pdb (complex) and topol.top (complex)
+for ii in A B; do
+    grep "^ATOM" chains/$ii.pdb >> mol.pdb
+done
+gmx pdb2gmx -f mol.pdb -ff charmm36m-mut -water tip3p -o conf.pdb
+
+## Generate hybrid topology using pmx
+# pmx gentop -itp topol_Protein_chain_X.itp -o topol_Protein_chain_X.itp -ff charmm36mut.ff 
+pmx gentop -p topol.top -ff charmm36m-mut
+cat pmxtop.top | sed 's/^Protein_chain_A.*//g' | sed 's/^Protein_chain_B.*//g' > pmxtop_free.top
+
+cat > ions.mdp << EOF
+integrator  = md
+dt          = 0.001
+nsteps      = 50000
+nstlist         = 1
+cutoff-scheme   = Verlet
+ns_type         = grid
+coulombtype     = PME
+rcoulomb        = 1.0
+rvdw            = 1.0
+pbc             = xyz
+EOF
+
+rm -r free complex
+mkdir free complex
+mkdir free/pdb2gmx complex/pdb2gmx
+
+# Complex
+# Create the box
+rm editconf.pdb solvate.pdb ions.tpr index.ndx
+echo 0 | gmx editconf -f conf.pdb -o editconf.pdb -princ -d 1.0 -bt cubic
+# Solvate the box
+gmx solvate -cp editconf.pdb -o solvate.pdb -p pmxtop.top
+# Add ions to make it neutral and of 0.15 M NaCl
+# If you want KCl, add -pname K
+gmx grompp -f ions.mdp -c solvate.pdb -o ions.tpr -p pmxtop.top -maxwarn 1 > LOG_grompp 2>&1
+echo 13 | gmx genion -s ions.tpr -o ionized.pdb -conc 0.15 -neutral -p pmxtop.top
+echo q | gmx make_ndx -f ionized.pdb
+cp ionized.pdb index.ndx pmx_* posre_* complex/pdb2gmx
+cp pmxtop.top complex/pdb2gmx/topol.top
+
+# Free
+# Get the box size first
+gmx editconf -f ionized.pdb -o tmp.gro
+bs=`tail -1 tmp.gro`
+rm ionized.pdb tmp.gro
+# Create the box
+rm editconf.pdb solvate.pdb ions.tpr index.ndx
+echo 0 | gmx editconf -f free.pdb -o editconf.pdb -box $bs
+# Solvate the box
+gmx solvate -cp editconf.pdb -o solvate.pdb -p pmxtop_free.top
+# Add ions to make it neutral and of 0.15 M NaCl
+# If you want KCl, add -pname K
+gmx grompp -f ions.mdp -c solvate.pdb -o ions.tpr -p pmxtop_free.top -maxwarn 1 > LOG_grompp 2>&1
+echo 13 | gmx genion -s ions.tpr -o ionized.pdb -conc 0.15 -neutral -p pmxtop_free.top
+echo q | gmx make_ndx -f ionized.pdb
+cp ionized.pdb index.ndx pmx_* posre_* free/pdb2gmx
+cp pmxtop_free.top free/pdb2gmx/topol.top
+
+rm \#* editconf.pdb solvate.pdb ions.mdp ions.tpr index.ndx mdout.mdp LOG_grompp 
+rm conf.pdb free.pdb ionized.pdb mol.pdb peptide_mutate.pdb X.pdb
+
+# mv free complex ..

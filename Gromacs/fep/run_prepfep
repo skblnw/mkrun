@@ -1,0 +1,9 @@
+#!/bin/bash
+
+for ii in 2 3 4 6 5 7 8; do 
+  for jj in ALA CYS ASP GLU PHE HIS ILE LYS LEU MET ASN GLN ARG SER THR VAL TRP TYR; do 
+    cd pos$ii/$jj/pdb2gmx
+    bash ../../../mkgmx_prepare
+    cd ../../..
+  done
+done
