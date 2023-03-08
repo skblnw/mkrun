@@ -1,7 +1,20 @@
 #!/bin/bash
+
+GPUID="$1"
 GMX="gmx"
-MDRUN="gmx mdrun -ntmpi 1 -ntomp 8 -gpu_id 0"
-MDRUN_GPU="gmx mdrun -ntmpi 1 -ntomp 8 -gpu_id 0 -pme gpu -nb gpu -bonded gpu -update gpu"
+MDRUN="gmx mdrun -ntmpi 1 -ntomp 8 -gpu_id $GPUID"
+MDRUN_GPU="gmx mdrun -ntmpi 1 -ntomp 8 -gpu_id $GPUID -pme gpu -nb gpu -bonded gpu -update gpu"
+[ $# -eq 0 ] && { echo "mkvmd> Usage: $0 [GPU ID]; Suggested: 0"; exit 1; }
+
+[ ! -d pdb2gmx ] && echo -e "mkgmx> Directory pdb2gmx not found!" && exit 1 
+
+files=("pdb2gmx/ionized.gro" "pdb2gmx/topol.top" "pdb2gmx/index.ndx" )
+for file in "${files[@]}"; do
+    if [ ! -f "$file" ]; then
+        echo "mkgmx> $file not found!"
+        exit 1
+    fi
+done
 
 mkdir -p output
 mini=true
@@ -11,10 +24,7 @@ eq_npt=true
 md1=true
 md2=false
 
-[ ! -d pdb2gmx ] && echo -e "mkgmx> Directory pdb2gmx not found!" && exit 1 
-[ ! -f $NDX ] && echo -e "mkgmx> Index file not found!" && exit 1 
-
-INITIAL_PDB=pdb2gmx/ionized.pdb
+INITIAL_PDB=pdb2gmx/ionized.gro
 NDX=pdb2gmx/index.ndx
 TOP=pdb2gmx/topol.top
 
@@ -22,7 +32,7 @@ if $mini; then
     prefix=step1_mini
     TPR=${prefix}.tpr
     rm -f $TPR
-    $GMX grompp -f step1_mini.mdp -o $TPR -c $INITIAL_PDB -r $INITIAL_PDB -n $NDX -p $TOP
+    $GMX grompp -f mdp/step1_mini.mdp -o $TPR -c $INITIAL_PDB -r $INITIAL_PDB -n $NDX -p $TOP
     $MDRUN -v -s $TPR -deffnm output/${prefix}
 fi
     
@@ -31,7 +41,7 @@ if $double; then
     prefix=step1_mini_double
     TPR=${prefix}.tpr
     rm -f $TPR
-    $GMX grompp -f step1_mini_double.mdp -o $TPR -c output/${previous}.gro -r $INITIAL_PDB -n $NDX -p $TOP
+    $GMX grompp -f mdp/step1_mini_double.mdp -o $TPR -c output/${previous}.gro -r $INITIAL_PDB -n $NDX -p $TOP
     gmx_d mdrun -ntmpi 1 -ntomp 12 -s $TPR -v -deffnm output/${prefix}
 fi
 
@@ -40,7 +50,7 @@ if $heat; then
     prefix=step3_annealing
     TPR=${prefix}.tpr
     rm -f $TPR
-    $GMX grompp -f step3_annealing.mdp -o $TPR -c output/${previous}.gro -r $INITIAL_PDB -n $NDX -p $TOP
+    $GMX grompp -f mdp/step3_annealing.mdp -o $TPR -c output/${previous}.gro -r $INITIAL_PDB -n $NDX -p $TOP
     $MDRUN -v -s $TPR -deffnm output/${prefix}
 fi
 
@@ -49,7 +59,7 @@ if $eq_npt; then
     prefix=step4_eq_npt
     TPR=${prefix}.tpr
     rm -f $TPR
-    $GMX grompp -f step4_eq_npt.mdp -o $TPR -c output/${previous}.gro -r $INITIAL_PDB -n $NDX -p $TOP
+    $GMX grompp -f mdp/step4_eq_npt.mdp -o $TPR -c output/${previous}.gro -r $INITIAL_PDB -n $NDX -p $TOP
     $MDRUN -v -s $TPR -deffnm output/${prefix}
 fi
 
@@ -58,7 +68,7 @@ if $md1; then
     prefix=md
     TPR=${prefix}.tpr
     rm -f $TPR
-    $GMX grompp -f step5_md.mdp -o $TPR -c output/${previous}.gro -r $INITIAL_PDB -n $NDX -p $TOP
+    $GMX grompp -f mdp/step5_md.mdp -o $TPR -c output/${previous}.gro -r $INITIAL_PDB -n $NDX -p $TOP
     $MDRUN_GPU -v -s $TPR -deffnm output/${prefix}
 fi
 
