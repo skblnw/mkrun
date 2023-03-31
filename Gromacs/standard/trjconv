@@ -3,8 +3,9 @@
 [ $# -eq 0 ] && { echo -e "Usage: trjconv [prefix]"; exit 1; }
 
 prefix=$1
-echo 0 | gmx trjconv -s md.tpr -f output/${prefix}.xtc -pbc nojump -dt 1000 -o tmp-nojump-${prefix}.xtc
-echo 1 0 | gmx trjconv -s md.tpr -f tmp-nojump-${prefix}.xtc -fit rot+trans -o tmp-fit-${prefix}.xtc
-echo 1 0 | gmx trjconv -s md.tpr -f tmp-fit-${prefix}.xtc -pbc res -center -o ${prefix}.rewrapped.pf1000ps.xtc
+# echo 0 | gmx trjconv -s md.tpr -f output/${prefix}.xtc -pbc nojump -dt 1000 -o tmp-nojump-${prefix}.xtc
+echo -e "a 5293 \n q" | gmx make_ndx -n pdb2gmx/index.ndx
+echo 19 0 | gmx trjconv -s md.tpr -f ${prefix}.xtc -n -pbc mol -center -ur compact -dt 1000 -o tmp-wrap-${prefix}.xtc
+echo 1 0 | gmx trjconv -s md.tpr -f tmp-wrap-${prefix}.xtc -fit rot+trans -o ${prefix}.rewrapped.pf1000ps.xtc
 
-rm tmp-*-${prefix}.xtc
+rm tmp-*-${prefix}.xtc 

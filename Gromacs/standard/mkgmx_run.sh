@@ -4,7 +4,7 @@ GPUID="$1"
 GMX="gmx"
 MDRUN="gmx mdrun -ntmpi 1 -ntomp 8 -gpu_id $GPUID"
 MDRUN_GPU="gmx mdrun -ntmpi 1 -ntomp 8 -gpu_id $GPUID -pme gpu -nb gpu -bonded gpu -update gpu"
-[ $# -eq 0 ] && { echo "mkvmd> Usage: $0 [GPU ID]; Suggested: 0"; exit 1; }
+[ $# -eq 0 ] && { echo "mkgmx> Usage: $0 [GPU ID]; Suggested: 0"; exit 1; }
 
 [ ! -d pdb2gmx ] && echo -e "mkgmx> Directory pdb2gmx not found!" && exit 1 
 

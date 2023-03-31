@@ -1,6 +1,6 @@
 #!/bin/bash
 
-[ $# -eq 0 ] && { echo -e "Usage: rungmx [-run|-lrun] [README|step7_production.mdp] [gpu ID] [prefix]"; exit 1; }
+[ $# -eq 0 ] && { echo -e "Usage: rungmx [-run|-lrun] [README|step7_production.mdp] [gpu ID] [prefix: only with -lrun]"; exit 1; }
 
 if [[ "$1" == "-run" ]]; then
 
@@ -21,10 +21,11 @@ elif [[ "$1" == "-lrun" ]]; then
         $2 > step7_production_vrescale.mdp
 
     MDRUN_GPU="gmx mdrun -ntmpi 1 -ntomp 16 -gpu_id $3 -pme gpu -nb gpu -bonded gpu -update gpu"
+    # gmx grompp -o md.tpr -f step7_production_vrescale.mdp -c step6.6_equilibration.gro -t step6.6_equilibration.cpt -n index.ndx -p topol.top
     gmx grompp -o md.tpr -f step7_production_vrescale.mdp -c step7_1.gro -t step7_1.cpt -n index.ndx -p topol.top
     
     prefix=$4
     #gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
-    # $MDRUN_GPU -v -s md.tpr -deffnm ${prefix} -nsteps -1
+    $MDRUN_GPU -v -s md.tpr -deffnm ${prefix} -nsteps -1
 
 fi

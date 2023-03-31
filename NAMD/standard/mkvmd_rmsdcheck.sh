@@ -26,7 +26,7 @@ for ii in $@; do
 done
 
 cat >> tcl <<EOF
-pbc wrap -centersel "${SELREF}" -center com -compound segid -all
+pbc wrap -all -compound res -center com -centersel "${SELREF}" 
 set sel_all [atomselect top all]
 set sel_ref0 [atomselect top "${SELREF}" frame 0]
 set sel_ref [atomselect top "${SELREF}"]

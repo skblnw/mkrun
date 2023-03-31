@@ -4,7 +4,7 @@ title                   = Standard MD simulation
 ; Run parameters
 integrator              = md                        ; leap-frog integrator
 dt                      = 0.002                     ; 2 fs
-nsteps                  = 10000000                   ; 10 ns
+nsteps                  = 500000                   ; 10 ns
 ; Output control
 nstlog                  = 1000                      ; update log file every 2.0 ps
 nstxout                 = 0                         ; suppress .trr output 

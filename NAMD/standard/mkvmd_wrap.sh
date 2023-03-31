@@ -1,6 +1,6 @@
 #!/bin/bash
 
-SEL_TEXT="segname RBD"
+SEL_TEXT="segname PROA"
 
 PDB="$1"; shift
 [ $# -eq 0 ] && { echo "mkvmd> Usage: $0 [PSF/PDB] [TRJ]"; \
@@ -25,7 +25,7 @@ for ii in $@; do
 done
 
 cat >> tcl <<EOF
-pbc wrap -all -compound segid -center com -centersel "${SEL_TEXT}"
+pbc wrap -all -compound res -center com -centersel "${SEL_TEXT}"
 set sel_all [atomselect top all]
 set sel_ref0 [atomselect top "${SEL_TEXT}" frame 0]
 set sel_ref [atomselect top "${SEL_TEXT}"]
