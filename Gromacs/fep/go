@@ -1,0 +1,35 @@
+#!/bin/bash
+# ALA ARG  ASN  ASP  CYS  GLN  GLU  HIS  ILE  LEU  LYS  MET  PHE  SER  THR TRP  TYR  VAL
+
+RPATH=/public/home/kevin/data/gad/fep/wt/single
+free=true
+complex=false
+
+for ii in 4; do
+  for jj in ALA ASN HIS
+    do
+    cd ${RPATH}/pos$ii/$jj/pdb2gmx/free/pdb2gmx; ln -fs ~/mutff/charmm36m-mut.ff .
+    cd ${RPATH}/pos$ii/$jj/pdb2gmx/complex/pdb2gmx; ln -fs ~/mutff/charmm36m-mut.ff .
+    cd ${RPATH}/pos$ii/$jj
+    mkdir -p win24.t1
+    mkdir -p win24.t1/free
+    mkdir -p win24.t1/complex
+    if $free; then
+      cd ${RPATH}/pos$ii/$jj/win24.t1/free; ln -fs ../../pdb2gmx/free/pdb2gmx .
+      cp ${RPATH}/mdp/*.mdp .
+      sh ${RPATH}/mkgmx_duplicate.sh 24
+      sed -e 's/^#PBS -N.*/#PBS -N p'$ii'-'$jj'-f/g' ${RPATH}/pbs > pbs
+      qsub pbs
+    fi
+    if $complex; then
+      cd ${RPATH}/pos$ii/$jj/win24.t1/complex; ln -fs ../../pdb2gmx/complex/pdb2gmx .
+      cp ${RPATH}/mdp/*.mdp .
+      sh ${RPATH}/mkgmx_duplicate.sh 24
+      sed -e 's/^#PBS -N.*/#PBS -N p'$ii'-'$jj'-b/g' ${RPATH}/pbs > pbs
+      qsub pbs
+    fi
+    cd ${RPATH}/pos$ii
+  done
+  cd ${RPATH}
+done
+

@@ -1,0 +1,12 @@
+#!/bin/bash
+
+echo -n "Both: "
+for ii in `ls`; do echo -en "$ii: "; find $ii -name "md.xvg" | wc -l; done | grep " 0" | awk -F: '{printf "%s ",$1}'
+echo ""
+list=$(for ii in `ls`; do echo -en "$ii: "; find $ii -name "md.xvg" | wc -l; done | grep " 24" | awk -F: '{printf "%s ",$1}')
+echo -n "Free: "
+for ii in $list; do echo -en "$ii: "; find $ii -name "md.xvg" | grep "complex" | wc -l; done | grep " 24" | awk -F: '{printf "%s ",$1}'
+echo ""
+echo -n "Complex: "
+for ii in $list; do echo -en "$ii: "; find $ii -name "md.xvg" | grep "free" | wc -l; done | grep " 24" | awk -F: '{printf "%s ",$1}'
+echo ""

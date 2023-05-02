@@ -36,4 +36,3 @@ for ii in $(seq $START $END); do
         ${prefix}-mod.mdp > dir${ii}/${prefix}.mdp
     done
 done
-

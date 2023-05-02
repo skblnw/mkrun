@@ -15,23 +15,32 @@ cutoff-scheme            = verlet
 nstlist                  = 1
 pbc                      = xyz
 rlist                    = 1.2
+; van der Waals
+vdwtype                  = cutoff
+vdw-modifier             = potential-switch
+rvdw                     = 1.2
+rvdw-switch              = 1.0
+; Apply long range dispersion corrections for Energy and Pressure
+DispCorr                  = EnerPres
 ; Electrostatics
 coulombtype              = PME
 rcoulomb                 = 1.2
-; van der Waals
-vdwtype                  = Cut-off
-rvdw                     = 1.2
-; Apply long range dispersion corrections for Energy and Pressure
-DispCorr                  = EnerPres
-; Spacing for the PME/PPPM FFT grid
-fourierspacing           = 0.1
 ; EWALD/PME/PPPM parameters
-pme_order                = 6
-ewald_rtol               = 1e-06
-epsilon_surface          = 0
+;pme_order                = 4
+;fourierspacing           = 0.12  ; Spacing for the PME/PPPM FFT grid
+;ewald_rtol               = 1e-06
 ; Temperature and pressure coupling are off during EM
 tcoupl                   = no
 pcoupl                   = no
+; Do not constrain the starting configuration
+continuation             = no
+; No velocities during EM 
+gen_vel                  = no 
+; options for bonds
+constraints              = h-bonds  ; we only have C-H bonds here
+; Type of constraint algorithm
+constraint-algorithm     = lincs
+
 ; Free energy control stuff
 free_energy              = yes
 init_lambda_state        = 0
@@ -50,13 +59,3 @@ sc-alpha                 = 0.5
 sc-power                 = 1
 sc-coul                  = no           ; linear interpolation of Coulomb (none in this case)
 nstdhdl                  = 200
-; No velocities during EM 
-gen_vel                  = no 
-; options for bonds
-constraints              = h-bonds  ; we only have C-H bonds here
-; Type of constraint algorithm
-constraint-algorithm     = lincs
-; Do not constrain the starting configuration
-continuation             = no
-; Highest order in the expansion of the constraint coupling matrix
-lincs-order              = 12

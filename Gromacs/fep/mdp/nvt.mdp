@@ -1,10 +1,9 @@
 define                   = -DPOSRES
 ; Run control
-integrator               = md       ; Langevin dynamics
+integrator               = md
 tinit                    = 0
 dt                       = 0.001
-nsteps                   = 50000    ; 100 ps
-nstcomm                  = 100
+nsteps                   = 250000
 ; Output control
 nstxout                  = 0
 nstvout                  = 0
@@ -14,23 +13,23 @@ nstenergy                = 200
 nstxout-compressed       = 5000
 ; Neighborsearching and short-range nonbonded interactions
 cutoff-scheme            = verlet
-nstlist                  = 20 
+nstlist                  = 40 
 pbc                      = xyz
 rlist                    = 1.2
+; van der Waals
+vdwtype                  = cutoff
+vdw-modifier             = potential-switch
+rvdw                     = 1.2
+rvdw-switch              = 1.0
+; Apply long range dispersion corrections for Energy and Pressure
+DispCorr                 = EnerPres
 ; Electrostatics
 coulombtype              = PME
 rcoulomb                 = 1.2
-; van der Waals
-vdwtype                  = Cut-off
-rvdw                     = 1.2
-; Apply long range dispersion corrections for Energy and Pressure
-DispCorr                  = EnerPres
-; Spacing for the PME/PPPM FFT grid
-fourierspacing           = 0.12
 ; EWALD/PME/PPPM parameters
-pme_order                = 4
-ewald_rtol               = 1e-06
-epsilon_surface          = 0
+;pme_order                = 4
+;fourierspacing           = 0.12  ; Spacing for the PME/PPPM FFT grid
+;ewald_rtol               = 1e-06
 ; Temperature coupling
 tcoupl                  = V-rescale
 tc_grps                 = non-Water Water
@@ -38,9 +37,20 @@ tau_t                   = 0.1       0.1
 ref_t                   = 310       310
 ; Pressure coupling is off for NVT
 Pcoupl                   = No
-tau_p                    = 0.5
-compressibility          = 4.5e-05
-ref_p                    = 1.0 
+; COM control
+refcoord-scaling         = com
+comm-mode                = linear
+; Do not constrain the starting configuration
+continuation             = no
+; Generate velocities to start
+gen_vel                  = yes
+gen_temp                 = 298
+gen_seed                 = -1
+; options for bonds
+constraints              = h-bonds  ; we only have C-H bonds here
+; Type of constraint algorithm
+constraint-algorithm     = lincs
+
 ; Free energy control stuff
 free_energy              = yes
 init_lambda_state        = 0
@@ -59,18 +69,3 @@ sc-alpha                 = 0.5
 sc-power                 = 1
 sc-coul                  = no           ; linear interpolation of Coulomb (none in this case)
 nstdhdl                  = 200
-; Generate velocities to start
-gen_vel                  = yes
-gen_temp                 = 298
-gen_seed                 = -1
-; options for bonds
-constraints              = h-bonds  ; we only have C-H bonds here
-; Type of constraint algorithm
-constraint-algorithm     = lincs
-; Do not constrain the starting configuration
-continuation             = no
-; Highest order in the expansion of the constraint coupling matrix
-lincs-order              = 12
-; COM control
-refcoord-scaling         = com
-comm-mode                = linear

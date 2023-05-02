@@ -1,0 +1,20 @@
+#!/bin/bash
+
+NWINDOWS=28
+start=0
+end=$(($NWINDOWS - 1))
+
+for ii in $(seq $start $end); do
+  gmx_mpi grompp -f dir$ii/em.mdp -c pdb2gmx/ionized.pdb -r pdb2gmx/ionized.pdb -p pdb2gmx/topol.top -o dir$ii/em.tpr -maxwarn 3
+done
+mpirun -np ${NWINDOWS} gmx_mpi mdrun -v -deffnm em -multidir dir{0..27}
+
+for ii in $(seq $start $end); do
+  gmx_mpi grompp -f dir$ii/nvt.mdp -c dir$ii/em.gro -r dir$ii/em.gro -p pdb2gmx/topol.top -o dir$ii/nvt.tpr -maxwarn 2
+done
+mpirun -np ${NWINDOWS} gmx_mpi mdrun -v -deffnm nvt -multidir dir{0..27} -nb gpu
+
+for ii in $(seq $start $end); do
+  gmx_mpi grompp -f dir$ii/md.mdp -c dir$ii/nvt.gro -p pdb2gmx/topol.top -o dir$ii/md.tpr -maxwarn 1
+done
+mpirun -np ${NWINDOWS} gmx_mpi mdrun -v -deffnm md -multidir dir{0..27} -replex 1000 -nb gpu -bonded gpu -ntomp 4 -pin on
