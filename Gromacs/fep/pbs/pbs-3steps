@@ -34,4 +34,3 @@ for ii in $(seq $start $end); do
   gmx_mpi grompp -f dir$ii/md.mdp -c dir$ii/nvt.gro -p pdb2gmx/topol.top -o dir$ii/md.tpr -maxwarn 1
 done
 mpirun -np $NP -hostfile $PBS_NODEFILE --mca orte_rsh_agent ssh --mca btl self,openib,sm gmx_mpi mdrun -v -deffnm md -multidir dir{0..23} -replex 1000 -nb gpu -bonded gpu
-
