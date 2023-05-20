@@ -21,8 +21,19 @@ install_ucx=false
 install_openmpi=false
 install_fftw=false
 install_plumed=false
-install_gromacs=true
-install_gromacs_mpi=true
+install_gromacs=false
+install_gromacs_mpi=false
+install_gromacs_double=false
+
+if $ubuntu; then
+  apt install libssl-dev
+  apt install dracut-core
+elif $centos; then
+  yum install centos-release-scl
+  yum install devtoolset-7-gcc*
+  yum install openssl-devel
+  scl enable devtoolset-7 bash
+fi
 
 check_files() {
   local files=("$@")
@@ -226,6 +237,34 @@ if $install_gromacs; then
             -DFFTWF_INCLUDE_DIR=/opt/fftw3/${fftw_version}/float-sse2-avx2/include \
             -DGMX_GPU=CUDA \
             -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
+            -DCMAKE_INSTALL_PREFIX=/opt/gromacs/${gromacs_version}
+  make -j8
+  make -j8 install
+  cd ~
+  rm -r "gromacs-${gromacs_version}"
+fi
+
+# Install Gromacs (double precision)
+if $install_gromacs_double; then
+  files=("gromacs-${gromacs_version}.tar.gz" "fftw-${fftw_version}.tar.gz")
+  check_files "${files[@]}"
+
+  tar zxvf "fftw-${fftw_version}.tar.gz"
+  cd "fftw-${fftw_version}"
+  ./configure --enable-double --enable-sse2 --enable-avx2 --enable-shared --prefix=/opt/fftw3/${fftw_version}/float-sse2-avx2
+  make -j8
+  make -j8 install
+  cd ~
+  rm -r "fftw-${fftw_version}"
+
+  tar xvf "gromacs-${gromacs_version}.tar.gz"
+  cd "gromacs-${gromacs_version}"
+  mkdir build
+  cd build
+  cmake ..  -DGMX_DOUBLE=ON \
+            -DGMX_FFT_LIBRARY=fftw3 \
+            -DFFTW_LIBRARY=/opt/fftw3/3.3.9/float-sse2-avx2/lib/libfftw3.so \
+            -DFFTW_INCLUDE_DIR=/opt/fftw3/3.3.9/float-sse2-avx2/include \
             -DCMAKE_INSTALL_PREFIX=/opt/gromacs/${gromacs_version}
   make -j8
   make -j8 install
