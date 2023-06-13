@@ -1,0 +1,99 @@
+define                   = -DPOSRES_LIGAND
+; Run control
+integrator               = sd       ; Langevin dynamics
+tinit                    = 0
+dt                       = 0.002
+nsteps                   = 1500000   ; 3 ns
+nstcomm                  = 100
+; Output control
+nstxout                  = 500000
+nstvout                  = 500000
+nstfout                  = 500000
+nstlog                   = 500000
+nstenergy                = 500
+nstxout-compressed       = 500000
+energygrps               = Protein LIG
+; Neighborsearching and short-range nonbonded interactions
+cutoff-scheme            = verlet
+nstlist                  = 20
+ns_type                  = grid
+pbc                      = xyz
+rlist                    = 1.2
+; Electrostatics
+coulombtype              = PME
+rcoulomb                 = 1.2
+; van der Waals
+vdwtype                  = cutoff
+vdw-modifier             = potential-switch
+rvdw-switch              = 1.0
+rvdw                     = 1.2
+; Apply long range dispersion corrections for Energy and Pressure
+DispCorr                  = EnerPres
+; Spacing for the PME/PPPM FFT grid
+fourierspacing           = 0.12
+; EWALD/PME/PPPM parameters
+pme_order                = 6
+ewald_rtol               = 1e-06
+epsilon_surface          = 0
+; Temperature coupling
+; tcoupl is implicitly handled by the sd integrator
+tc_grps                  = Protein_LIG Water_and_ions
+tau_t                    = 1.0 1.0
+ref_t                    = 298 298
+; Pressure coupling is on for NPT
+Pcoupl                   = Parrinello-Rahman 
+pcoupltype               = isotropic 
+tau_p                    = 2.0
+compressibility          = 4.5e-05 
+ref_p                    = 1.0 
+; Free energy control stuff
+free_energy              = yes
+init_lambda_state = 48
+delta_lambda             = 0
+calc_lambda_neighbors    = -1       ; only immediate neighboring windows
+couple-moltype           = LIG      ; name of moleculetype to decouple
+couple-lambda0           = vdw-q    ; only van der Waals interactions
+couple-lambda1           = none     ; turn off everything, in this case only vdW
+couple-intramol          = no
+; Vectors of lambda specified here
+; Each combination is an index that is retrieved from init_lambda_state = 48
+; init_lambda_state = 48
+vdw_lambdas              = 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.72 0.74 0.76 0.78 0.80 0.82 0.84 0.86 0.88 0.90 0.92 0.94 0.96 0.98 1.00 
+coul_lambdas             = 0.00 0.01 0.02 0.03 0.05 0.08 0.10 0.20 0.30 0.40 0.50 0.60 0.70 0.75 0.80 0.85 0.90 0.95 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00 1.00
+; We are not transforming any bonded or restrained interactions
+bonded_lambdas           = 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 
+restraint_lambdas        = 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.05 0.10 0.15 0.20 0.25 0.30 0.35 0.40 0.45 0.50 0.55 0.60 0.65 0.70 0.72 0.74 0.76 0.78 0.80 0.82 0.84 0.86 0.88 0.90 0.92 0.94 0.96 0.98 1.00 
+; Masses are not changing (particle identities are the same at lambda = 0 and lambda = 1)
+mass_lambdas             = 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 
+; Not doing simulated temperting here
+temperature_lambdas      = 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 
+; Options for the decoupling
+sc-alpha                 = 0.5
+sc-coul                  = no       ; linear interpolation of Coulomb (none in this case)
+sc-power                 = 1
+sc-sigma                 = 0.3 
+nstdhdl                  = 10
+; Do not generate velocities
+gen_vel                  = no 
+; options for bonds
+constraints              = h-bonds  ; we only have C-H bonds here
+; Type of constraint algorithm
+constraint-algorithm     = lincs
+; Constrain the starting configuration
+; since we are continuing from NPT
+continuation             = yes 
+; Highest order in the expansion of the constraint coupling matrix
+lincs-order              = 12
+; Pull code
+;pull                    = yes
+;pull_ncoords            = 1         ; only one reaction coordinate 
+;pull_ngroups            = 2         ; two groups defining one reaction coordinate 
+;pull_group1_name        = LIG
+;pull_group2_name        = LIG_site
+;pull_coord1_type        = umbrella  ; harmonic potential
+;pull_coord1_geometry    = distance  ; simple distance increase 
+;pull_coord1_dim         = Y Y Y
+;pull_coord1_groups      = 1 2
+;pull_coord1_start       = yes       ; define initial COM distance > 0
+;pull_coord1_rate        = 0         ; 0.00 nm per ps = 0 nm per ns
+;pull_coord1_k           = 250       ; kJ mol^-1 nm^-2
