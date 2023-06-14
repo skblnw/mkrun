@@ -117,7 +117,7 @@ if $install_ucx; then
   #./autogen.sh
   ./contrib/configure-release --prefix="${install_base}/ucx/${ucx_version}" --with-cuda="/usr/local/cuda"
   make -j8
-  make install
+  make -j8 install
   cd ~
   rm -r "ucx-${ucx_version}"
 fi
@@ -148,6 +148,23 @@ if $install_fftw; then
   tar zxvf "fftw-${fftw_version}.tar.gz"
   cd "fftw-${fftw_version}"
   ./configure --enable-float --enable-sse2 --enable-avx2 --enable-shared --prefix=/opt/fftw3/${fftw_version}/float-sse2-avx2
+  make -j8
+  make -j8 install
+  cd ~
+  rm -r "fftw-${fftw_version}"
+fi
+
+# Install FFTW (MPI)
+if $install_fftw_mpi; then
+  files=("fftw-${fftw_version}.tar.gz")
+  check_files "${files[@]}"
+
+  tar zxvf "fftw-${fftw_version}.tar.gz"
+  cd "fftw-${fftw_version}"
+  ./configure --enable-float --enable-sse2 --enable-avx2 --enable-threads --enable-openmp --enable-mpi --enable-shared \
+              MPICC= \
+              MPICXX= \
+              --prefix=/opt/fftw3/${fftw_version}/float-sse2-avx2-omp-mpi
   make -j8
   make -j8 install
   cd ~
@@ -195,6 +212,31 @@ if $install_plumed; then
   rm -r "gromacs-${gromacs_version}"
 fi
 
+# Install Gromacs
+if $install_gromacs; then
+  files=("gromacs-${gromacs_version}.tar.gz")
+  check_files "${files[@]}"
+  directories=("/usr/local/cuda" "/opt/fftw3/${fftw_version}")
+  check_directories "${directories[@]}"
+
+  tar xvf "gromacs-${gromacs_version}.tar.gz"
+  cd "gromacs-${gromacs_version}"
+  mkdir build
+  cd build
+  cmake .. -DGMX_FFT_LIBRARY=fftw3 \
+            -DFFTWF_LIBRARY=/opt/fftw3/${fftw_version}/float-sse2-avx2/lib/libfftw3f.so \
+            -DFFTWF_INCLUDE_DIR=/opt/fftw3/${fftw_version}/float-sse2-avx2/include \
+            -DGMX_GPU=CUDA \
+            -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
+            -DCMAKE_INSTALL_PREFIX=/opt/gromacs/${gromacs_version} \
+            -DCMAKE_CXX_COMPILER= \
+            -DCMAKE_C_COMPILER= 
+  make -j8
+  make -j8 install
+  cd ~
+  rm -r "gromacs-${gromacs_version}"
+fi
+
 # Install Gromacs (MPI version)
 if $install_gromacs_mpi; then
   files=("gromacs-${gromacs_version}.tar.gz")
@@ -221,29 +263,6 @@ if $install_gromacs_mpi; then
   rm -r "gromacs-${gromacs_version}"
 fi
 
-# Install Gromacs
-if $install_gromacs; then
-  files=("gromacs-${gromacs_version}.tar.gz")
-  check_files "${files[@]}"
-  directories=("/usr/local/cuda" "/opt/fftw3/${fftw_version}")
-  check_directories "${directories[@]}"
-
-  tar xvf "gromacs-${gromacs_version}.tar.gz"
-  cd "gromacs-${gromacs_version}"
-  mkdir build
-  cd build
-  cmake .. -DGMX_FFT_LIBRARY=fftw3 \
-            -DFFTWF_LIBRARY=/opt/fftw3/${fftw_version}/float-sse2-avx2/lib/libfftw3f.so \
-            -DFFTWF_INCLUDE_DIR=/opt/fftw3/${fftw_version}/float-sse2-avx2/include \
-            -DGMX_GPU=CUDA \
-            -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
-            -DCMAKE_INSTALL_PREFIX=/opt/gromacs/${gromacs_version}
-  make -j8
-  make -j8 install
-  cd ~
-  rm -r "gromacs-${gromacs_version}"
-fi
-
 # Install Gromacs (double precision)
 if $install_gromacs_double; then
   files=("gromacs-${gromacs_version}.tar.gz" "fftw-${fftw_version}.tar.gz")
@@ -251,7 +270,7 @@ if $install_gromacs_double; then
 
   tar zxvf "fftw-${fftw_version}.tar.gz"
   cd "fftw-${fftw_version}"
-  ./configure --enable-double --enable-sse2 --enable-avx2 --enable-shared --prefix=/opt/fftw3/${fftw_version}/float-sse2-avx2
+  ./configure --enable-sse2 --enable-avx2 --enable-shared --prefix=/opt/fftw3/${fftw_version}/double-sse2-avx2
   make -j8
   make -j8 install
   cd ~
@@ -263,8 +282,8 @@ if $install_gromacs_double; then
   cd build
   cmake ..  -DGMX_DOUBLE=ON \
             -DGMX_FFT_LIBRARY=fftw3 \
-            -DFFTW_LIBRARY=/opt/fftw3/3.3.9/float-sse2-avx2/lib/libfftw3.so \
-            -DFFTW_INCLUDE_DIR=/opt/fftw3/3.3.9/float-sse2-avx2/include \
+            -DFFTW_LIBRARY=/opt/fftw3/${fftw_version}/double-sse2-avx2/lib/libfftw3.so \
+            -DFFTW_INCLUDE_DIR=/opt/fftw3/${fftw_version}/double-sse2-avx2/include \
             -DCMAKE_INSTALL_PREFIX=/opt/gromacs/${gromacs_version}
   make -j8
   make -j8 install
