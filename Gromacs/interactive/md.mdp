@@ -1,0 +1,65 @@
+; LINES STARTING WITH ';' ARE COMMENTS
+title                   = Standard MD simulation
+;define                  = -DPOSRES_NOMOVE
+; Run parameters
+integrator              = md                        ; leap-frog integrator
+dt                      = 0.002                     ; 2 fs
+nsteps                  = -1                   ; 10 ns
+; Output control
+nstlog                  = 1000                      ; update log file every 2.0 ps
+nstxout                 = 0                         ; suppress .trr output 
+nstvout                 = 0                         ; suppress .trr output
+nstfout                 = 0                         ; suppress .trr output
+nstenergy               = 1000                      ; save energies every 2.0 ps
+nstxout-compressed      = 1000                     ; write 1000 frames xtc trajectory 
+
+; Bond parameters
+constraint_algorithm    = lincs                     ; holonomic constraints
+constraints             = h-bonds                   ; all bonds (even heavy atom-H bonds) constrained, h-bonds?
+lincs_iter              = 1                         ; accuracy of LINCS
+lincs_order             = 4                         ; also related to accuracy
+; Neighborsearching
+cutoff-scheme           = Verlet
+;ns_type                 = grid                      ; search neighboring grid cells
+rlist                   = 1.2                       ; If "cutoff-scheme=Verlet", rlist=verlet-buffer-tolerance
+vdwtype                 = cutoff                    ; Twin range cut-offs with neighbor list cut-off rlist and VdW cut-off rvdw
+vdw-modifier            = force-switch              ; Suggested for CHARMM36 by the Gromacs team
+                                                    ; Potential-shift-Verlet: Shift the Van der Waals potential by a constant such that it is zero at the cut-off
+rvdw                    = 1.2                       ; van der Waals cutoff (in nm)
+rvdw-switch             = 1.0
+; Electrostatics
+coulombtype             = PME                       ; Particle Mesh Ewald for long-range electrostatics
+                                                    ; Direct space is similar to the Ewald sum, while the reciprocal part is performed with FFTs
+                                                    ; Grid dimensions are controlled with fourierspacing and the interpolation order with pme-order
+                                                    ; coulomb-modifier = Potential-shift-Verlet
+rcoulomb                = 1.2                       ; electrostatic cutoff (in nm)
+;pme_order               = 4                         ; cubic interpolation. 4 equals cubic interpolation. 
+                                                    ; Try 6/8/10 when running in parallel and simultaneously decrease grid dimension.
+;fourierspacing          = 0.12                      ; grid spacing for FFT
+; Dispersion correction
+DispCorr                = no                        ; Suggested for CHARMM36 by the Gromacs team
+                                                    ; EnerPres: account for cut-off vdW scheme
+
+; Temperature coupling
+tcoupl                  = V-rescale
+tc_grps                 = non-Water Water
+tau_t                   = 0.1       0.1
+ref_t                   = 310       310
+
+; Pressure coupling
+pcoupl                  = Parrinello-Rahman         ; pressure coupling is on for NPT
+pcoupltype              = isotropic
+tau_p                   = 5.0                       ; time constant, in ps
+                                                    ; 2.0-5.0 (Gromacs Manual)
+ref_p                   = 1.0                       ; reference pressure, in bar
+compressibility         = 4.5e-5                    ; isothermal compressibility of water, bar^-1
+refcoord_scaling        = com
+
+; Periodic boundary conditions
+pbc                     = xyz
+;
+continuation            = yes
+gen_vel                 = no
+
+; Group to display and/or manipulate in interactive MD session
+IMD-group                = System
