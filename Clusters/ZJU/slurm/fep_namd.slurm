@@ -16,12 +16,11 @@ echo "Job directory: $(pwd)"
 # Decide the software version
 source /public/software/profile.d/apps_namd-3.0alpha9.sh
 
-NAMD="/public/software/apps/NAMD_3.0alpha9/namd3"
+NAMD="namd3"
 
 $NAMD +p1 +devices 0 eq/fep.eq.namd >& eq/LOG_eq
 
-prefix=trial1
-rsync -a eq/fep.tcl eq/equilibrate.coor eq/equilibrate.vel eq/equilibrate.xsc $prefix
-rsync -a eq/fep.namd $prefix/fep.namd
-$NAMD +p1 +devices 0 $prefix/fep.namd >& $prefix/LOG_fep
-
+for ii in $(seq 1 1); do
+    rsync -avh eq/fep.namd eq/fep.tcl eq/equilibrate.coor eq/equilibrate.vel eq/equilibrate.xsc trial${ii}
+    $NAMD +p1 +devices 0 trial${ii}/fep.namd >& trial${ii}/LOG_fep
+done

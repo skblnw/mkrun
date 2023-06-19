@@ -1,15 +1,120 @@
 #!/bin/bash
-VMD="/opt/vmd/1.9.3/vmd"
 
+# Definitions of variables
+VMD="/opt/vmd/1.9.3/vmd"
 SEGNAME="PROC"
 SELECT_TEXT="segname $SEGNAME"
+MD_PDB_FILE="md.pdb"
+EQ_FILES=("fep.tcl" "fep.eq.namd" "fep.namd")
 
+# Function to check if a directory exists, and if not, make it
+function check_and_make_dir() {
+  if [ ! -d $1 ]; then
+    mkdir -p $1
+  fi
+}
+
+# Function to move files
+function move_files() {
+  mv ionized.fep $1
+  mv ionized.p* cell_size.str $1/pdb2namd/vmd_solvate
+}
+
+# Function to rsync files
+function sync_files() {
+  local dest=$1
+  for file in ${EQ_FILES[*]}; do
+    rsync -rpt ../../eq/$file $dest/eq/$file
+  done
+}
+
+# Function to check if all EQ_FILES exist
+function check_eq_files_exist() {
+  for file in ${EQ_FILES[*]}; do
+    if [ ! -f "./eq/$file" ]; then
+      echo "Error: File ./eq/$file does not exist!"
+      exit 1
+    fi
+  done
+}
+
+# Function to run namd3
+function run_namd3() {
+  if [[ "$1" == "-run" ]]; then 
+    cd eq
+    echo "mknamd> Running eq..."
+    namd3 +p8 +devices 1 fep.eq.namd >& LOG_eq
+    cd ..
+  fi
+}
+
+# Function to create run.sh file
+function create_run_file() {
+  local filename=$1
+  local dev=$2
+
+  cat << EOF > $filename
+#!/bin/bash
+
+NAMD="namd3"
+
+cd eq
+\$NAMD +p8 +devices $dev fep.eq.namd >& LOG_eq
+cd ..
+
+for ii in \$(seq 1 1); do
+    rsync -avh eq/fep.namd eq/fep.tcl eq/equilibrate.coor eq/equilibrate.vel eq/equilibrate.xsc trial\$ii
+    \$NAMD +p1 +devices $dev trial\$ii/fep.namd >& trial\$ii/LOG_fep
+done
+EOF
+
+  # Make the file executable
+  chmod +x $filename
+}
+
+# Function to create slurm file
+function create_slurm_file() {
+  local filename=$1
+
+  cat << EOF > $filename
+#!/bin/bash
+#SBATCH -J <job name>
+#SBATCH -p single
+#SBATCH --time=24:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=1
+#SBATCH --gres=gpu:1
+
+echo "Start time: \$(date)"
+echo "SLURM_JOB_NODELIST: \$SLURM_JOB_NODELIST"
+echo "hostname: \$(hostname)"
+echo "CUDA_VISIBLE_DEVICES: \$CUDA_VISIBLE_DEVICES"
+echo "Job directory: \$(pwd)"
+
+# Decide the software version
+source /public/software/profile.d/apps_namd-3.0alpha9.sh
+
+NAMD="/public/software/apps/NAMD_3.0alpha9/namd3"
+
+\$NAMD +p8 +devices 0 eq/fep.eq.namd >& eq/LOG_eq
+
+for ii in \$(seq 1 1); do
+    rsync -avh eq/fep.namd eq/fep.tcl eq/equilibrate.coor eq/equilibrate.vel eq/equilibrate.xsc trial\$ii
+    \$NAMD +p1 +devices 0 trial\$ii/fep.namd >& trial\$ii/LOG_fep
+done
+EOF
+}
+
+# Other part of your script
 [ $# -lt 1 ] && { echo "mknamd> Usage: $0 [all|RESID] [-run]"; echo "mknamd> Default peptide selection is: $SELECT_TEXT"; echo "mknamd> If apply multiple RESIDs, use e.g. \"1 2 3\""; exit 1; }
 
-[ ! -f pdb2namd/md.pdb ] && { echo "md.pdb does not exist!"; exit 1; }
+[ ! -f $MD_PDB_FILE ] && { echo "md.pdb does not exist!"; exit 1; }
 
-length_of_peptide=`grep $SEGNAME pdb2namd/md.pdb | grep "CA" -c`
-sequence=`grep $SEGNAME pdb2namd/md.pdb | grep "CA" | awk '{print $4}'`
+check_eq_files_exist
+
+length_of_peptide=`grep $SEGNAME $MD_PDB_FILE | grep "CA" -c`
+sequence=`grep $SEGNAME $MD_PDB_FILE | grep "CA" | awk '{print $4}'`
 
 if [[ "$1" == "all" ]]; then
   list=$(seq 1 $length_of_peptide)
@@ -72,34 +177,9 @@ topology pdb2namd/top_all36_propatch.rtf
 # topology pdb2namd/toppar_water_ions_namd.str
 
 # Aliases borrowed from AutoPSF
-  pdbalias residue G GUA
-  pdbalias residue C CYT
-  pdbalias residue A ADE
-  pdbalias residue T THY
-  pdbalias residue U URA
-
-  foreach bp { GUA CYT ADE THY URA } {
-     pdbalias atom $bp "O5\*" O5'
-     pdbalias atom $bp "C5\*" C5'
-     pdbalias atom $bp "O4\*" O4'
-     pdbalias atom $bp "C4\*" C4'
-     pdbalias atom $bp "C3\*" C3'
-     pdbalias atom $bp "O3\*" O3'
-     pdbalias atom $bp "C2\*" C2'
-     pdbalias atom $bp "O2\*" O2'
-     pdbalias atom $bp "C1\*" C1'
-  }
-
   pdbalias atom ILE CD1 CD
   pdbalias atom SER HG HG1
   pdbalias residue HIS HSD
-
-# Heme aliases
-  pdbalias residue HEM HEME
-  pdbalias atom HEME "N A" NA
-  pdbalias atom HEME "N B" NB
-  pdbalias atom HEME "N C" NC
-  pdbalias atom HEME "N D" ND
 
 # Water aliases
   pdbalias residue HOH TIP3
@@ -248,7 +328,7 @@ $sel moveby [vecinvert [measure center $sel]]
 $sel writepdb tmp.pdb
 
 package require solvate
-solvate prot.psf tmp.pdb -minmax {{-38 -40 -51} {38 40 51}} -o solvated
+solvate prot.psf tmp.pdb -minmax {{-40 -40 -52} {40 40 52}} -o solvated
 package require autoionize
 autoionize -psf solvated.psf -pdb solvated.pdb -sc 0.15 -o ionized
 
@@ -286,9 +366,6 @@ EOF
 }
 
 
-
-
-
 # /-------------------/
 # /     Main body     /
 # /-------------------/
@@ -307,68 +384,59 @@ do
     echo "mknamd> Do nothing"; continue
   else
 
-    [ -d pos$ii ] && { cp -r pos$ii pos$ii.BAK; rm -r pos$ii; }
-    mkdir -p chains pos$ii 
+    if [ -d pos$ii ]; then
+      cp -r pos$ii pos$ii.BAK
+      rm -r pos$ii
+    fi
+
+    check_and_make_dir "chains"
+    check_and_make_dir "pos$ii"
 
     # /---------------------/
     # /     Bound State     /
     # /---------------------/
 
-    mkdir -p pos$ii/bound pos$ii/bound/pdb2namd pos$ii/bound/pdb2namd/vmd_solvate
+    check_and_make_dir "pos$ii/bound"
+    check_and_make_dir "pos$ii/bound/pdb2namd"
+    check_and_make_dir "pos$ii/bound/pdb2namd/vmd_solvate"
 
     psfgen $ii
     psfgen_bound
     solvate
     markfep
 
-    mv ionized.fep pos$ii/bound
-    mv ionized.p* cell_size.str pos$ii/bound/pdb2namd/vmd_solvate
+    move_files "pos$ii/bound"
+
     cd pos$ii/bound
-    rsync -rpt ../../eq/fep.tcl eq/
-    rsync -rpt ../../eq/fep.eq.namd eq/fep.eq.namd
-    rsync -rpt ../../eq/fep.namd eq/fep.namd
-    rsync -rpt ../../mknamd_fep_check.sh mknamd_fep_check.sh
-    rsync -rpt ../../mknamd_fep_run.sh mknamd_fep_run.sh
-
-    if [[ "$2" == "-run" ]]; then 
-      cd eq
-      echo "mknamd> Running eq..."
-      namd3 +p8 +devices 1 fep.eq.namd >& LOG_eq
-      cd ..
-    fi
-
+    sync_files "."
+    create_run_file "run.sh" 1
+    run_namd3 "$2"
+    create_slurm_file "slurm"
     cd ../..
 
     # /--------------------/
     # /     Free State     /
     # /--------------------/
 
-    mkdir -p pos$ii/free pos$ii/free/pdb2namd pos$ii/free/pdb2namd/vmd_solvate
+    check_and_make_dir "pos$ii/free"
+    check_and_make_dir "pos$ii/free/pdb2namd"
+    check_and_make_dir "pos$ii/free/pdb2namd/vmd_solvate"
 
     psfgen $ii
     psfgen_free
     solvate
     markfep
 
-    mv ionized.fep pos$ii/free
-    mv ionized.p* cell_size.str pos$ii/free/pdb2namd/vmd_solvate
+    move_files "pos$ii/free"
+
     cd pos$ii/free
-    rsync -rpt ../../eq/fep.tcl eq/
-    rsync -rpt ../../eq/fep.eq.namd eq/fep.eq.namd
-    rsync -rpt ../../eq/fep.namd eq/fep.namd
-    rsync -rpt ../../mknamd_fep_check.sh mknamd_fep_check.sh
-    rsync -rpt ../../mknamd_fep_run.sh mknamd_fep_run.sh
-
-    if [[ "$2" == "-run" ]]; then 
-      cd eq
-      echo "mknamd> Running eq..."
-      namd3 +p8 +devices 1 fep.eq.namd >& LOG_eq
-      cd ..
-    fi
-
+    sync_files "."
+    create_run_file "run.sh" 1
+    run_namd3 "$2"
+    create_slurm_file "slurm"
     cd ../..
-    rm -rf chains tcl* tmp.pdb prot.p* solvated.*
 
+    rm -rf chains tcl* tmp.pdb prot.p* solvated.*
   fi
 
   res_prev=$resname
