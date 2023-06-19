@@ -25,7 +25,7 @@ function move_files() {
 function sync_files() {
   local dest=$1
   for file in ${EQ_FILES[*]}; do
-    rsync -avhL ../../eq/$file $dest/eq/$file
+    rsync -aL ../../eq/$file $dest/eq/$file
   done
 }
 
@@ -104,7 +104,7 @@ source /public/software/profile.d/apps_namd-3.0alpha9.sh
 
 NAMD="/public/software/apps/NAMD_3.0alpha9/namd3"
 
-\$NAMD +p8 +devices 0 eq/fep.eq.namd >& eq/LOG_eq
+\$NAMD +p4 +devices 0 eq/fep.eq.namd >& eq/LOG_eq
 
 for ii in \$(seq 1 1); do
     rsync -avh eq/fep.namd eq/fep.tcl eq/equilibrate.coor eq/equilibrate.vel eq/equilibrate.xsc trial\$ii
@@ -122,6 +122,7 @@ check_files_exist
 
 length_of_peptide=`grep $SEGNAME $MD_PDB_FILE | grep "CA" -c`
 sequence=`grep $SEGNAME $MD_PDB_FILE | grep "CA" | awk '{print $4}'`
+echo -e "mknamd> the antigen sequence is: $sequence\nmknamd> Now working on..."
 
 if [[ "$1" == "all" ]]; then
   list=$(seq 1 $length_of_peptide)
