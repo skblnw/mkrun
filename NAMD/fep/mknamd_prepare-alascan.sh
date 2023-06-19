@@ -5,6 +5,7 @@ VMD="/opt/vmd/1.9.3/vmd"
 SEGNAME="PROC"
 SELECT_TEXT="segname $SEGNAME"
 MD_PDB_FILE="md.pdb"
+FF_FILEs=("readcharmmtop1.2/top_all36_prot.rtf" "readcharmmtop1.2/top_all36_hybrid.inp" "top_all36_propatch.rtf")
 EQ_FILES=("fep.tcl" "fep.eq.namd" "fep.namd")
 
 # Function to check if a directory exists, and if not, make it
@@ -29,10 +30,16 @@ function sync_files() {
 }
 
 # Function to check if all EQ_FILES exist
-function check_eq_files_exist() {
+function check_files_exist() {
   for file in ${EQ_FILES[*]}; do
     if [ ! -f "./eq/$file" ]; then
       echo "Error: File ./eq/$file does not exist!"
+      exit 1
+    fi
+  done
+  for file in ${FF_FILES[*]}; do
+    if [ ! -f "./$file" ]; then
+      echo "Error: File ./$file does not exist!"
       exit 1
     fi
   done
@@ -111,7 +118,7 @@ EOF
 
 [ ! -f $MD_PDB_FILE ] && { echo "md.pdb does not exist!"; exit 1; }
 
-check_eq_files_exist
+check_files_exist
 
 length_of_peptide=`grep $SEGNAME $MD_PDB_FILE | grep "CA" -c`
 sequence=`grep $SEGNAME $MD_PDB_FILE | grep "CA" | awk '{print $4}'`
@@ -155,7 +162,7 @@ psfgen () {
   cat > tcl <<EOF
 package require psfgen
 
-mol new pdb2namd/md.pdb
+mol new $MD_PDB_FILE
 foreach ii {A B} {
     set sel [atomselect top "segname PRO\$ii"]
     \$sel writepdb chains/PRO\$ii.pdb
@@ -171,10 +178,10 @@ set sel [atomselect top "$SELECT_TEXT"]
 EOF
   cat >> tcl <<'EOF'
 resetpsf
-topology pdb2namd/readcharmmtop1.2/top_all36_prot.rtf
-topology pdb2namd/readcharmmtop1.2/top_all36_hybrid.inp
-topology pdb2namd/top_all36_propatch.rtf
-# topology pdb2namd/toppar_water_ions_namd.str
+topology readcharmmtop1.2/top_all36_prot.rtf
+topology readcharmmtop1.2/top_all36_hybrid.inp
+topology top_all36_propatch.rtf
+# topology toppar_water_ions_namd.str
 
 # Aliases borrowed from AutoPSF
   pdbalias atom ILE CD1 CD
@@ -301,8 +308,7 @@ psfmerge () {
 package require topotools
 mol new mutant.psf
 mol addfile mutant.pdb
-mol new pdb2namd/md.psf
-mol addfile pdb2namd/md.pdb
+mol new $MD_PDB_FILE
 set sel1 [atomselect 0 all]
 set sel2 [atomselect 1 "segname PROA PROB"]
 set mol [::TopoTools::selections2mol "\$sel1 \$sel2"]
