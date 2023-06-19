@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J <job name>
+##SBATCH -J <job name>
 #SBATCH -p single
-#SBATCH --time=72:00:00
+#SBATCH --time=48:00:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
@@ -16,9 +16,9 @@ echo "Job directory: $(pwd)"
 # Decide the software version
 source /public/software/profile.d/apps_namd-3.0alpha9.sh
 
-NAMD="namd3"
+NAMD="/public/software/apps/NAMD_3.0alpha9/namd3"
 
-$NAMD +p4 +devices 0 eq/fep.eq.namd >& eq/LOG_eq
+$NAMD +p1 +devices 0 eq/fep.eq.namd >& eq/LOG_eq
 
 nn=1
 rsync -avh eq/fep.tcl eq/equilibrate.coor eq/equilibrate.vel eq/equilibrate.xsc eq/fep.namd trial${nn}
