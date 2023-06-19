@@ -403,6 +403,7 @@ do
     # /---------------------/
 
     check_and_make_dir "pos$ii/bound"
+    check_and_make_dir "pos$ii/bound/eq"
     check_and_make_dir "pos$ii/bound/pdb2namd"
     check_and_make_dir "pos$ii/bound/pdb2namd/vmd_solvate"
 
@@ -415,8 +416,8 @@ do
 
     cd pos$ii/bound
     sync_files "."
-    create_run_file "run.sh" 1
-    run_namd3 "$2"
+    #create_run_file "run.sh" 1
+    #run_namd3 "$2"
     create_slurm_file "slurm"
     cd ../..
 
@@ -425,6 +426,7 @@ do
     # /--------------------/
 
     check_and_make_dir "pos$ii/free"
+    check_and_make_dir "pos$ii/free/eq"
     check_and_make_dir "pos$ii/free/pdb2namd"
     check_and_make_dir "pos$ii/free/pdb2namd/vmd_solvate"
 
@@ -437,8 +439,8 @@ do
 
     cd pos$ii/free
     sync_files "."
-    create_run_file "run.sh" 1
-    run_namd3 "$2"
+    #create_run_file "run.sh" 1
+    #run_namd3 "$2"
     create_slurm_file "slurm"
     cd ../..
 
