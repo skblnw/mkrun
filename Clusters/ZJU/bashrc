@@ -1,0 +1,51 @@
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# Uncomment the following line if you don't like systemctl's auto-paging feature:
+# export SYSTEMD_PAGER=
+
+export PATH=/public/home/kevin/bin:$PATH
+
+# User specific aliases and functions
+alias showmethepower='ssh root@localhost -i .ssh/power'
+alias du_sort='du -bh --max-depth=1 | sort -rh'
+alias ff_namd='ln -s ~/forcefields/toppar_c36_jul20/ toppar; ln -s ~/forcefields/toppar_water_ions_namd.str .'
+alias ff_fep='ln -s ~/codes/fep_namd/eq .; ln -s ~/forcefields/readcharmmtop1.2 .; ln -s ~/forcefields/top_all36_propatch.rtf .; ln -s ~/forcefields/toppar_water_ions_namd.str .'
+alias ff_gmx='ln -s ~/forcefields/charmm36-feb2021.ff .'
+
+# VMD
+export PATH=/public/software/apps/vmd/1.9.3/:$PATH
+
+# GMX
+source /public/software/profile.d/apps_gromacs-2023.1.sh
+#source /public/software/profile.d/apps_gromacs-2023.1-openmpi.sh
+
+alias checksmd='grep "^SMD" log/smd.log; tail -n 2 output/smd*.colvars.traj'
+
+function performance_gmx() {
+    if [ -z "$1" ]
+    then
+        echo "Please provide a target file pattern as an argument."
+        return 1
+    fi
+
+    target_files=$1
+    result=$(find . -wholename "$target_files" -print0 | xargs -0 awk '/Performance/ {sum+=$2; count++} END {if(count>0) print sum/count; else print "No valid data found."}')
+    echo "The average performance value is: $result ns/day"
+}
+
+function performance_namd() {
+    if [ -z "$1" ]
+    then
+        echo "Please provide a target file pattern as an argument."
+        return 1
+    fi
+
+    target_files=$1
+    result=$(find . -wholename "$target_files" -print0 | xargs -0 awk '/Benchmark/ {sum+=$8; count++} END {if(count>0) print sum/count; else print "No valid data found."}')
+    echo "The average performance value is: $result ns/day"
+}
