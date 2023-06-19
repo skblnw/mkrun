@@ -5,7 +5,7 @@ VMD="/opt/vmd/1.9.3/vmd"
 SEGNAME="PROC"
 SELECT_TEXT="segname $SEGNAME"
 MD_PDB_FILE="md.pdb"
-FF_FILEs=("readcharmmtop1.2/top_all36_prot.rtf" "readcharmmtop1.2/top_all36_hybrid.inp" "top_all36_propatch.rtf")
+FF_FILES=("readcharmmtop1.2/top_all36_prot.rtf" "readcharmmtop1.2/top_all36_hybrid.inp" "top_all36_propatch.rtf")
 EQ_FILES=("fep.tcl" "fep.eq.namd" "fep.namd")
 
 # Function to check if a directory exists, and if not, make it
