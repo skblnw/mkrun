@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Definitions of variables
-VMD="/opt/vmd/1.9.3/vmd"
+VMD="vmd"
 SEGNAME="PROC"
 SELECT_TEXT="segname $SEGNAME"
 MD_PDB_FILE="md.pdb"
@@ -25,7 +25,7 @@ function move_files() {
 function sync_files() {
   local dest=$1
   for file in ${EQ_FILES[*]}; do
-    rsync -rpt ../../eq/$file $dest/eq/$file
+    rsync -avhL ../../eq/$file $dest/eq/$file
   done
 }
 
