@@ -8,6 +8,12 @@ MD_PDB_FILE="md.pdb"
 FF_FILES=("readcharmmtop1.2/top_all36_prot.rtf" "readcharmmtop1.2/top_all36_hybrid.inp" "top_all36_propatch.rtf")
 EQ_FILES=("fep.tcl" "fep.eq.namd" "fep.namd")
 
+
+# /-------------------/
+# /     Functions     /
+# /-------------------/
+
+
 # Function to check if a directory exists, and if not, make it
 function check_and_make_dir() {
   if [ ! -d $1 ]; then
@@ -112,52 +118,6 @@ for ii in \$(seq 1 1); do
 done
 EOF
 }
-
-# Other part of your script
-[ $# -lt 1 ] && { echo "mknamd> Usage: $0 [all|RESID] [-run]"; echo "mknamd> Default peptide selection is: $SELECT_TEXT"; echo "mknamd> If apply multiple RESIDs, use e.g. \"1 2 3\""; exit 1; }
-
-[ ! -f $MD_PDB_FILE ] && { echo "md.pdb does not exist!"; exit 1; }
-
-check_files_exist
-
-length_of_peptide=`grep $SEGNAME $MD_PDB_FILE | grep "CA" -c`
-sequence=`grep $SEGNAME $MD_PDB_FILE | grep "CA" | awk '{print $4}'`
-echo -e "mknamd> the antigen sequence is: $sequence\nmknamd> Now working on..."
-
-if [[ "$1" == "all" ]]; then
-  list=$(seq 1 $length_of_peptide)
-else
-  list="$1"
-fi
-
-declare -A mutation=( ["ARG"]="R2A" \
-                      ["ASN"]="N2A" \
-                      ["ASP"]="D2A" \
-                      ["CYS"]="C2A" \
-                      ["GLN"]="Q2A" \
-                      ["GLU"]="E2A" \
-                      ["GLY"]="G2A" \
-                      ["HIS"]="H2A" \
-                      ["HSD"]="H2A" \
-                      ["HSE"]="H2A" \
-                      ["HSP"]="H2A" \
-                      ["ILE"]="I2A" \
-                      ["LEU"]="L2A" \
-                      ["LYS"]="K2A" \
-                      ["MET"]="M2A" \
-                      ["PHE"]="F2A" \
-                      ["PRO"]="P2A" \
-                      ["SER"]="S2A" \
-                      ["THR"]="T2A" \
-                      ["TRP"]="W2A" \
-                      ["TYR"]="Y2A" \
-                      ["VAL"]="V2A" \
-                      )
-
-
-# /-------------------/
-# /     Functions     /
-# /-------------------/
 
 psfgen () {
   cat > tcl <<EOF
@@ -376,6 +336,46 @@ EOF
 # /-------------------/
 # /     Main body     /
 # /-------------------/
+
+[ $# -lt 1 ] && { echo "mknamd> Usage: $0 [all|RESID] [-run]"; echo "mknamd> Default peptide selection is: $SELECT_TEXT"; echo "mknamd> If apply multiple RESIDs, use e.g. \"1 2 3\""; exit 1; }
+
+[ ! -f $MD_PDB_FILE ] && { echo "md.pdb does not exist!"; exit 1; }
+
+check_files_exist
+
+length_of_peptide=`grep $SEGNAME $MD_PDB_FILE | grep "CA" -c`
+sequence=`grep $SEGNAME $MD_PDB_FILE | grep "CA" | awk '{print $4}'`
+# echo -e "mknamd> the antigen sequence is: $sequence\nmknamd> Now working on..."
+
+if [[ "$1" == "all" ]]; then
+  list=$(seq 1 $length_of_peptide)
+else
+  list="$1"
+fi
+
+declare -A mutation=( ["ARG"]="R2A" \
+                      ["ASN"]="N2A" \
+                      ["ASP"]="D2A" \
+                      ["CYS"]="C2A" \
+                      ["GLN"]="Q2A" \
+                      ["GLU"]="E2A" \
+                      ["GLY"]="G2A" \
+                      ["HIS"]="H2A" \
+                      ["HSD"]="H2A" \
+                      ["HSE"]="H2A" \
+                      ["HSP"]="H2A" \
+                      ["ILE"]="I2A" \
+                      ["LEU"]="L2A" \
+                      ["LYS"]="K2A" \
+                      ["MET"]="M2A" \
+                      ["PHE"]="F2A" \
+                      ["PRO"]="P2A" \
+                      ["SER"]="S2A" \
+                      ["THR"]="T2A" \
+                      ["TRP"]="W2A" \
+                      ["TYR"]="Y2A" \
+                      ["VAL"]="V2A" \
+                      )
 
 ii=0
 for resname in $sequence
