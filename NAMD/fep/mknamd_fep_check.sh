@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ "$#" -eq 0 ]]; then
-    echo ">Usage: mknamd_fep_grep alchemy.fepout <-plot> <-range start end>"
+    echo ">Usage: mknamd_fep_grep alchemy.fepout <-range start end> OR <-plot>"
     exit 0
 fi
 
@@ -35,6 +35,6 @@ plt.show()
 EOF
 
     python pyplot
-    rm -f pyplot fepout
+    rm -f pyplot
     
 fi

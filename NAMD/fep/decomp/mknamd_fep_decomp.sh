@@ -20,7 +20,7 @@ if $tag_multiple; then
         [ ! -f "$trial/$1" ] && { echo -e "$trial/$1 does not exist!"; exit 1; }
         echo "Computing for $trial"
         outdir=$trial/outdecomp
-        rm -r $outdir
+        [ -d "$outdir" ] && { rm -r $outdir }
         mkdir $outdir
         grep "^#Free energy change" $trial/$1 | awk '{print NR, $9, $12, $19}' > $outdir/raw
         grep -n "^#STARTING COLLECTION" $trial/$1 | awk -F: '{print $1+1}' > $outdir/l1
@@ -38,7 +38,7 @@ else
     triallist="1"
     [ ! -f "$1" ] && { echo -e "$1 does not exist!"; exit 1; }
     outdir=outdecomp
-    rm -r $outdir
+    [ -d "$outdir" ] && { rm -r $outdir }
     mkdir $outdir
     grep "^#Free energy change" $1 | awk '{print NR, $9, $12, $19}' > $outdir/raw
     grep -n "^#STARTING COLLECTION" $1 | awk -F: '{print $1+1}' > $outdir/l1
@@ -49,6 +49,7 @@ else
         tail -n +$ntail $1 | head -$((nhead+1)) >> $outdir/raw$nn
         tail -n +$ntail $1 | head -$((nhead)) | awk 'NR%1==0' | awk '{print ($4 - $3), ($6 - $5), $7, $9}' >> $outdir/data$nn
     done < $outdir/nlist
+
 fi
 
 rm decompose_summary.dat
@@ -122,6 +123,7 @@ for trial in $triallist; do
         sum_dvdw += $9; \
         sum_couple += $14; n++;} END \
         {print prefix,sum_dg,sum_delec,sum_dvdw,sum_couple}' < $outdir/decomp >> decompose_summary.dat
+
 done
 
 if $tag_multiple; then 
@@ -130,6 +132,6 @@ if $tag_multiple; then
         sum_delec += $3; \
         sum_dvdw += $4; \
         sum_couple += $5; n++;} END \
-        {print sum_dg/n,sum_delec/n,sum_dvdw/n,sum_couple/n}' < decompose_summary.dat
+        {printf "%.2f %.2f %.2f %.2f", sum_dg/n,sum_delec/n,sum_dvdw/n,sum_couple/n}' < decompose_summary.dat
     echo ""
 fi
