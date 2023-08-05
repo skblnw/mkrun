@@ -1,0 +1,53 @@
+#!/bin/bash
+
+PDB="$1"
+PDB2="$2"
+[ $# -eq 0 ] && { echo "mkvmd> Usage: $0 [PSF/PDB]"; exit 1; }
+
+if [ ! -f $PDB ]; then
+    echo -e "$PDB \nStructure not found!"
+    exit 0
+fi
+
+if [[ $PDB2 == "" ]]; then
+    cat > tcl <<EOF
+mol new $PDB waitfor all
+EOF
+else
+    cat > tcl <<EOF
+mol new $PDB waitfor all
+mol addfile $PDB2 waitfor all
+EOF
+fi
+
+cat >> tcl <<EOF
+set alphabets {0 A B C D E F G H I J K L M N O P Q R S T U V W X Y Z}
+
+set selall [atomselect top protein]
+set total_num_of_chains [llength [lsort -unique [\$selall get segname]]]
+if { \$total_num_of_chains == 1 } {
+    set total_num_of_chains [llength [lsort -unique [\$selall get chain]]]
+    set chainlist [lsort -unique [\$selall get chain]]
+} else {
+    set chainlist [lsort -unique [\$selall get segname]]
+}
+
+foreach ii \$chainlist cc [lrange \$alphabets 1 \$total_num_of_chains] {
+    set sel [atomselect top "segname \$ii"]
+    \$sel set chain \$cc
+}
+set sel [atomselect top "resname HSD HSE HSP"]; \$sel set resname HIS
+set sel [atomselect top "resname ILE and name CD"]; \$sel set name CD1
+set sel [atomselect top "name OT1"]; \$sel set name O
+set sel [atomselect top "name OT2"]; \$sel set name OXT
+set sel [atomselect top "resname TIP"]; \$sel set resname SOL
+set sel [atomselect top "resname SOL and name H1"]; \$sel set name HW1
+set sel [atomselect top "resname SOL and name H2"]; \$sel set name HW2
+set sel [atomselect top "resname SOL and name OH2"]; \$sel set name OW
+set sel [atomselect top "protein"]
+\$sel writepdb fixed.pdb
+quit
+EOF
+vmd -dispdev text -e tcl
+
+rm tcl 
