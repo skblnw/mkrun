@@ -1,11 +1,25 @@
 #!/bin/bash
 
-[ $# -eq 0 ] && { echo -e "Usage: trjconv [prefix]"; exit 1; }
+# Check if there are no arguments provided
+if [ $# -eq 0 ]; then
+    echo -e "Usage: trjconv [prefix]"
+    exit 1
+fi
 
-prefix=$1
+# Set variables
+PREFIX="$1"
+TPR_FILE="md.tpr"
+INDEX_FILE="index.ndx"
+OUTPUT_XTC="${PREFIX}.rewrapped.pf1000ps.xtc"
+
+# Create an index file with molecule groups
+echo -e "group 0\nmol 1\nmol 2\n" | gmx select -s "$TPR_FILE" -on "$INDEX_FILE"
+
+# Process the trajectory by adjusting PBC, centering it and saving every 1000th frame
+echo -e "1\n0\n" | gmx trjconv -s "$TPR_FILE" -f "${PREFIX}.xtc" -n "$INDEX_FILE" -pbc mol -center -ur compact -dt 1000 -o "step1-$OUTPUT_XTC"
+echo -e "1\n0\n" | gmx trjconv -s "$TPR_FILE" -f "step1-$OUTPUT_XTC" -n "$INDEX_FILE" -fit rot+trans -o "$OUTPUT_XTC"
+
 # echo 0 | gmx trjconv -s md.tpr -f output/${prefix}.xtc -pbc nojump -dt 1000 -o tmp-nojump-${prefix}.xtc
-echo -e "a 5293 \n q" | gmx make_ndx -n pdb2gmx/index.ndx
-echo 19 0 | gmx trjconv -s md.tpr -f ${prefix}.xtc -n -pbc mol -center -ur compact -dt 1000 -o tmp-wrap-${prefix}.xtc
-echo 1 0 | gmx trjconv -s md.tpr -f tmp-wrap-${prefix}.xtc -fit rot+trans -o ${prefix}.rewrapped.pf1000ps.xtc
+# echo -e "a 5293 \n q" | gmx make_ndx -n pdb2gmx/index.ndx
 
-rm tmp-*-${prefix}.xtc 
+rm "step*-$OUTPUT_XTC"
