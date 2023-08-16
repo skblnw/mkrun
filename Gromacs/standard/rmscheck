@@ -14,7 +14,7 @@ OUTPUT_XTC="${PREFIX}-wrap.xtc"
 OUTPUT_XVG="${PREFIX}-rmsd.xvg"
 
 # Create an index file with molecule groups
-echo -e "group 1\nmol 1\nmol 2\n" | gmx select -s "$TPR_FILE" -on "$INDEX_FILE"
+echo -e "group 1\nmol 1\nmol 3\n" | gmx select -s "$TPR_FILE" -on "$INDEX_FILE"
 
 # Process the trajectory by adjusting PBC, centering it and saving every 1000th frame
 echo -e "1\n0\n" | gmx trjconv -s "$TPR_FILE" -f "${PREFIX}.xtc" -n "$INDEX_FILE" -pbc mol -center -ur compact -dt 1000 -o "$OUTPUT_XTC"
