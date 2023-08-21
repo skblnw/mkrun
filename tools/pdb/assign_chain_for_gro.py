@@ -20,11 +20,7 @@ def assign_chain_ids(filename, chains, starts):
             resid_offset = starts[chain_counter]
 
             # Adjust the residue ID by subtracting the initial residue id of the previous chain and adding the starting residue id of the current chain
-<<<<<<< HEAD
-            new_res_id = res_id + resid_offset - 1
-=======
             new_res_id = res_id + resid_offset - 1 
->>>>>>> b7bc71c69991c08a3b7ef28dc69544b2f9cda888
 
             # Update the line with the new chain id and the new residue ID
             new_line = line[:21] + chain_id + f"{new_res_id:>4}" + line[26:]
