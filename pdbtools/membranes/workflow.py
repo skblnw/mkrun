@@ -3,6 +3,58 @@ import subprocess
 import argparse
 import tempfile
 
+"""
+workflow.py
+
+Description:
+    This script automates the preparation of molecular dynamics simulations, 
+    focusing on the integration of protein and lipid structures. The primary 
+    tasks encompassed in this workflow include the merging of PDB files, 
+    removal of overlapping lipids, solvation of the system, removal of 
+    undesired water molecules, topology modification, and ion addition.
+
+Author:
+    [Your Name / Your Lab / Your Email]
+
+Usage:
+    python workflow.py <proteins_pdb_path> <lipids_pdb_path> --box_size <box_dimensions>
+
+    Arguments:
+    - proteins_pdb_path: Path to the protein PDB file.
+    - lipids_pdb_path: Path to the lipid PDB file.
+    - box_size (optional): Dimensions for the simulation box in gmx editconf (e.g., '10.12176 10.12176 10').
+
+Steps:
+# pdb2gmx protein
+# move protein according to reference
+# move lipids according to reference
+# check existence of p2g_move.pdb
+# check existence of lipids.pdb
+# source combine.tcl
+# check existence of tmp.pdb
+# source mark_lipids.tcl
+# check existence of prot_memb_hole.pdb
+# editconf
+# check existence of editconf.gro
+# cp protein.top topol.top
+# check existence of topol.top
+# genbox
+# check existence of solvate.gro
+# source remove_water.tcl
+# check existence of solvate_delw.pdb
+# count lipids and waters
+# modify topol.top
+# check existence of ions.mdp, topol.top, POPC.itp, posre.itp
+# grompp
+# check existence of ions.tpr
+# genion
+# check existence of ionized.pdb
+
+Notes:
+- This script assumes that all required software tools (e.g., GROMACS, VMD) are installed and accessible from the command line.
+- Placeholder functions need to be defined for specific operations like parsing PDB files and determining water boundaries.
+"""
+
 # General-purpose functions
 
 def BASH(command):
@@ -181,8 +233,8 @@ def add_ions():
     BASH(f"gmx grompp -f {temp_file_name} -c solvate_delw.pdb -o ions.tpr -p topol.top -maxwarn 1")
     check_files_existence(["ions.tpr"])
 
-    BASHv(f"gmx genion -s ions.tpr -o ionized.pdb -conc 0.15 -neutral -p topol.top")
-    check_files_existence(["ionized.pdb"])
+    BASHv(f"gmx genion -s ions.tpr -o step5_input.gro -conc 0.15 -neutral -p topol.top")
+    check_files_existence(["step5_input.gro"])
 
 def main(args):
     """
