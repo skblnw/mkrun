@@ -17,7 +17,7 @@ def assign_chain_ids(filename, chains, starts):
                 chain_counter += 1
 
             chain_id = chains[chain_counter] if chain_counter < len(chains) else 'X'
-            resid_offset = starts[chain_counter]
+            resid_offset = starts[chain_counter] if chain_counter < len(chains) else 1
 
             # Adjust the residue ID by subtracting the initial residue id of the previous chain and adding the starting residue id of the current chain
             new_res_id = res_id + resid_offset - 1 
