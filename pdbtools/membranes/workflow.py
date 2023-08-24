@@ -25,7 +25,13 @@ def check_files_existence(filenames):
         raise FileNotFoundError(", ".join(missing_files) + " not found")
 
 def combine_pdb_files(proteins, lipids):
-    """Combine two pdb files into combined.pdb."""
+    """
+    Combine two pdb files into combined.pdb.
+    
+    Parameters:
+    - proteins: Path to proteins pdb file.
+    - lipids: Path to lipids pdb file.
+    """
     with open(proteins, 'r') as f1, open(lipids, 'r') as f2:
         proteins_lines = [line for line in f1 if line.startswith("ATOM")]
         lipids_lines = [line for line in f2 if line.startswith("ATOM")]
@@ -34,7 +40,9 @@ def combine_pdb_files(proteins, lipids):
         out_file.writelines(proteins_lines + lipids_lines)
 
 def remove_overlapping_lipids():
-    """Label and remove lipids that overlap in space with the proteins using a TCL script."""
+    """
+    Label and remove lipids that overlap in space with the proteins using a TCL script.
+    """
     tcl_script_content = """
     mol new combined.pdb
     set seltext_for_lipids "resname POPC"
@@ -149,6 +157,9 @@ def modify_topol(lipids, waters):
         file.writelines(lines)
 
 def add_ions():
+    """
+    Add ions to the system.
+    """
     mdp_content = f"""
     integrator  = md
     dt          = 0.001
@@ -162,7 +173,7 @@ def add_ions():
     pbc             = xyz
     """
 
-    # Write the TCL script to a temporary file
+    # Write the MDP content to a temporary file
     with tempfile.NamedTemporaryFile(suffix=".mdp", delete=False) as temp_file:
         temp_file_name = temp_file.name
         temp_file.write(mdp_content.encode())
@@ -174,6 +185,9 @@ def add_ions():
     check_files_existence(["ionized.pdb"])
 
 def main(args):
+    """
+    Main workflow for preparing a pdb file for molecular dynamics simulations.
+    """
 
     proteins = args.proteins
     lipids = args.lipids
@@ -209,10 +223,10 @@ def main(args):
 
     add_ions()
 
+    # Cleanup: Remove intermediate files
     BASH(f"rm \#* mdout.mdp combined.pdb prot_memb_hole.pdb editconf.gro solvate.pdb solvate_delw.pdb ions.tpr")
 
 if __name__ == "__main__":
-
     parser = argparse.ArgumentParser(description="Prepare a pdb file.")
     parser.add_argument("proteins", help="Path to proteins.pdb")
     parser.add_argument("lipids", help="Path to lipids.pdb")
