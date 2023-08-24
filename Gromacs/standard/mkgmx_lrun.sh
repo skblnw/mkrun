@@ -27,7 +27,7 @@ else
     [ ! -f "${PREVIOUS}.cpt" ] && echo "mkvmd> ${PREVIOUS}.cpt not found!" && exit 1 
     cp ${PREVIOUS}.cpt ${PREVIOUS}.cpt.BAK
     echo "mkvmd> Continuing simulation from ${PREVIOUS}.cpt"
-    $MDRUN_GPU -v -s $TPR_FILE -cpi ${PREVIOUS}.cpt -deffnm $PREFIX -nsteps 1000
+    $MDRUN_GPU -v -s $TPR_FILE -cpi ${PREVIOUS}.cpt -deffnm $PREFIX -nsteps -1
 fi
 
 # gmx grompp -o md.tpr -f step7_production_vrescale.mdp -c step7_1.gro -t step7_1.cpt -n index.ndx -p topol.top
