@@ -1,64 +1,84 @@
 #!/bin/bash
 
 # Define parameters and commands
-GPUID="$1"
 GMX="gmx"
-MDRUN="gmx mdrun -ntmpi 1 -ntomp 8 -gpu_id $GPUID"
-MDRUN_GPU="gmx mdrun -ntmpi 1 -ntomp 8 -gpu_id $GPUID -pme gpu -nb gpu -bonded gpu -update gpu"
 
-# Check if the number of arguments is zero
-if [ $# -eq 0 ]; then 
-    echo "mkgmx> Usage: $0 [GPU ID]; Suggested: 0"
-    exit 1
-fi
+# Minimization
+mini_prefix="step6.0_minimization"
+init="step5_input"
+rest_prefix="step5_input"
 
-# Check if the required directory exists
-[ ! -d pdb2gmx ] && echo "mkgmx> Directory pdb2gmx not found!" && exit 1 
+run_minimization() {
+    local prefix="$1"
+    local init_gro="$2"
+    local rest_gro="$3"
+    
+    # Preprocess the input
+    $GMX grompp -f ${prefix}.mdp -o ${prefix}.tpr -c ${init_gro}.gro -r ${rest_gro}.gro -p topol.top -n index.ndx
 
-# Check if the required files exist
-files=("pdb2gmx/ionized.gro" "pdb2gmx/topol.top" "pdb2gmx/index.ndx")
-for file in "${files[@]}"; do
-    [ ! -f "$file" ] && echo "mkgmx> $file not found!" && exit 1
-done
-
-# Simulation settings
-mkdir -p output
-mini=true
-double=false
-heat=true
-eq_npt=true
-md1=true
-md2=false
-
-INITIAL_PDB=pdb2gmx/ionized.gro
-NDX=pdb2gmx/index.ndx
-TOP=pdb2gmx/topol.top
-
-# Function to run a simulation step
-run_simulation() {
-    local previous="$1"
-    local prefix="$2"
-    local mdp_file="$3"
-    local TPR="${prefix}.tpr"
-    rm -f $TPR
-    $GMX grompp -f $mdp_file -o $TPR -c output/${previous}.gro -r $INITIAL_PDB -n $NDX -p $TOP
-    $4 -v -s $TPR -deffnm output/${prefix}
+    # Run the minimization
+    gmx_d mdrun -v -deffnm ${prefix}
 }
 
-# Simulation steps based on the set conditions
-$mini && run_simulation "$INITIAL_PDB" "step1_mini" "mdp/step1_mini.mdp" "$MDRUN"
-$double && run_simulation "step1_mini" "step1_mini_double" "mdp/step1_mini_double.mdp" "gmx_d mdrun -ntmpi 1 -ntomp 8"
-$heat && run_simulation "step1_mini" "step3_annealing" "mdp/step3_annealing.mdp" "$MDRUN"
-$eq_npt && run_simulation "step3_annealing" "step4_eq_npt" "mdp/step4_eq_npt.mdp" "$MDRUN"
-$md1 && run_simulation "step4_eq_npt" "md" "mdp/step5_md.mdp" "$MDRUN_GPU"
+run_minimization $mini_prefix $init $rest_prefix
 
-if $md2; then
-    previous="md"
-    prefix="t1"
-    TPR="md.tpr"
-    $GMX grompp -f step5_md.mdp -o $TPR -t output/${previous}.cpt -c $INITIAL_PDB -r $INITIAL_PDB -n $NDX -p $TOP
-    # Uncomment the lines below if needed
-    # gmx convert-tpr -s ${previous}.tpr -o $prefix.tpr -extend 10000
-    # $MDRUN_GPU -v -s $TPR -cpi output/${prefix}.cpt -deffnm output/${prefix} -nsteps -1
-    # $MDRUN_GPU -v -s $TPR -deffnm output/${prefix} -nsteps -1
-fi
+# Equilibration
+equi_prefix="step6.%d_equilibration"
+cnt=1
+cntmax=6
+
+run_equilibration() {
+    local prefix="$1"
+    local previous="$2"
+    local rest_gro="$3"
+    local count="$4"
+    
+    istep=$(printf ${prefix} ${count})
+    pstep=$(printf ${prefix} $((${count}-1)))
+    
+    if [ ${count} -eq 1 ]; then
+        pstep=$mini_prefix
+    fi
+
+    # Preprocess the input
+    $GMX grompp -f ${istep}.mdp -o ${istep}.tpr -c ${pstep}.gro -r ${rest_gro}.gro -p topol.top -n index.ndx
+
+    # Run the equilibration
+    $GMX mdrun -v -deffnm ${istep}
+}
+
+while [ $cnt -le $cntmax ]; do
+    run_equilibration $equi_prefix $mini_prefix $rest_prefix $cnt
+    cnt=$((cnt+1))
+done
+
+# Production
+prod_step="step7"
+prod_prefix="step7_production"
+cnt=1
+cntmax=1
+
+run_production() {
+    local step="$1"
+    local previous="$2"
+    local prefix="$3"
+    local count="$4"
+    
+    istep="${step}_${count}"
+    pstep="${step}_$((${count}-1))"
+    
+    if [ ${count} -eq 1 ]; then
+        pstep=$(printf ${equi_prefix} 6)
+        $GMX grompp -f ${prefix}.mdp -o ${istep}.tpr -c ${pstep}.gro -p topol.top -n index.ndx
+    else
+        $GMX grompp -f ${prefix}.mdp -o ${istep}.tpr -c ${pstep}.gro -t ${pstep}.cpt -p topol.top -n index.ndx
+    fi
+
+    # Run the production
+    $GMX mdrun -v -deffnm ${istep}
+}
+
+while [ $cnt -le $cntmax ]; do
+    run_production $prod_step $equi_prefix $prod_prefix $cnt
+    cnt=$((cnt+1))
+done
