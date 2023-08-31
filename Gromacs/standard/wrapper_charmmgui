@@ -26,6 +26,6 @@ elif [[ "$1" == "-lrun" ]]; then
     
     prefix=$4
     #gmx convert-tpr -s $prefix1.tpr -o $prefix2.tpr -extend 10000
-    $MDRUN_GPU -v -s md.tpr -deffnm ${prefix} -nsteps -1
+    $MDRUN_GPU -v -s md.tpr -deffnm ${prefix} -nsteps 1000
 
 fi
