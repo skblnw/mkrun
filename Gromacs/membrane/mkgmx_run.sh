@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Define parameters and commands
+<<<<<<< HEAD
 GPUID="$1"
 GMX="gmx"
 MDRUN="gmx mdrun -ntmpi 1 -ntomp 8 -gpu_id $GPUID"
@@ -45,6 +46,28 @@ run_minimization() {
 }
 
 $mini && run_minimization $mini_prefix
+=======
+GMX="gmx"
+
+# Minimization
+mini_prefix="step6.0_minimization"
+init="step5_input"
+rest_prefix="step5_input"
+
+run_minimization() {
+    local prefix="$1"
+    local init_gro="$2"
+    local rest_gro="$3"
+    
+    # Preprocess the input
+    $GMX grompp -f ${prefix}.mdp -o ${prefix}.tpr -c ${init_gro}.gro -r ${rest_gro}.gro -p topol.top -n index.ndx
+
+    # Run the minimization
+    gmx_d mdrun -v -deffnm ${prefix}
+}
+
+run_minimization $mini_prefix $init $rest_prefix
+>>>>>>> 6969ea4c94249aa83711e1a83638b393307ad7e0
 
 # Equilibration
 equi_prefix="step6.%d_equilibration"
@@ -53,7 +76,13 @@ cntmax=6
 
 run_equilibration() {
     local prefix="$1"
+<<<<<<< HEAD
     local count="$2"
+=======
+    local previous="$2"
+    local rest_gro="$3"
+    local count="$4"
+>>>>>>> 6969ea4c94249aa83711e1a83638b393307ad7e0
     
     istep=$(printf ${prefix} ${count})
     pstep=$(printf ${prefix} $((${count}-1)))
@@ -63,6 +92,7 @@ run_equilibration() {
     fi
 
     # Preprocess the input
+<<<<<<< HEAD
     $GMX grompp -f mdp/${istep}.mdp -o ${istep}.tpr -c ${pstep}.gro -r ${INITIAL_PDB} -p ${TOP} -n ${NDX}
     # Run the equilibration
     $MDRUN -v -deffnm ${istep}
@@ -70,6 +100,16 @@ run_equilibration() {
 
 while [ $cnt -le $cntmax ]; do
     $eq && run_equilibration $equi_prefix $cnt
+=======
+    $GMX grompp -f ${istep}.mdp -o ${istep}.tpr -c ${pstep}.gro -r ${rest_gro}.gro -p topol.top -n index.ndx
+
+    # Run the equilibration
+    $GMX mdrun -v -deffnm ${istep}
+}
+
+while [ $cnt -le $cntmax ]; do
+    run_equilibration $equi_prefix $mini_prefix $rest_prefix $cnt
+>>>>>>> 6969ea4c94249aa83711e1a83638b393307ad7e0
     cnt=$((cnt+1))
 done
 
@@ -90,6 +130,7 @@ run_production() {
     
     if [ ${count} -eq 1 ]; then
         pstep=$(printf ${equi_prefix} 6)
+<<<<<<< HEAD
         $GMX grompp -f ${prefix}.mdp -o ${istep}.tpr -c ${pstep}.gro -p ${TOP} -n ${NDX}
     else
         $GMX grompp -f ${prefix}.mdp -o ${istep}.tpr -c ${pstep}.gro -t ${pstep}.cpt -p ${TOP} -n ${NDX}
@@ -101,5 +142,18 @@ run_production() {
 
 while [ $cnt -le $cntmax ]; do
     $md && run_production $prod_step $equi_prefix $prod_prefix $cnt
+=======
+        $GMX grompp -f ${prefix}.mdp -o ${istep}.tpr -c ${pstep}.gro -p topol.top -n index.ndx
+    else
+        $GMX grompp -f ${prefix}.mdp -o ${istep}.tpr -c ${pstep}.gro -t ${pstep}.cpt -p topol.top -n index.ndx
+    fi
+
+    # Run the production
+    $GMX mdrun -v -deffnm ${istep}
+}
+
+while [ $cnt -le $cntmax ]; do
+    run_production $prod_step $equi_prefix $prod_prefix $cnt
+>>>>>>> 6969ea4c94249aa83711e1a83638b393307ad7e0
     cnt=$((cnt+1))
 done
