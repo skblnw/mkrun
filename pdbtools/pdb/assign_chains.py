@@ -10,7 +10,7 @@ def assign_chain_ids(filename, chains, starts):
     new_lines = []
 
     for line in lines:
-        if line.startswith('ATOM'):
+        if chain_counter < len(chains) & line.startswith('ATOM'):
             res_id = int(line[22:26].strip())
 
             if prev_res_id is not None and (res_id != prev_res_id and res_id != prev_res_id + 1):
