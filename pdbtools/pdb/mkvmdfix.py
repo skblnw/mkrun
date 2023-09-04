@@ -58,7 +58,7 @@ set sel [atomselect top "resname TIP"]; $sel set resname SOL
 set sel [atomselect top "resname SOL and name H1"]; $sel set name HW1
 set sel [atomselect top "resname SOL and name H2"]; $sel set name HW2
 set sel [atomselect top "resname SOL and name OH2"]; $sel set name OW
-set sel [atomselect top "protein"]
+set sel [atomselect top "all"]
 $sel writepdb temp.pdb
 quit
 """
