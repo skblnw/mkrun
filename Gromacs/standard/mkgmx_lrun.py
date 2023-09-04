@@ -16,7 +16,6 @@ def execute_subprocess(cmd):
 
 def start_simulation(prefix, tpr_file, mdrun_gpu, nsteps):
     """Start a new molecular dynamics simulation."""
-    check_file_existence(f"{prefix}.cpt")
     print("mkvmd> Starting a new simulation")
     cmd = f"{mdrun_gpu} -v -s {tpr_file} -deffnm {prefix} -nsteps {nsteps}"
     execute_subprocess(cmd)
