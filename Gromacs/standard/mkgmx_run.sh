@@ -39,14 +39,20 @@ run_simulation() {
     local previous="$1"
     local prefix="$2"
     local mdp_file="$3"
-    local TPR="${prefix}.tpr"
+    local TPR="output/${prefix}.tpr"
     rm -f $TPR
     $GMX grompp -f $mdp_file -o $TPR -c output/${previous}.gro -r $INITIAL_PDB -n $NDX -p $TOP
     $4 -v -s $TPR -deffnm output/${prefix}
 }
 
 # Simulation steps based on the set conditions
-$mini && run_simulation "$INITIAL_PDB" "step1_mini" "mdp/step1_mini.mdp" "$MDRUN"
+if $mini; then
+    prefix="step1_mini"
+    TPR="output/${prefix}.tpr"
+    rm -f $TPR
+    $GMX grompp -f mdp/step1_mini_double.mdp -o $TPR -c $INITIAL_PDB -r $INITIAL_PDB -n $NDX -p $TOP
+    $MDRUN -v -s $TPR -deffnm output/${prefix}
+fi
 $double && run_simulation "step1_mini" "step1_mini_double" "mdp/step1_mini_double.mdp" "gmx_d mdrun -ntmpi 1 -ntomp 8"
 $heat && run_simulation "step1_mini" "step3_annealing" "mdp/step3_annealing.mdp" "$MDRUN"
 $eq_npt && run_simulation "step3_annealing" "step4_eq_npt" "mdp/step4_eq_npt.mdp" "$MDRUN"
@@ -56,7 +62,7 @@ if $md2; then
     previous="md"
     prefix="t1"
     TPR="md.tpr"
-    $GMX grompp -f step5_md.mdp -o $TPR -t output/${previous}.cpt -c $INITIAL_PDB -r $INITIAL_PDB -n $NDX -p $TOP
+    $GMX grompp -f mdp/step5_md.mdp -o $TPR -t output/${previous}.cpt -c $INITIAL_PDB -r $INITIAL_PDB -n $NDX -p $TOP
     # Uncomment the lines below if needed
     # gmx convert-tpr -s ${previous}.tpr -o $prefix.tpr -extend 10000
     # $MDRUN_GPU -v -s $TPR -cpi output/${prefix}.cpt -deffnm output/${prefix} -nsteps -1
