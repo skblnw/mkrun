@@ -66,7 +66,7 @@ quit
         file.write(tcl_commands)
 
     print("Running VMD command...")
-    subprocess.run(["vmd", "-dispdev", "text", "-e", "tcl"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    subprocess.run(["vmd", "-dispdev", "text", "-e", "tcl"], shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     # Optionally filter the chains in the output PDB file
     if chains:
