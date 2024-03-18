@@ -9,10 +9,10 @@ if [ ! -f $PDB ]; then
     exit 0
 fi
 
-ln -fs $PDB prot.pdb
-
-cat > tcl << 'EOF'
-mol new prot.pdb
+cat > tcl << EOF
+mol new $PDB
+EOF
+cat >> tcl << 'EOF'
 set outfile [open "cv.in" w]
 set sel [atomselect top "backbone and resid 345 to 370"]
 puts $outfile " &colvar"

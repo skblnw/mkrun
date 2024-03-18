@@ -1,0 +1,9 @@
+sed -e "s/#!\/bin\/bash/#!\/bin\/zsh\nsource ~\/.zshrc/g" \
+    -e "s/\$VMD/vmd/g" \
+    -e "s/\*/\\*/g" \
+    -e "s/\[\$jj\]/\[\$ii\]/g" \
+    -e "s/\/home\/kevin\/github/\/Users\/ukevi\/github/g" \
+    $1 > wrapper
+shift
+zsh wrapper $@
+rm wrapper

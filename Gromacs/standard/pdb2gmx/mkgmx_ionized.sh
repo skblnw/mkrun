@@ -1,7 +1,7 @@
 #!/bin/bash
 
 MOL="$1"
-NOMOVE=true
+NOMOVE=false
 [ $# -eq 0 ] && { echo "mkvmd> Usage: $0 [MOLECULE]; Suggested: conf.gro"; exit 1; }
 
 if [ ! -f $MOL ]; then
