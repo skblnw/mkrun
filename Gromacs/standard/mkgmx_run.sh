@@ -27,8 +27,7 @@ mini=true
 double=false
 heat=true
 eq_npt=true
-md1=true
-md2=false
+md=true
 
 INITIAL_PDB=pdb2gmx/ionized.gro
 NDX=pdb2gmx/index.ndx
@@ -50,21 +49,10 @@ if $mini; then
     prefix="step1_mini"
     TPR="output/${prefix}.tpr"
     rm -f $TPR
-    $GMX grompp -f mdp/step1_mini_double.mdp -o $TPR -c $INITIAL_PDB -r $INITIAL_PDB -n $NDX -p $TOP
+    $GMX grompp -f mdp/step1_mini.mdp -o $TPR -c $INITIAL_PDB -r $INITIAL_PDB -n $NDX -p $TOP
     $MDRUN -v -s $TPR -deffnm output/${prefix}
 fi
 $double && run_simulation "step1_mini" "step1_mini_double" "mdp/step1_mini_double.mdp" "gmx_d mdrun -ntmpi 1 -ntomp 8"
 $heat && run_simulation "step1_mini" "step3_annealing" "mdp/step3_annealing.mdp" "$MDRUN"
 $eq_npt && run_simulation "step3_annealing" "step4_eq_npt" "mdp/step4_eq_npt.mdp" "$MDRUN"
-$md1 && run_simulation "step4_eq_npt" "md" "mdp/step5_md.mdp" "$MDRUN_GPU"
-
-if $md2; then
-    previous="md"
-    prefix="t1"
-    TPR="md.tpr"
-    $GMX grompp -f mdp/step5_md.mdp -o $TPR -t output/${previous}.cpt -c $INITIAL_PDB -r $INITIAL_PDB -n $NDX -p $TOP
-    # Uncomment the lines below if needed
-    # gmx convert-tpr -s ${previous}.tpr -o $prefix.tpr -extend 10000
-    # $MDRUN_GPU -v -s $TPR -cpi output/${prefix}.cpt -deffnm output/${prefix} -nsteps -1
-    # $MDRUN_GPU -v -s $TPR -deffnm output/${prefix} -nsteps -1
-fi
+$md && run_simulation "step4_eq_npt" "md" "mdp/step5_md.mdp" "$MDRUN_GPU"
