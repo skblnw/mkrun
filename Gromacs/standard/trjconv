@@ -19,6 +19,9 @@ echo -e "group 0\nmol 1\nmol 2\n" | gmx select -s "$TPR_FILE" -on "$INDEX_FILE"
 echo -e "1\n0\n" | gmx trjconv -s "$TPR_FILE" -f "${PREFIX}.xtc" -n "$INDEX_FILE" -pbc mol -center -ur compact -dt 1000 -o "step1-$OUTPUT_XTC"
 echo -e "1\n0\n" | gmx trjconv -s "$TPR_FILE" -f "step1-$OUTPUT_XTC" -n "$INDEX_FILE" -fit rot+trans -o "$OUTPUT_XTC"
 
+# Calculate RMSD for the trajectory
+echo -e "1\n2\n" | gmx rms -s "$TPR_FILE" -f "${OUTPUT_XTC}" -n "$INDEX_FILE" -o "$OUTPUT_XVG"
+
 # echo 0 | gmx trjconv -s md.tpr -f output/${prefix}.xtc -pbc nojump -dt 1000 -o tmp-nojump-${prefix}.xtc
 # echo -e "a 5293 \n q" | gmx make_ndx -n pdb2gmx/index.ndx
 
