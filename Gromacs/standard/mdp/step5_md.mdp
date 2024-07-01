@@ -15,7 +15,7 @@ nstxout-compressed      = 50000                     ; write 1000 frames xtc traj
 
 ; Bond parameters
 constraint_algorithm    = lincs                     ; holonomic constraints
-constraints             = h-bonds                   ; all bonds (even heavy atom-H bonds) constrained, h-bonds?
+constraints             = h-bonds                   ; all h-bonds constrained, without heavy atom-H bonds
 lincs_iter              = 1                         ; accuracy of LINCS
 lincs_order             = 4                         ; also related to accuracy
 ; Neighborsearching

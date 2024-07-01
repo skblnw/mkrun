@@ -15,7 +15,7 @@ nstcalcenergy           = 100
 ; Bond parameters
 continuation            = no
 constraint_algorithm    = lincs       ; holonomic constraints
-constraints             = all-bonds   ; all bonds (even heavy atom-H bonds) constrained
+constraints             = h-bonds     ; all h-bonds constrained, without heavy atom-H bonds
 lincs_iter              = 1           ; accuracy of LINCS
 lincs_order             = 4           ; also related to accuracy
 ; Neighborsearching
