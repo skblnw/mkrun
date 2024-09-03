@@ -1,13 +1,13 @@
 #!/bin/bash
 
-[ $# -eq 0 ] && { echo -e "Usage: rungmx [-run|-lrun] [README|step7_production.mdp] [gpu ID] [prefix: only with -lrun]"; exit 1; }
+[ $# -eq 0 ] && { echo -e "Usage: rungmx [-run|-lrun] [gpu ID] [prefix: only with -lrun]"; exit 1; }
 
 if [[ "$1" == "-run" ]]; then
 
-    sed -e "s/gmx mdrun -v/gmx mdrun -ntmpi 1 -ntomp 16 -gpu_id $3 -nb gpu -pme gpu -bonded gpu -v/g" \
+    sed -e "s/gmx mdrun -v/gmx mdrun -ntmpi 1 -ntomp 16 -gpu_id $2 -nb gpu -pme gpu -bonded gpu -v/g" \
         -e "s/^gmx_d mdrun -v -deffnm \${mini_prefix}/gmx mdrun -ntmpi 1 -ntomp 16 -v -deffnm \${mini_prefix}/g" \
         -e "s/^set cntmax = 10/set cntmax = 1/g" \
-        $2 > wrapper
+        README > wrapper
     csh wrapper
 
 elif [[ "$1" == "-lrun" ]]; then
@@ -17,14 +17,14 @@ elif [[ "$1" == "-lrun" ]]; then
         -e "s/^nstfout.*/nstfout                 = 50000/g" \
         -e "s/^nstxout.*/nstxout                 = 50000/g" \
         -e "s/^nstxout.*/nstxout-compressed      = 50000/g" \
-        $2 > step7_production_vrescale_trr.mdp
+        step7_production.mdp > step7_production_trr.mdp
 
-    MDRUN_GPU="gmx mdrun -ntmpi 1 -ntomp 16 -gpu_id $3 -pme gpu -nb gpu -bonded gpu -update gpu"
-    #$MDRUN_GPU -v -s md.tpr -deffnm step7_1
+    MDRUN_GPU="gmx mdrun -ntmpi 1 -ntomp 16 -gpu_id $2 -pme gpu -nb gpu -bonded gpu -update gpu"
+    #$MDRUN_GPU -v -deffnm step7_1
     gmx grompp -o md.tpr -f step7_production.mdp -c step7_1.gro -t step7_1.cpt -n index.ndx -p topol.top
-    #gmx grompp -o md-trr.tpr -f step7_production_vrescale_trr.mdp -c step7_1.gro -t step7_1.cpt -n index.ndx -p topol.top
+    #gmx grompp -o md-trr.tpr -f step7_production_trr.mdp -c step7_1.gro -t step7_1.cpt -n index.ndx -p topol.top
     
-    prefix=$4
-    $MDRUN_GPU -v -s md.tpr -deffnm ${prefix} -nsteps 1000
+    prefix=$3
+    $MDRUN_GPU -v -s md.tpr -deffnm ${prefix} -nsteps -1
 
 fi

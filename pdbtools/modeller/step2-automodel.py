@@ -10,7 +10,7 @@ env.io.atom_files_directory = ['.', '../atom_files']
 
 class MyModel(AutoModel):
     def special_patches(self, aln):
-        self.rename_segments(segment_ids=['F','H'],
+        self.rename_segments(segment_ids=['A','H'],
                              renumber_residues=[1,1])
 
 a = MyModel(env,
