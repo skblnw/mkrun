@@ -11,7 +11,7 @@ env.io.atom_files_directory = ['.', '../atom_files']
 class MyModel(AutoModel):
     def special_patches(self, aln):
         self.rename_segments(segment_ids=['A','H'],
-                             renumber_residues=[1,1])
+                             renumber_residues=[29,1])
 
 a = MyModel(env,
     alnfile  = 'prot.seq',
