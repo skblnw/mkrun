@@ -8,11 +8,10 @@
 #SBATCH --gpus=1
 
 module load gromacs/2023.2-gcc-9.5.0-jzxesel
-
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
-bash wrapper_charmmgui -run 0 
-wait
+MDRUN="gmx_mpi mdrun -nb gpu -pme gpu -bonded gpu -update gpu -gpu_id 0"
 
-bash wrapper_charmmgui -lrun 0 t1
-wait
+prefix=t1
+$MDRUN -v -s md.tpr -deffnm ${prefix} -nsteps -1 -maxh 167
+#$MDRUN -v -s md.tpr -cpi ${prefix}.cpt -deffnm ${prefix} -nsteps -1 -maxh 72
