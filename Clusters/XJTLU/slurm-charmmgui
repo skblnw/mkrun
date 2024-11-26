@@ -43,7 +43,11 @@ if $production; then
     #$MDRUN_GPU -v -deffnm step7_1
 
     #prefix=t1
-    $MDRUN_GPU -v -s md.tpr -deffnm ${prefix} -nsteps -1 -maxh 167
+    if [ ! -f ${prefix}.cpt ]; then
+      $MDRUN_GPU -v -s md.tpr -deffnm ${prefix} -nsteps -1 -maxh 167
+    else
+      $MDRUN_GPU -v -s md.tpr -cpi ${prefix}.cpt -deffnm ${prefix} -nsteps -1 -maxh 167
+    fi
 
 fi
 
