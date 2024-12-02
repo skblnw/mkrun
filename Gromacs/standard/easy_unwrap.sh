@@ -9,7 +9,7 @@ OUTPUT_XVG="${PREFIX}.rmsd.xvg"
 GMX="gmx"
 
 # Create an index file with molecule groups
-# $GMX make_ndx -s "$TPR_FILE" -n "$INDEX_FILE"
+# $GMX make_ndx -f "$TPR_FILE" -n "$INDEX_FILE"
 
 # Process the trajectory by adjusting PBC, centering it and saving every 1000th frame
 $GMX trjconv -s "$TPR_FILE" -f "${PREFIX}.xtc" -n "$INDEX_FILE" -pbc mol -center -ur compact -dt 1000 -o "step1-$OUTPUT_XTC"
