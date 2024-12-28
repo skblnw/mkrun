@@ -1,0 +1,43 @@
+;
+;	This is a standalone topology file
+;
+;	Created by:
+;	                    :-) GROMACS - gmx pdb2gmx, 2020.4 (-:
+;	
+;	Command line:
+;	  gmx pdb2gmx -f receptor.pdb -o receptor_GMX.pdb -water tip3p -ignh -ff amber99sb-ildn
+;	Force field was read from the standard GROMACS share directory.
+;
+
+; Include forcefield parameters
+#include "amber99sb-ildn.ff/forcefield.itp"
+#include "ligand.itp"
+
+; Ligand position restraints
+#ifdef POSRES
+#include "posre_ligand.itp"
+#endif
+
+; Include water topology
+#include "amber99sb-ildn.ff/tip3p.itp"
+
+#ifdef POSRES_WATER
+; Position restraint for each water oxygen
+[ position_restraints ]
+;  i funct       fcx        fcy        fcz
+   1    1       1000       1000       1000
+#endif
+
+; Include topology for ions
+#include "amber99sb-ildn.ff/ions.itp"
+
+[ system ]
+; Name
+Free state in water
+
+[ molecules ]
+; Compound        #mols
+ligand 1
+SOL         1125
+NA               3
+CL               4
