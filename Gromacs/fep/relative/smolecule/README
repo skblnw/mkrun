@@ -8,8 +8,11 @@ dockingdir="/home/luotian/MD/FEP_example"
 # $dockingdir/mol0/ligand.acpype/ligand_GMX.itp -> $rootdir/1.itp.BAK
 # $dockingdir/mol1/ligand.acpype/ligand_GMX.itp -> $rootdir/2.itp.BAK
 
-# rm [ atomtypes ] in itp
+# rm [ atomtypes ] in itp (optional)
+# extract [ atomtypes ] to backup files (essential)
 # rename to 1.itp 2.itp
+
+# bash split_atom_types.sh
 
 # touch pairs.dat
 
@@ -20,8 +23,8 @@ pmx ligandHybrid -i1 1.pdb -i2 2.pdb -itp1 1.itp -itp2 2.itp -pairs pairs.dat
 # mergedB.pdb -> ligand.pdb
 # merged.itp -> ligand.itp
 
-# add [ atomtypes ] to ligand.itp
-# also copy [ atomtypes ] from ffmerged.itp
+# add [ atomtypes ] to ligand.itp (essential)
+# also copy [ atomtypes ] from ffmerged.itp (essential)
 
 # touch posre_ligand.itp
 # loop over pairs.dat:
@@ -31,95 +34,8 @@ pmx ligandHybrid -i1 1.pdb -i2 2.pdb -itp1 1.itp -itp2 2.itp -pairs pairs.dat
 # 3 1 1000 1000 1000
 # ...
 
-
-### Free State
-mkdir $rootdir/free
-workdir="$rootdir/free"
-cd $workdir
-
-# ln -s ../ligand.pdb .
-# ln -s ../ligand.itp .
-# topol.top.BAK -> topol.top
-# this is a universal template
-
-echo 0 | gmx editconf -f ligand.pdb -o editconf.gro -princ -d 1.0 -bt cubic
-
-gmx solvate -cp editconf.gro -o solvate.gro -p topol.top
-
-# touch ions.mdp
-cat > ions.mdp << EOF
-integrator      = md
-dt              = 0.001
-nsteps          = 50000
-nstlist         = 20
-cutoff-scheme   = Verlet
-ns_type         = grid
-coulombtype     = cutoff
-rcoulomb        = 1.0
-rvdw            = 1.0
-pbc             = xyz
-EOF
-
-gmx grompp -f ions.mdp -c solvate.gro -o ions.tpr -p topol.top
-echo 4 | gmx genion -s ions.tpr -o ionized.gro -conc 0.15 -neutral -p topol.top
-# check if ionized.gro exists
-
-# ln -s em.mdp .
-# ln -s nvt.mdp .
-# ln -s md.mdp .
-
-# Run in series
-NWINDOWS=12
-start=0
-end=$(($NWINDOWS - 1))
-
-for ii in $(seq $start $end); do
-	mkdir -p dir$ii
-done
-
-for ii in $(seq $start $end); do
-	cd dir$ii
-	sed -e 's/^init_lambda_state.*$/init_lambda_state = '$ii'/g' ../em.mdp > em.${ii}.mdp
-	if [[ "$ii" -eq 0 ]]; then
-		gmx grompp -f em.${ii}.mdp -c ../ionized.gro -p ../topol.top -r ../ionized.gro -o em.tpr -maxwarn 2
-	else
-		# if lambda>0, start from final coordinates of previous lambda
-		jj=$(($ii - 1))
-		gmx grompp -f em.${ii}.mdp -c ../dir$jj/md.gro -p ../topol.top -r ../dir$jj/md.gro -o em.tpr -maxwarn 2
-	fi
-	gmx mdrun -v -deffnm em
-	cd $workdir
-done
-
-for ii in $(seq $start $end); do
-	cd dir$ii
-	sed -e 's/^init_lambda_state.*$/init_lambda_state = '$ii'/g' ../nvt.mdp > nvt.${ii}.mdp
-	gmx grompp -f nvt.${ii}.mdp -c em.gro -p ../topol.top -o nvt.tpr -maxwarn 1
-	gmx mdrun -v -deffnm nvt
-	cd $workdir
-done
-
-for ii in $(seq $start $end); do
-	cd dir$ii
-	sed -e 's/^init_lambda_state.*$/init_lambda_state = '$ii'/g' ../md.mdp > md.${ii}.mdp
-	gmx grompp -f md.${ii}.mdp -c nvt.gro -t nvt.cpt -p ../topol.top -o md.tpr -maxwarn 1
-	gmx mdrun -v -deffnm md
-	cd $workdir
-done
-
-# Post-simulation Analysis
-mkdir -p xvg
-cd xvg
-
-for ii in $(seq $start $end); do
-  ln -s ../dir$ii/md.xvg dhdl.$ii.xvg
-done
-
-# check if alchemical_analysis is correctly loaded
-cd $workdir
-alchemical_analysis -d xvg -u kcal -g -w -s 1000
-
-cd $rootdir
+# finished all preparation in rootdir
+################################################################
 
 ### Bound State
 mkdir $rootdir/bound
@@ -175,7 +91,7 @@ echo 15 | gmx genion -s ions.tpr -o ionized.gro -conc 0.15 -neutral -p topol.top
 # ln -s nvt.mdp .
 # ln -s md.mdp .
 
-# Run in series
+# Run in serial
 NWINDOWS=12
 start=0
 end=$(($NWINDOWS - 1))
@@ -226,6 +142,102 @@ done
 cd $workdir
 alchemical_analysis -d xvg -u kcal -g -w -s 1000
 
-# combine the results
+# go back to the root dir
 cd $rootdir
+################################################################
+
+### Free State
+mkdir $rootdir/free
+workdir="$rootdir/free"
+cd $workdir
+
+# ln -s ../ligand.pdb .
+# ln -s ../ligand.itp .
+# topol.top.BAK -> topol.top
+# this is a universal template
+
+# locate the ionized.gro of bound state and get the box size
+box_size=$(tail -n 1 "../bound/ionized.gro")
+echo 0 | gmx editconf -f ligand.pdb -o editconf.gro -box $box_size
+
+gmx solvate -cp editconf.gro -o solvate.gro -p topol.top
+
+# touch ions.mdp
+cat > ions.mdp << EOF
+integrator      = md
+dt              = 0.001
+nsteps          = 50000
+nstlist         = 20
+cutoff-scheme   = Verlet
+ns_type         = grid
+coulombtype     = cutoff
+rcoulomb        = 1.0
+rvdw            = 1.0
+pbc             = xyz
+EOF
+
+gmx grompp -f ions.mdp -c solvate.gro -o ions.tpr -p topol.top
+echo 4 | gmx genion -s ions.tpr -o ionized.gro -conc 0.15 -neutral -p topol.top
+# check if ionized.gro exists
+
+# ln -s em.mdp .
+# ln -s nvt.mdp .
+# ln -s md.mdp .
+
+# Run in serial
+NWINDOWS=12
+start=0
+end=$(($NWINDOWS - 1))
+
+for ii in $(seq $start $end); do
+	mkdir -p dir$ii
+done
+
+for ii in $(seq $start $end); do
+	cd dir$ii
+	sed -e 's/^init_lambda_state.*$/init_lambda_state = '$ii'/g' ../em.mdp > em.${ii}.mdp
+	if [[ "$ii" -eq 0 ]]; then
+		gmx grompp -f em.${ii}.mdp -c ../ionized.gro -p ../topol.top -r ../ionized.gro -o em.tpr -maxwarn 2
+	else
+		# if lambda>0, start from final coordinates of previous lambda
+		jj=$(($ii - 1))
+		gmx grompp -f em.${ii}.mdp -c ../dir$jj/md.gro -p ../topol.top -r ../dir$jj/md.gro -o em.tpr -maxwarn 2
+	fi
+	gmx mdrun -v -deffnm em
+	cd $workdir
+done
+
+for ii in $(seq $start $end); do
+	cd dir$ii
+	sed -e 's/^init_lambda_state.*$/init_lambda_state = '$ii'/g' ../nvt.mdp > nvt.${ii}.mdp
+	gmx grompp -f nvt.${ii}.mdp -c em.gro -p ../topol.top -o nvt.tpr -maxwarn 1
+	gmx mdrun -v -deffnm nvt
+	cd $workdir
+done
+
+for ii in $(seq $start $end); do
+	cd dir$ii
+	sed -e 's/^init_lambda_state.*$/init_lambda_state = '$ii'/g' ../md.mdp > md.${ii}.mdp
+	gmx grompp -f md.${ii}.mdp -c nvt.gro -t nvt.cpt -p ../topol.top -o md.tpr -maxwarn 1
+	gmx mdrun -v -deffnm md
+	cd $workdir
+done
+
+# Post-simulation Analysis
+mkdir -p xvg
+cd xvg
+
+for ii in $(seq $start $end); do
+  ln -s ../dir$ii/md.xvg dhdl.$ii.xvg
+done
+
+# check if alchemical_analysis is correctly loaded
+cd $workdir
+alchemical_analysis -d xvg -u kcal -g -w -s 1000
+
+# go back to the root dir
+cd $rootdir
+################################################################
+
+# combine the results
 python combine_results.py
