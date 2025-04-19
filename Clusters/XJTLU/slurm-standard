@@ -10,11 +10,19 @@
 module load gromacs/2023.2-gcc-9.5.0-jzxesel
 export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
+# Equilibration
+
 bash mkgmx_run.sh 0
 ln -s output/md.tpr .
 
-MDRUN="gmx_mpi mdrun -nb gpu -pme gpu -bonded gpu -update gpu -gpu_id 0"
+
+# Production
+
+MDRUN="gmx_mpi mdrun -gpu_id 0 -nb gpu -pme gpu -bonded gpu -update gpu"
 
 prefix=t1
-$MDRUN -v -s md.tpr -deffnm ${prefix} -nsteps -1 -maxh 167
-#$MDRUN -v -s md.tpr -cpi ${prefix}.cpt -deffnm ${prefix} -nsteps -1 -maxh 72
+if [ ! -f ${prefix}.cpt ]; then
+  $MDRUN_GPU -v -s md.tpr -deffnm ${prefix} -nsteps -1 -maxh 167
+else
+  $MDRUN_GPU -v -s md.tpr -cpi ${prefix}.cpt -deffnm ${prefix} -nsteps -1 -maxh 167
+fi

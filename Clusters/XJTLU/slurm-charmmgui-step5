@@ -33,17 +33,15 @@ if $production; then
         -e "s/^nstfout.*/nstfout                 = 50000/g" \
         -e "s/^nstxout.*/nstxout                 = 50000/g" \
         -e "s/^nstxout.*/nstxout-compressed      = 50000/g" \
-        step7_production.mdp > step7_production_trr.mdp
-    gmx_mpi grompp -o md-trr.tpr -f step7_production_trr.mdp -c step7_1.gro -t step7_1.cpt -n index.ndx -p topol.top
+        step5_production.mdp > step5_production_trr.mdp
+    gmx_mpi grompp -o md-trr.tpr -f step5_production_trr.mdp -c step5_1.gro -t step5_1.cpt -n index.ndx -p topol.top
     fi
 
-    #[ ! -f md.tpr ] && gmx_mpi grompp -o md.tpr -f step7_production.mdp -c step7_1.gro -t step7_1.cpt -n index.ndx -p topol.top
     [ ! -f md.tpr ] && gmx_mpi grompp -o md.tpr -f step5_production.mdp -c step5_1.gro -t step5_1.cpt -n index.ndx -p topol.top
 
     MDRUN_GPU="gmx_mpi mdrun -gpu_id 0 -pme gpu -nb gpu -bonded gpu -update gpu"
-    #$MDRUN_GPU -v -deffnm step7_1
 
-    #prefix=t1
+    prefix=t1
     if [ ! -f ${prefix}.cpt ]; then
       $MDRUN_GPU -v -s md.tpr -deffnm ${prefix} -nsteps -1 -maxh 167
     else

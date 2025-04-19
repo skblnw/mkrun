@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=test
-#SBATCH --partition=gpu4090
-#SBATCH --qos=4gpus
+#SBATCH --partition=gpu3090
+#SBATCH --qos=8gpus
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=6
@@ -26,6 +26,17 @@ fi
 
 if $production; then
 
+    trr_is_needed=false
+    if $trr_is_needed; then
+    sed -e "s/^nsteps.*/nsteps                  = 500000/g" \
+        -e "s/^nstvout.*/nstvout                 = 50000/g" \
+        -e "s/^nstfout.*/nstfout                 = 50000/g" \
+        -e "s/^nstxout.*/nstxout                 = 50000/g" \
+        -e "s/^nstxout.*/nstxout-compressed      = 50000/g" \
+        step7_production.mdp > step7_production_trr.mdp
+    gmx_mpi grompp -o md-trr.tpr -f step7_production_trr.mdp -c step7_1.gro -t step7_1.cpt -n index.ndx -p topol.top
+    fi
+
     [ ! -f md.tpr ] && gmx_mpi grompp -o md.tpr -f step7_production.mdp -c step7_1.gro -t step7_1.cpt -n index.ndx -p topol.top
 
     MDRUN_GPU="gmx_mpi mdrun -gpu_id 0 -pme gpu -nb gpu -bonded gpu -update gpu"
@@ -38,3 +49,4 @@ if $production; then
     fi
 
 fi
+
