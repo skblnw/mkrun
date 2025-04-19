@@ -26,17 +26,6 @@ fi
 
 if $production; then
 
-    trr_is_needed=false
-    if $trr_is_needed; then
-    sed -e "s/^nsteps.*/nsteps                  = 500000/g" \
-        -e "s/^nstvout.*/nstvout                 = 50000/g" \
-        -e "s/^nstfout.*/nstfout                 = 50000/g" \
-        -e "s/^nstxout.*/nstxout                 = 50000/g" \
-        -e "s/^nstxout.*/nstxout-compressed      = 50000/g" \
-        step5_production.mdp > step5_production_trr.mdp
-    gmx_mpi grompp -o md-trr.tpr -f step5_production_trr.mdp -c step5_1.gro -t step5_1.cpt -n index.ndx -p topol.top
-    fi
-
     [ ! -f md.tpr ] && gmx_mpi grompp -o md.tpr -f step5_production.mdp -c step5_1.gro -t step5_1.cpt -n index.ndx -p topol.top
 
     MDRUN_GPU="gmx_mpi mdrun -gpu_id 0 -pme gpu -nb gpu -bonded gpu -update gpu"
