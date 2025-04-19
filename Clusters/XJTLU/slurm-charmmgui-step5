@@ -1,0 +1,54 @@
+#!/bin/bash
+#SBATCH --job-name=test
+#SBATCH --partition=gpu3090
+#SBATCH --qos=8gpus
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=6
+#SBATCH --gpus=1
+
+module load gromacs/2023.2-gcc-9.5.0-jzxesel
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
+
+equilibration=true
+production=false
+
+if $equilibration; then
+
+    sed -e "s/gmx mdrun -v/gmx_mpi mdrun -gpu_id 0 -nb gpu -pme gpu -bonded gpu -v/g" \
+        -e "s/gmx_d mdrun /gmx_mpi mdrun /g" \
+        -e "s/gmx grompp /gmx_mpi grompp /g" \
+        -e "s/^set cntmax = 10/set cntmax = 1/g" \
+        README > wrapper
+    csh wrapper
+
+fi
+
+if $production; then
+
+    trr_is_needed=false
+    if $trr_is_needed; then
+    sed -e "s/^nsteps.*/nsteps                  = 500000/g" \
+        -e "s/^nstvout.*/nstvout                 = 50000/g" \
+        -e "s/^nstfout.*/nstfout                 = 50000/g" \
+        -e "s/^nstxout.*/nstxout                 = 50000/g" \
+        -e "s/^nstxout.*/nstxout-compressed      = 50000/g" \
+        step7_production.mdp > step7_production_trr.mdp
+    gmx_mpi grompp -o md-trr.tpr -f step7_production_trr.mdp -c step7_1.gro -t step7_1.cpt -n index.ndx -p topol.top
+    fi
+
+    #[ ! -f md.tpr ] && gmx_mpi grompp -o md.tpr -f step7_production.mdp -c step7_1.gro -t step7_1.cpt -n index.ndx -p topol.top
+    [ ! -f md.tpr ] && gmx_mpi grompp -o md.tpr -f step5_production.mdp -c step5_1.gro -t step5_1.cpt -n index.ndx -p topol.top
+
+    MDRUN_GPU="gmx_mpi mdrun -gpu_id 0 -pme gpu -nb gpu -bonded gpu -update gpu"
+    #$MDRUN_GPU -v -deffnm step7_1
+
+    #prefix=t1
+    if [ ! -f ${prefix}.cpt ]; then
+      $MDRUN_GPU -v -s md.tpr -deffnm ${prefix} -nsteps -1 -maxh 167
+    else
+      $MDRUN_GPU -v -s md.tpr -cpi ${prefix}.cpt -deffnm ${prefix} -nsteps -1 -maxh 167
+    fi
+
+fi
+

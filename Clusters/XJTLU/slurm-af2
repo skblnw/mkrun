@@ -1,0 +1,24 @@
+#!/bin/bash
+#SBATCH --job-name=colabfold
+#SBATCH --partition=gpu4090
+#SBATCH --qos=gpu4090
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=1
+#SBATCH --gpus=1
+
+#ml avail
+ml anaconda3
+#ml cuda
+#ml cudnn
+#ml anaconda3/2022.10-gcc-8.5.0-4dp3trd
+#ml cuda/11.8.0-gcc-8.5.0-d7ndetl
+#ml cudnn/8.7.0.84-11.8-gcc-8.5.0-xo2snl5
+
+
+source activate localcolabfold
+
+mkdir -p pred
+
+colabfold_batch input.fasta pred
+
