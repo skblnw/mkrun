@@ -38,6 +38,7 @@ mdrun_args=(
   -deffnm "$run_prefix"
   -nsteps -1
   -maxh 166.5
+  -pin on
   -nb gpu
   -pme gpu
   -bonded gpu

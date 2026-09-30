@@ -10,6 +10,8 @@ Cluster snapshot: September 2026.
 ## Examples
 
 - `gromacs-md.slurm`: a checkpoint-aware, single-GPU GROMACS production run.
+- `amber-md.slurm`: one Amber `pmemd.cuda` stage on one GPU and one CPU.
+- `namd-md.slurm`: one NAMD 3 GPU-resident stage on one GPU and one CPU.
 - `gromacs-charmmgui.slurm`: CHARMM-GUI equilibration or production without
   maintaining separate scripts for every numbered step or trajectory format.
 - `colabfold.slurm`: a single-GPU LocalColabFold prediction.
@@ -25,6 +27,33 @@ different things:
 - `--qos=4gpus` selects an entitlement/concurrency policy. It does **not** make
   one job consume four GPUs.
 - `--gpus=1` is the GPU request made by that job.
+
+The Amber and NAMD examples use the user-owned launchers at
+`/gpfs/work/bio/chunchan/opt/bin/pmemd.cuda` and
+`/gpfs/work/bio/chunchan/opt/bin/namd3`. They default to `gpu4090`, 1 CPU,
+1 GPU, 16 GB and 1 hour. For a 3090, override the partition with
+`sbatch --partition=gpu3090`; override memory and wall time to match the
+actual system and stage. A short wall time may help backfill only when the
+simulation can finish or restart cleanly within it. Submit from the directory
+containing the input files and their referenced force-field files.
+
+Amber takes a `mdin`, topology (`.parm7`/`.prmtop`) and starting coordinates
+(`.rst7`). Its `irest` and `ntx` settings must match whether the coordinates
+start a new run or continue one; use the previous `.rst7` as the next stage's
+starting coordinates. Pass the optional reference coordinates for a restrained
+stage. Each run needs a fresh output prefix because `pmemd.cuda -O` overwrites
+its outputs. Do not set `CUDA_VISIBLE_DEVICES` yourself inside a Slurm job.
+
+NAMD takes a complete configuration (`.namd`) with its own `outputName`, force
+field, coordinates and restart settings. For the one-core benchmark setup,
+enable `GPUresident on` in a compatible NAMD 3 config. The benchmark also used
+`GPUAtomMigration on`, which NAMD labels experimental. The Slurm script writes
+the NAMD log separately; changing the log prefix does not change `outputName`
+or prevent the config from overwriting simulation outputs.
+
+Readable HPC copies of this README and the three MD-engine Slurm examples are
+kept at `/gpfs/work/bio/chunchan/opt/templates/md-engines/`. The repository is
+the source for future edits; copy updated files there after reviewing changes.
 
 ## Current cluster shape
 
@@ -73,6 +102,10 @@ module spider gromacs
 
 ```bash
 sbatch gromacs-md.slurm md.tpr replica-01
+
+sbatch amber-md.slurm 04_md.in ionized.parm7 03_eq.rst7 replica-01
+
+sbatch namd-md.slurm production.namd replica-01
 
 sbatch --export=ALL,MODE=equilibration \
   gromacs-charmmgui.slurm
